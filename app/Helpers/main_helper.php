@@ -113,7 +113,7 @@ function compressConvertImage($get_file, $upload_path, $filename)
 function menuSidebar()
 {
     $sub_kategori = model('SubKategori')->first();
-    $url_konfig_produk = base_url() . 'koleksi?kategori=' . $sub_kategori['slug_kategori'] . '&sub=' . $sub_kategori['slug'] . '&config=kelola_produk';
+    $url_konfig_produk = base_url() . 'koleksi?kategori=' . $sub_kategori['slug_kategori'] . '&sub=' . $sub_kategori['slug'] . '&config=produk';
     $menu_sidebar = [
 		[
 			'title'	=> 'Dashboard',
@@ -157,7 +157,7 @@ function menuSidebar()
 		],
         [
             'title' => 'Konfigurasi Produk',
-            'icon'  => 'fa-solid fa-table-cells-large',
+            'icon'  => 'fa-solid fa-gears',
             'url'   => $url_konfig_produk,
             'role'  => [1],
             'type'  => 'no-collapse',

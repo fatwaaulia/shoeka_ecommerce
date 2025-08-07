@@ -1,5 +1,14 @@
 <?php
 $get_order_by = $_GET['order_by'] ?? '';
+
+
+$array_id_varian_produk = $array_id_varian_produk ? json_decode($array_id_varian_produk) : [];
+if ($array_id_varian_produk) {
+    $data = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
+    $total_produk  = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->countAllResults();
+} else {
+    $total_produk = 0;
+}
 ?>
 
 <link rel="stylesheet" href="<?= base_url() ?>assets/modules/dselect/dselect.min.css">
@@ -9,14 +18,15 @@ $get_order_by = $_GET['order_by'] ?? '';
 
 <section class="container">
     <div class="row">
-        <div class="col-12">
-            <h5 class="text-center">
+        <div class="col-12 text-center">
+            <h5>
                 <?= $kategori['nama'] ?>
                 <?= $sub_kategori ? ' - ' . $sub_kategori['nama'] : '' ?>
             </h5>
+            <small><?= $total_produk ?> produk</small>
         </div>
     </div>
-    <form action="" method="get">
+    <form action="" method="get" class="mt-3">
         <div class="row gx-2 gy-3">
             <div class="col-12 col-md-6 col-lg-4 col-xl-3">
                 <label for="order_by" class="form-label">Urutkan</label>
@@ -41,19 +51,19 @@ $get_order_by = $_GET['order_by'] ?? '';
             </div>
         </div>
     </form>
-    <div class="row mt-5">
-        <div class="col-12">
-            <?php
-            $ids = $array_id_varian_produk ? json_decode($array_id_varian_produk) : [];
-
-            if ($ids) :
-            $varian_produk = model('VarianProduk')->whereIn('id', $ids)->findAll();
-            foreach ($varian_produk as $v) :
-            ?>
-            <a href="<?= base_url() ?>detail-produk/<?= $v['id'] ?>"><?= $v['nama']; ?></a> <br>
-            <?php endforeach; endif; ?>
-
+    <div class="row mt-0 gx-4 gy-5">
+        <?php
+        if ($array_id_varian_produk) :
+            foreach ($data as $v) :
+        ?>
+        <div class="col-6 col-md-4 col-xl-3">
+            <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>">
+                <img src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" alt="<?= $v['nama'] ?>">
+                <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
+                <p class="mb-0 fw-500"><?= formatRupiah($v['harga_ecommerce']) ?></p>
+            </a>
         </div>
+        <?php endforeach; endif; ?>
     </div>
 </section>
 

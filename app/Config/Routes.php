@@ -33,7 +33,11 @@ $routes->get('detail-produk/(:segment)', 'FrontEnd::detailProduk/$1');
 // Keranjang
 $routes->get('keranjang', 'FrontEnd::keranjang');
 $routes->post('keranjang', 'FrontEnd::keranjangSession');
-$routes->post('api/invoice/create', 'FrontEnd::createInvoice');
+$routes->post('api/transaksi/create', 'Transaksi::create');
+
+// Raja Ongkir
+$routes->get('api/ongkir/wilayah', 'Ongkir::index');
+$routes->post('api/ongkir/tarif', 'Ongkir::tarif');
 
 // Transaksi
 $routes->get('detail-transaksi', 'FrontEnd::detailTransaksi');
@@ -171,7 +175,7 @@ if (in_array($id_role, roleAccessByTitle('Sub Sub Kategori'))) {
         $routes->get('/', 'SubSubKategori::index');
         $routes->post('create', 'SubSubKategori::create');
         $routes->post('update/(:segment)', 'SubSubKategori::update/$1');
-        $routes->post('update/(:segment)/json-id-varian-produk', 'SubKategori::updateJsonIdVarianProduk/$1');
+        $routes->post('update/(:segment)/json-id-varian-produk', 'SubSubKategori::updateJsonIdVarianProduk/$1');
         $routes->post('delete/(:segment)', 'SubSubKategori::delete/$1');
     });
 }

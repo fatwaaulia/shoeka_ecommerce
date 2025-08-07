@@ -14,7 +14,11 @@
                     <td>: <?= $data['status'] ?></td>
                 </tr>
             </table>
+            <?php if ($data['tipe_pembayaran'] == 'va') : ?>
             <a href="<?= $data['invoice_url'] ?>" target="_blank" class="btn btn-primary mt-3">Bayar Sekarang</a>
+            <?php else : ?>
+            <a href="https://wa.me/62082345566500" target="_blank" class="btn btn-primary mt-3">Hubungi Admin</a>
+            <?php endif; ?>
         </div>
     </div>
 </section>

@@ -54,11 +54,13 @@ $get_config = !empty($_GET['config']) ? ('&config=' . $_GET['config']) : '';
             </div>
         </div>
         <div class="ms-lg-auto mt-3 mt-lg-0">
-            <a class="fw-600 me-3 text-dark" data-bs-toggle="modal" data-bs-target="#lacakInvoice">
-                LACAK INVOICE
+            <a class="fw-600 me-3 text-dark" data-bs-toggle="modal" data-bs-target="#lacakPesanan">
+                LACAK PESANAN
             </a>
             <a href="<?= base_url() ?>keranjang" class="position-relative">
-                <i class="fa-solid fa-cart-shopping fa-xl"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                </svg>
                 <span class="position-absolute top-0 start-100 translate-middle badge bg-dark">
                     <?= session('keranjang') ? count(json_decode(session('keranjang'))) : 0 ?>
                 </span>
@@ -110,11 +112,11 @@ $get_config = !empty($_GET['config']) ? ('&config=' . $_GET['config']) : '';
     </div>
 </nav>
 
-<div class="modal fade" id="lacakInvoice" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+<div class="modal fade" id="lacakPesanan" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Lacak Invoice</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Lacak Pesanan</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="<?= base_url() ?>detail-transaksi" method="get">

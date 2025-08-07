@@ -85,7 +85,8 @@ div.dt-processing > div:last-child > div {
                                 <th>Gambar</th>
                                 <th>Harga Pokok</th>
                                 <th>Biaya Produk</th>
-                                <th>Harga Jual</th>
+                                <th>Harga Ecommerce</th>
+                                <th>Berat (gram)</th>
                                 <th>SKU</th>
                             </tr>
                         </thead>
@@ -227,7 +228,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: 'biaya_produk',
             }, {
                 name: '',
-                data: 'harga_jual',
+                data: 'harga_ecommerce',
+            }, {
+                name: '',
+                data: 'berat',
             }, {
                 name: 'sku',
                 data: 'sku',

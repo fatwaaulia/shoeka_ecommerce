@@ -20,22 +20,17 @@ class VarianProduk extends BaseController
     --------------------------------------------------------------*/
     public function index()
     {
-        $select     = ['*'];
-        $base_query = model($this->model_name)->select($select);
+        $select = model($this->model_name)->baseQuery('select');
+        $base_query = model($this->model_name)->baseQuery()->where([
+            'berat !=' => 0,
+            'status'   => 'ENABLE',
+        ]);
         $limit      = (int)$this->request->getVar('length');
         $offset     = (int)$this->request->getVar('start');
 
         $data            = $base_query;
         $records_total   = $base_query->countAllResults(false);
-        $array_query_key = ['produk'];
 
-        if (array_intersect(array_keys($_GET), $array_query_key)) {
-            $get_produk = $this->request->getVar('produk');
-            if ($get_produk) {
-                $produk = model('Produk')->select(['id', 'nama'])->where('nama', $get_produk)->first();
-                $base_query->where('a.id_produk', $produk['id']);
-            }
-        }
 
         // Datatables
         $columns = array_column($this->request->getVar('columns') ?? [], 'name');
@@ -57,6 +52,7 @@ class VarianProduk extends BaseController
             $data[$key]['harga_pokok'] = formatRupiah($v['harga_pokok']);
             $data[$key]['biaya_produk'] = formatRupiah($v['biaya_produk']);
             $data[$key]['harga_jual'] = formatRupiah($v['harga_jual']);
+            $data[$key]['harga_ecommerce'] = formatRupiah($v['harga_ecommerce']);
             $data[$key]['created_at'] = date('d-m-Y H:i:s', strtotime($v['created_at']));
         }
 

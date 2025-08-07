@@ -17,7 +17,7 @@ class App extends BaseConfig
      * E.g., http://example.com/
      */
     public string $baseURL    = 'http://localhost:8080/';
-    public string $webfileURL = 'http://192.168.1.24/shoeka/shoeka_dashboard/public/assets/uploads/';
+    public string $webfileURL = 'http://192.168.1.10/shoeka/shoeka_dashboard/public/assets/uploads/';
     public string $dirUpload  = 'assets/uploads/';
 
     /**

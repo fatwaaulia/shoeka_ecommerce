@@ -37,7 +37,7 @@ $description  = isset($description) ? $description : $app_settings['deskripsi'];
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/main.css?v=1.0">
     <style>
     section {
-        padding: 40px;
+        padding: 25px;
     }
     </style>
 
