@@ -22,9 +22,9 @@
                             <div class="invalid-feedback" id="invalid_potongan"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="minimal_belanja" class="form-label">Minimal Belanja</label>
-                            <input type="text" inputmode="numeric" class="form-control" id="minimal_belanja" name="minimal_belanja" placeholder="Masukkan minimal belanja" oninput="this.value = dotsNumber(this.value)">
-                            <div class="invalid-feedback" id="invalid_minimal_belanja"></div>
+                            <label for="minimal_ongkir" class="form-label">Minimal Ongkir</label>
+                            <input type="text" inputmode="numeric" class="form-control" id="minimal_ongkir" name="minimal_ongkir" placeholder="Masukkan minimal ongkir" oninput="this.value = dotsNumber(this.value)">
+                            <div class="invalid-feedback" id="invalid_minimal_ongkir"></div>
                         </div>
                         <div class="row gx-2">
                             <div class="col-6">

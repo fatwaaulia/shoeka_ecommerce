@@ -30,7 +30,8 @@ $get_created_by = $_GET['created_by'] ?? '';
                             <th>No.</th>
                             <th>Nama</th>
                             <th>Kode</th>
-                            <th>Potongan</th>
+                            <th>Jenis Diskon</th>
+                            <th>Diskon</th>
                             <th>Minimal Belanja</th>
                             <th>Perode Awal</th>
                             <th>Perode Akhir</th>
@@ -73,7 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: 'kode',
             }, {
                 name: '',
-                data: 'potongan',
+                data: 'jenis_diskon',
+            }, {
+                name: '',
+                data: 'diskon',
             }, {
                 name: '',
                 data: 'minimal_belanja',

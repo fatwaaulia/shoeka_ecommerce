@@ -87,7 +87,7 @@ class PotonganOngkir extends BaseController
         foreach ($data as $key => $v) {
             $data[$key]['no_urut'] = $offset + $key + 1;
             $data[$key]['potongan'] = formatRupiah($v['potongan']);
-            $data[$key]['minimal_belanja'] = formatRupiah($v['minimal_belanja']);
+            $data[$key]['minimal_ongkir'] = formatRupiah($v['minimal_ongkir']);
             $data[$key]['periode_awal'] = date('d-m-Y', strtotime($v['periode_awal']));
             $data[$key]['periode_akhir'] = date('d-m-Y', strtotime($v['periode_akhir']));
             $data[$key]['created_at'] = date('d-m-Y H:i:s', strtotime($v['created_at']));
@@ -103,11 +103,11 @@ class PotonganOngkir extends BaseController
     public function create()
     {
         $rules = [
-            'nama'            => "required|is_unique[ecommerce_$this->base_name.nama]",
-            'potongan'        => 'required',
-            'minimal_belanja' => 'required',
-            'periode_awal'    => 'required',
-            'periode_akhir'   => 'required',
+            'nama'           => "required|is_unique[ecommerce_$this->base_name.nama]",
+            'potongan'       => 'required',
+            'minimal_ongkir' => 'required',
+            'periode_awal'   => 'required',
+            'periode_akhir'  => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -121,11 +121,11 @@ class PotonganOngkir extends BaseController
 
         // Lolos Validasi
         $data = [
-            'nama'            => $this->request->getVar('nama'),
-            'potongan'        => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
-            'minimal_belanja' => $this->request->getVar('minimal_belanja', FILTER_SANITIZE_NUMBER_INT),
-            'periode_awal'    => $this->request->getVar('periode_awal'),
-            'periode_akhir'   => $this->request->getVar('periode_akhir'),
+            'nama'           => $this->request->getVar('nama'),
+            'potongan'       => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
+            'minimal_ongkir' => $this->request->getVar('minimal_ongkir', FILTER_SANITIZE_NUMBER_INT),
+            'periode_awal'   => $this->request->getVar('periode_awal'),
+            'periode_akhir'  => $this->request->getVar('periode_akhir'),
         ];
 
         model($this->model_name)->insert($data);
@@ -140,12 +140,11 @@ class PotonganOngkir extends BaseController
     public function update($id = null)
     {
         $rules = [
-            'nama'            => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
-            'potongan'        => 'required',
-            'minimal_belanja' => 'required',
-            'periode_awal'    => 'required',
-            'periode_akhir'   => 'required',
-            
+            'nama'           => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
+            'potongan'       => 'required',
+            'minimal_ongkir' => 'required',
+            'periode_awal'   => 'required',
+            'periode_akhir'  => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -159,11 +158,11 @@ class PotonganOngkir extends BaseController
 
         // Lolos Validasi
         $data = [
-            'nama'            => $this->request->getVar('nama'),
-            'potongan'        => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
-            'minimal_belanja' => $this->request->getVar('minimal_belanja', FILTER_SANITIZE_NUMBER_INT),
-            'periode_awal'    => $this->request->getVar('periode_awal'),
-            'periode_akhir'   => $this->request->getVar('periode_akhir'),
+            'nama'           => $this->request->getVar('nama'),
+            'potongan'       => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
+            'minimal_ongkir' => $this->request->getVar('minimal_ongkir', FILTER_SANITIZE_NUMBER_INT),
+            'periode_awal'   => $this->request->getVar('periode_awal'),
+            'periode_akhir'  => $this->request->getVar('periode_akhir'),
         ];
         model($this->model_name)->update($id, $data);
 

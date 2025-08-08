@@ -86,7 +86,7 @@ class VoucherBelanja extends BaseController
 
         foreach ($data as $key => $v) {
             $data[$key]['no_urut'] = $offset + $key + 1;
-            $data[$key]['potongan'] = formatRupiah($v['potongan']);
+            $data[$key]['diskon'] = dotsNumber($v['diskon']);
             $data[$key]['minimal_belanja'] = formatRupiah($v['minimal_belanja']);
             $data[$key]['periode_awal'] = date('d-m-Y', strtotime($v['periode_awal']));
             $data[$key]['periode_akhir'] = date('d-m-Y', strtotime($v['periode_akhir']));
@@ -105,7 +105,8 @@ class VoucherBelanja extends BaseController
         $rules = [
             'nama'            => "required|is_unique[ecommerce_$this->base_name.nama]",
             'kode'            => "required|is_unique[ecommerce_$this->base_name.kode]",
-            'potongan'        => 'required',
+            'jenis_diskon'    => 'required',
+            'diskon'          => 'required',
             'minimal_belanja' => 'required',
             'periode_awal'    => 'required',
             'periode_akhir'   => 'required',
@@ -124,7 +125,8 @@ class VoucherBelanja extends BaseController
         $data = [
             'nama'            => $this->request->getVar('nama'),
             'kode'            => $this->request->getVar('kode'),
-            'potongan'        => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
+            'jenis_diskon'    => $this->request->getVar('jenis_diskon'),
+            'diskon'          => $this->request->getVar('diskon', FILTER_SANITIZE_NUMBER_INT),
             'minimal_belanja' => $this->request->getVar('minimal_belanja', FILTER_SANITIZE_NUMBER_INT),
             'periode_awal'    => $this->request->getVar('periode_awal'),
             'periode_akhir'   => $this->request->getVar('periode_akhir'),
@@ -144,7 +146,8 @@ class VoucherBelanja extends BaseController
         $rules = [
             'nama'            => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
             'kode'            => "required|is_unique[ecommerce_$this->base_name.kode,id,$id]",
-            'potongan'        => 'required',
+            'jenis_diskon'    => 'required',
+            'diskon'          => 'required',
             'minimal_belanja' => 'required',
             'periode_awal'    => 'required',
             'periode_akhir'   => 'required',
@@ -164,7 +167,8 @@ class VoucherBelanja extends BaseController
         $data = [
             'nama'            => $this->request->getVar('nama'),
             'kode'            => $this->request->getVar('kode'),
-            'potongan'        => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
+            'jenis_diskon'    => $this->request->getVar('jenis_diskon'),
+            'diskon'          => $this->request->getVar('diskon', FILTER_SANITIZE_NUMBER_INT),
             'minimal_belanja' => $this->request->getVar('minimal_belanja', FILTER_SANITIZE_NUMBER_INT),
             'periode_awal'    => $this->request->getVar('periode_awal'),
             'periode_akhir'   => $this->request->getVar('periode_akhir'),

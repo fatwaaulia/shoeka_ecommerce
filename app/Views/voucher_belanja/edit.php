@@ -22,9 +22,23 @@
                             <div class="invalid-feedback" id="invalid_kode"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="potongan" class="form-label">Potongan</label>
-                            <input type="text" inputmode="numeric" class="form-control" id="potongan" name="potongan" value="<?= dotsNumber(abs($data['potongan'])) ?>" placeholder="Masukkan potongan" oninput="this.value = dotsNumber(this.value)">
-                            <div class="invalid-feedback" id="invalid_potongan"></div>
+                            <label for="jenis_diskon" class="form-label">Jenis Diskon</label>
+                            <select class="form-select" id="jenis_diskon" name="jenis_diskon">
+                                <option value="">Pilih</option>
+                                <?php
+                                $jenis_diskon = ['Rp', '%'];
+                                foreach ($jenis_diskon as $v) :
+                                    $selected = ($v == $data['jenis_diskon']) ? 'selected' : '';
+                                ?>
+                                <option value="<?= $v ?>" <?= $selected ?>><?= $v ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="invalid-feedback" id="invalid_jenis_diskon"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diskon" class="form-label">Diskon</label>
+                            <input type="text" inputmode="numeric" class="form-control" id="diskon" name="diskon" value="<?= dotsNumber(abs($data['diskon'])) ?>" placeholder="Masukkan diskon" oninput="this.value = dotsNumber(this.value)">
+                            <div class="invalid-feedback" id="invalid_diskon"></div>
                         </div>
                         <div class="mb-3">
                             <label for="minimal_belanja" class="form-label">Minimal Belanja</label>
