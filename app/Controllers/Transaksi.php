@@ -93,7 +93,68 @@ class Transaksi extends BaseController
         $index_layanan_kurir = $this->request->getVar('layanan_kurir');
         $tarif_ongkir = $response['data'][$index_layanan_kurir];
 
-        $total_tagihan = (int)$total_belanja + (int)$tarif_ongkir['cost'];
+        // Voucher Belanja
+        $kode_voucher_belanja = trim($this->request->getVar('kode_voucher_belanja'));
+        $voucher_belanja = model('VoucherBelanja')->where([
+            'kode' => trim($kode_voucher_belanja),
+            'periode_awal <='  => date('Y-m-d'),
+            'periode_akhir >=' => date('Y-m-d'),
+        ])
+        ->first();
+
+        if ($voucher_belanja) {
+            if ($total_belanja < $voucher_belanja['minimal_belanja']) return;
+
+            if ($voucher_belanja['jenis_diskon'] == 'Rp') {
+                $diskon_belanja = $voucher_belanja['diskon'];
+
+            } elseif ($voucher_belanja['jenis_diskon'] == '%') {
+                $diskon_belanja = ($total_belanja * $voucher_belanja['diskon'] / 100);
+            } else {
+                $diskon_belanja = 0;
+            }
+
+            $id_voucher_belanja = $voucher_belanja['id'];
+            $kode_voucher_belanja = $voucher_belanja['kode'];
+            $diskon_voucher_belanja = $voucher_belanja['diskon'];
+            $jenis_diskon_voucher_belanja = $voucher_belanja['jenis_diskon'];
+            $minimal_belanja_voucher_belanja = $voucher_belanja['minimal_belanja'];
+            $potongan_diskon = $diskon_belanja;
+            $total_belanja = $total_belanja;
+            $final_total_belanja = $total_belanja - $potongan_diskon;
+
+        } else {
+            $id_voucher_belanja = 0;
+            $kode_voucher_belanja = '';
+            $diskon_voucher_belanja = 0;
+            $jenis_diskon_voucher_belanja = '';
+            $minimal_belanja_voucher_belanja = 0;
+            $potongan_diskon = 0;
+            $total_belanja = $total_belanja;
+            $final_total_belanja = $total_belanja;
+        }
+        // END | Voucher Belanja
+
+        // Potongan Ongkir
+        $potongan_ongkir = model('PotonganOngkir')->where([
+            'periode_awal <='  => date('Y-m-d'),
+            'periode_akhir >=' => date('Y-m-d'),
+        ])
+        ->orderBy('periode_awal DESC')
+        ->first();
+
+        if ($potongan_ongkir) {
+            $id_potongan_ongkir = $potongan_ongkir['id'];
+            $potongan_ongkir = $potongan_ongkir['potongan'];
+            $final_ongkir = $tarif_ongkir['cost'] - $potongan_ongkir;
+        } else {
+            $id_potongan_ongkir = 0;
+            $potongan_ongkir = 0;
+            $final_ongkir = $tarif_ongkir['cost'];
+        }
+        // END | Potongan Ongkir
+
+        $total_tagihan = $final_total_belanja + $final_ongkir;
 
         for (;;) {
             $random_string = 'INV' . strtoupper(random_string('alnum', 6));
@@ -186,9 +247,22 @@ class Transaksi extends BaseController
             'tarif_ongkir_description' => $tarif_ongkir['description'],
             'tarif_ongkir_cost' => $tarif_ongkir['cost'],
             'tarif_ongkir_etd' => $tarif_ongkir['etd'],
+            
+            'id_potongan_ongkir' => $id_potongan_ongkir,
+            'potongan_ongkir' => $potongan_ongkir,
+            'final_ongkir' => $final_ongkir,
+
+            'id_voucher_belanja' => $id_voucher_belanja,
+            'kode_voucher_belanja' => $kode_voucher_belanja,
+            'diskon_voucher_belanja' => $diskon_voucher_belanja,
+            'jenis_diskon_voucher_belanja' => $jenis_diskon_voucher_belanja,
+            'minimal_belanja_voucher_belanja' => $minimal_belanja_voucher_belanja,
+            'potongan_diskon' => $potongan_diskon,
+            'total_belanja' => $total_belanja,
+            'final_total_belanja' => $final_total_belanja,
 
             'total_berat'   => $total_berat,
-            'total_belanja' => $total_belanja,
+
             'total_tagihan' => $total_tagihan,
 
             'tipe_pembayaran'  => $tipe_pembayaran,
@@ -201,8 +275,9 @@ class Transaksi extends BaseController
             'expired_at'       => $response_xendit['expiry_date'] ?? null,
             'paid_at'          => null,
         ];
-        model('Transaksi')->insert($data);
-        $id_transaksi = model($this->model_name)->getInsertID();
+        // model('Transaksi')->insert($data);
+        // $id_transaksi = model($this->model_name)->getInsertID();
+        $id_transaksi = 123;
 
         $data_item_transaksi = [];
         foreach ($varian_produk as $v) {
@@ -235,8 +310,15 @@ class Transaksi extends BaseController
                 'alamat_customer'  => $alamat_customer,
             ];
         }
-        model('ItemTransaksi')->insertBatch($data_item_transaksi);
-        session()->remove('keranjang');
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'status'  => 'success',
+            'transaksi' => $data,
+            'item'   => $data_item_transaksi,
+        ]);
+
+        // model('ItemTransaksi')->insertBatch($data_item_transaksi);
+        // session()->remove('keranjang');
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',

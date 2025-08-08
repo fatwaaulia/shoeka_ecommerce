@@ -32,7 +32,10 @@ $routes->get('detail-produk/(:segment)', 'FrontEnd::detailProduk/$1');
 
 // Keranjang
 $routes->get('keranjang', 'FrontEnd::keranjang');
-$routes->post('keranjang', 'FrontEnd::keranjangSession');
+
+// Checkout
+$routes->get('checkout', 'FrontEnd::checkout');
+$routes->get('api/voucher-belanja/kode/(:segment)', 'VoucherBelanja::cekKode/$1');
 $routes->post('api/transaksi/create', 'Transaksi::create');
 
 // Keranjang Session

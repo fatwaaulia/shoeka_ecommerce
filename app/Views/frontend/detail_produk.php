@@ -68,7 +68,7 @@
                         </button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">MASUKKAN KERANJANG</button>
+                <button type="submit" class="btn btn-primary mt-3">Masukkan Keranjang</button>
             </form>
 
             <hr style="border: 1px solid #ddd;">

@@ -114,7 +114,7 @@ foreach ($keranjang as $item) {
                         <?= $v['nama'] ?>
                         <i class="fa-solid fa-angle-down"></i>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu position-static">
                         <?php
                         foreach ($sub_sub_kategori as $v2) :
                             $active_sub_sub = '';

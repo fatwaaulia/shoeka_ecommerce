@@ -118,6 +118,16 @@ class FrontEnd extends BaseController
         return view('frontend/header', $view);
     }
 
+    public function checkout()
+    {
+        $data['title'] = 'Checkout';
+
+        $view['navbar'] = view('frontend/components/navbar');
+        $view['content'] = view('frontend/checkout', $data);
+        $view['footer'] = view('frontend/components/footer');
+        return view('frontend/header', $view);
+    }
+
     public function detailTransaksi()
     {
         $kode = $this->request->getVar('kode', FILTER_SANITIZE_SPECIAL_CHARS);

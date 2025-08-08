@@ -62,6 +62,66 @@ class VoucherBelanja extends BaseController
     /*--------------------------------------------------------------
     # API
     --------------------------------------------------------------*/
+    public function cekKode($kode)
+    {
+        $keranjang_session = json_decode(session('keranjang'), true) ?? [];
+        $array_id_varian_produk = array_column($keranjang_session, 'id_varian_produk');
+        $total_belanja = 0;
+        if ($array_id_varian_produk) :
+            $varian_produk = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
+
+            foreach ($varian_produk as $key => $v) :
+                $total_harga_ecommerce = 0;
+                foreach ($keranjang_session as $v2) {
+                    if ($v2['id_varian_produk'] === $v['id']) {
+                        $qty = (int)$v2['qty'];
+                        break;
+                    }
+                }
+
+                $total_harga_ecommerce += $v['harga_ecommerce'] * $qty;
+                $total_belanja += $total_harga_ecommerce;
+            endforeach;
+        endif;
+
+        $voucher_belanja = model($this->model_name)->where([
+            'kode' => trim($kode),
+            'periode_awal <='  => date('Y-m-d'),
+            'periode_akhir >=' => date('Y-m-d'),
+        ])
+        ->first();
+
+        if ($voucher_belanja) {
+            if ($total_belanja < $voucher_belanja['minimal_belanja']) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Minimal belanja '. formatRupiah($voucher_belanja['minimal_belanja']),
+                ]);
+            }
+
+            if ($voucher_belanja['jenis_diskon'] == 'Rp') {
+                $diskon_belanja = $voucher_belanja['diskon'];
+
+            } elseif ($voucher_belanja['jenis_diskon'] == '%') {
+                $diskon_belanja = ($total_belanja * $voucher_belanja['diskon'] / 100);
+            } else {
+                $diskon_belanja = 0;
+            }
+
+            return $this->response->setStatusCode(200)->setJSON([
+                'status'  => 'success',
+                'message' => 'Voucher berhasil digunakan',
+                'data'    => $voucher_belanja,
+                'diskon_belanja' => $diskon_belanja,
+            ]);
+        } else {
+            return $this->response->setStatusCode(400)->setJSON([
+                'status'  => 'error',
+                'message' => 'Voucher tidak ditemukan',
+            ]);
+        }
+    }
+
     public function index()
     {
         $select     = ['*'];
@@ -78,6 +138,8 @@ class VoucherBelanja extends BaseController
         $order = $this->request->getVar('order')[0] ?? null;
         if (isset($order['column'], $order['dir']) && !empty($columns[$order['column']])) {
             $base_query->orderBy($columns[$order['column']], $order['dir'] === 'desc' ? 'desc' : 'asc');
+        } else {
+            $base_query->orderBy('periode_awal DESC');
         }
         // End | Datatables
 
