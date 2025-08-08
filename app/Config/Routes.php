@@ -35,6 +35,11 @@ $routes->get('keranjang', 'FrontEnd::keranjang');
 $routes->post('keranjang', 'FrontEnd::keranjangSession');
 $routes->post('api/transaksi/create', 'Transaksi::create');
 
+// Keranjang Session
+$routes->post('session/keranjang/create', 'KeranjangSession::create');
+$routes->post('session/keranjang/update/(:segment)', 'KeranjangSession::update/$1');
+$routes->post('session/keranjang/delete/(:segment)', 'KeranjangSession::delete/$1');
+
 // Raja Ongkir
 $routes->get('api/ongkir/wilayah', 'Ongkir::index');
 $routes->post('api/ongkir/tarif', 'Ongkir::tarif');
@@ -42,6 +47,7 @@ $routes->post('api/ongkir/tarif', 'Ongkir::tarif');
 // Transaksi
 $routes->get('detail-transaksi', 'FrontEnd::detailTransaksi');
 $routes->post('webhook/xendit', 'Webhook::xendit');
+$routes->get('api/transaksi/detail/(:segment)', 'Transaksi::detail/$1');
 
 /*--------------------------------------------------------------
   # Autentikasi
@@ -106,48 +112,37 @@ if (userSession('id_role') == 1) {
     });
 }
 
-if (in_array($id_role, roleAccessByTitle('Galeri'))) {
-    $routes->group("$slug_role/galeri", ['filter' => 'EnsureLogin'], static function ($routes) {
-        $routes->get('/', 'Galeri::main');
-        $routes->get('new', 'Galeri::new');
-        $routes->get('edit/(:segment)', 'Galeri::edit/$1');
+if (in_array($id_role, roleAccessByTitle('Voucher Belanja'))) {
+    $routes->group("$slug_role/voucher-belanja", ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'VoucherBelanja::main');
+        $routes->get('new', 'VoucherBelanja::new');
+        $routes->get('edit/(:segment)', 'VoucherBelanja::edit/$1');
     });
-    $routes->group('api/galeri', ['filter' => 'EnsureLogin'], static function ($routes) {
-        $routes->get('/', 'Galeri::index');
-        $routes->post('create', 'Galeri::create');
-        $routes->post('update/(:segment)', 'Galeri::update/$1');
-        $routes->post('delete/(:segment)', 'Galeri::delete/$1');
+    $routes->group('api/voucher-belanja', ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'VoucherBelanja::index');
+        $routes->post('create', 'VoucherBelanja::create');
+        $routes->post('update/(:segment)', 'VoucherBelanja::update/$1');
+        $routes->post('delete/(:segment)', 'VoucherBelanja::delete/$1');
+    });
+}
+
+if (in_array($id_role, roleAccessByTitle('Potongan Ongkir'))) {
+    $routes->group("$slug_role/potongan-ongkir", ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'PotonganOngkir::main');
+        $routes->get('new', 'PotonganOngkir::new');
+        $routes->get('edit/(:segment)', 'PotonganOngkir::edit/$1');
+    });
+    $routes->group('api/potongan-ongkir', ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'PotonganOngkir::index');
+        $routes->post('create', 'PotonganOngkir::create');
+        $routes->post('update/(:segment)', 'PotonganOngkir::update/$1');
+        $routes->post('delete/(:segment)', 'PotonganOngkir::delete/$1');
     });
 }
 
 /*--------------------------------------------------------------
   # Master Data
 --------------------------------------------------------------*/
-if (in_array($id_role, roleAccessByTitle('Role'))) {
-    $routes->get("$slug_role/role", 'Role::main', ['filter' => 'EnsureLogin']);
-    $routes->group('api/role', ['filter' => 'EnsureLogin'], static function ($routes) {
-        $routes->get('/', 'Role::index');
-        $routes->post('create', 'Role::create');
-        $routes->post('update/(:segment)', 'Role::update/$1');
-        $routes->post('delete/(:segment)', 'Role::delete/$1');
-    });
-}
-
-if (in_array($id_role, roleAccessByTitle('User Management'))) {
-    $routes->group("$slug_role/users", ['filter' => 'EnsureLogin'], static function ($routes) {
-        $routes->get('/', 'Users::main');
-        $routes->get('new', 'Users::new');
-        $routes->get('edit/(:segment)', 'Users::edit/$1');
-    });
-    $routes->group('api/users', ['filter' => 'EnsureLogin'], static function ($routes) {
-        $routes->get('/', 'Users::index');
-        $routes->post('create', 'Users::create');
-        $routes->post('update/(:segment)', 'Users::update/$1');
-        $routes->post('delete/(:segment)', 'Users::delete/$1');
-        $routes->post('foto/delete/(:segment)', 'Users::hapusFoto/$1');
-    });
-}
-
 if (in_array($id_role, roleAccessByTitle('Kategori'))) {
     $routes->get("$slug_role/kategori", 'Kategori::main', ['filter' => 'EnsureLogin']);
     $routes->group('api/kategori', ['filter' => 'EnsureLogin'], static function ($routes) {

@@ -118,64 +118,6 @@ class FrontEnd extends BaseController
         return view('frontend/header', $view);
     }
 
-    public function keranjangSession()
-    {
-        $tipe = $this->request->getVar('tipe');
-
-        if ($tipe == 'create') {
-            $keranjang_session = json_decode(session('keranjang'), true) ?? [];
-
-            $id_varian_produk = decode($this->request->getVar('id_varian_produk'));
-            $slug_varian_produk = $this->request->getVar('slug_varian_produk');
-            $qty = $this->request->getVar('qty');
-            $found = false;
-            foreach ($keranjang_session as &$v) {
-                if ($v['id_varian_produk'] == $id_varian_produk) {
-                    $v['qty'] += (int)$qty;
-                    $found = true;
-                    break;
-                }
-            }
-            unset($v);
-    
-            if (! $found) {
-                $keranjang_session[] = [
-                    'id_varian_produk' => $id_varian_produk,
-                    'qty' => $qty
-                ];
-            }
-
-            session()->set('keranjang', json_encode($keranjang_session));
-
-            return $this->response->setStatusCode(200)->setJSON([
-                'status'  => 'success',
-                'message' => 'Berhasil masuk keranjang',
-                'route'   => base_url() . 'detail-produk/' . $slug_varian_produk,
-            ]);
-        }
-
-        if ($tipe == 'delete') {
-            $keranjang_session = json_decode(session('keranjang'), true) ?? [];
-            $id_varian_produk = $this->request->getVar('id_varian_produk');
-
-            foreach ($keranjang_session as $key => $item) {
-                if ($item['id_varian_produk'] == $id_varian_produk) {
-                    unset($keranjang_session[$key]);
-                    $keranjang_session = array_values($keranjang_session);
-                    break;
-                }
-            }
-
-            session()->set('keranjang', json_encode($keranjang_session));
-
-            return $this->response->setStatusCode(200)->setJSON([
-                'status'  => 'success',
-                'message' => 'Item berhasil dihapus',
-                'route'   => base_url('keranjang'),
-            ]);
-        }
-    }
-
     public function detailTransaksi()
     {
         $kode = $this->request->getVar('kode', FILTER_SANITIZE_SPECIAL_CHARS);

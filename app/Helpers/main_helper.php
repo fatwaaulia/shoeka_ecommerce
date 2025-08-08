@@ -129,6 +129,20 @@ function menuSidebar()
 			'role'	=> [1],
 			'type'	=> 'no-collapse',
 		],
+        [
+            'title'	=> 'Voucher Belanja',
+            'icon'	=> 'fa-solid fa-tags',
+            'url'	=> base_url(userSession('slug_role')) . '/voucher-belanja',
+            'role'	=> [1],
+            'type'	=> 'no-collapse',
+        ],
+        [
+            'title'	=> 'Potongan Ongkir',
+            'icon'	=> 'fa-solid fa-scissors',
+            'url'	=> base_url(userSession('slug_role')) . '/potongan-ongkir',
+            'role'	=> [1],
+            'type'	=> 'no-collapse',
+        ],
 		[
 			'title'	=> 'MASTER DATA',
 			'role'	=> [1],
@@ -166,13 +180,6 @@ function menuSidebar()
 			'title'	=> 'ACCOUNT',
 			'role'	=> [1],
 			'type'	=> 'heading',
-		],
-        [
-			'title'	=> 'App Settings',
-			'icon'	=> 'fa-solid fa-gear',
-			'url'	=> base_url(userSession('slug_role')) . '/app-settings',
-			'role'	=> [1],
-			'type'	=> 'no-collapse',
 		],
 		[
 			'title'	=> 'Profil',

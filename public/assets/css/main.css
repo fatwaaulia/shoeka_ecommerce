@@ -126,6 +126,15 @@ hr { opacity: unset; }
     .responsive-aspect { aspect-ratio: 16 / 9; }
 }
 
+.scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+}
+
 /*--------------------------------------------------------------
   # Bootstrap
 --------------------------------------------------------------*/

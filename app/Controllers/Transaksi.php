@@ -76,8 +76,9 @@ class Transaksi extends BaseController
         $total_belanja = 0;
 
         $varian_produk = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
+        $total_belanja = 0;
+        $total_berat = 0;
         foreach ($varian_produk as $v) {
-            $total_harga_ecommerce = 0;
             foreach ($keranjang_session as $v2) {
                 if ($v2['id_varian_produk'] === $v['id']) {
                     $qty = (int)$v2['qty'];
@@ -85,9 +86,8 @@ class Transaksi extends BaseController
                 }
             }
 
-            $total_berat += $v['berat'];
-            $total_harga_ecommerce += ($v['harga_ecommerce'] * $qty);
-            $total_belanja += $total_harga_ecommerce;
+            $total_berat += ($v['berat'] * $qty);
+            $total_belanja += ($v['harga_ecommerce'] * $qty);
         }
 
         $index_layanan_kurir = $this->request->getVar('layanan_kurir');
@@ -206,16 +206,16 @@ class Transaksi extends BaseController
 
         $data_item_transaksi = [];
         foreach ($varian_produk as $v) {
-            $total_harga_ecommerce = 0;
+            $total_harga = 0;
+            $total_berat = 0;
             foreach ($keranjang_session as $v2) {
                 if ($v2['id_varian_produk'] === $v['id']) {
                     $qty = (int)$v2['qty'];
+                    $total_harga = $v['harga_ecommerce'] * $qty;
+                    $total_berat = $v['berat'] * $qty;
                     break;
                 }
             }
-
-            $total_harga_ecommerce += $v['harga_ecommerce'] * $qty;
-            $total_belanja += $total_harga_ecommerce;
 
             $data_item_transaksi[] = [
                 'id_transaksi' => $id_transaksi,
@@ -227,7 +227,8 @@ class Transaksi extends BaseController
                 'harga_ecommerce' => $v['harga_ecommerce'],
                 'berat' => $v['berat'],
                 'qty' => $qty,
-                'total_harga' => '',
+                'total_harga' => $total_harga,
+                'total_berat' => $total_berat,
                 'nama_customer'    => $nama_customer,
                 'no_hp_customer'   => $no_hp_customer,
                 'email_customer'   => $email_customer,
@@ -242,5 +243,43 @@ class Transaksi extends BaseController
             'message' => 'Transaksi berhasil. Segera lakukan pembayaran.',
             'route'   => $detail_transaksi,
         ]);
+    }
+
+    public function detail($id)
+    {
+        $api_key = 'xnd_development_Z745AIUbLnrvgz9JtyGSV8mF1UNarORVsj62mirDsKFHCDtsxrzgA9rcueAR9nd';
+        $api_key_base64 = base64_encode($api_key);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.xendit.co/v2/invoices/$id",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Basic ' . $api_key_base64,
+            ),
+        ));
+
+        $response_xendit = curl_exec($curl);
+        curl_close($curl);
+        $response_xendit = json_decode($response_xendit, true);
+
+        if ($response_xendit) {
+            return $this->response->setStatusCode(200)->setJSON([
+                'status' => 'success',
+                'data'   => $response_xendit,
+            ]);
+        } else {
+            return $this->response->setStatusCode(200)->setJSON([
+                'status' => 'error',
+                'data'   => $response_xendit,
+            ]);
+        }
     }
 }

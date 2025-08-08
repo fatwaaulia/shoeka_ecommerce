@@ -2,14 +2,14 @@
 
 namespace App\Controllers;
 
-class Kategori extends BaseController
+class VoucherBelanja extends BaseController
 {
     protected $base_name;
     protected $model_name;
 
     public function __construct()
     {
-        $this->base_name   = 'kategori';
+        $this->base_name   = 'voucher_belanja';
         $this->model_name  = str_replace(' ', '', ucwords(str_replace('_', ' ', $this->base_name)));
     }
 
@@ -28,6 +28,34 @@ class Kategori extends BaseController
 
         $view['sidebar'] = view('dashboard/sidebar');
         $view['content'] = view($this->base_name . '/main', $data);
+        return view('dashboard/header', $view);
+    }
+
+    public function new()
+    {
+        $data = [
+            'base_api' => $this->base_api,
+            'title'    => 'Add ' . ucwords(str_replace('_', ' ', $this->base_name)),
+        ];
+
+        $view['sidebar'] = view('dashboard/sidebar');
+        $view['content'] = view($this->base_name . '/new', $data);
+        return view('dashboard/header', $view);
+    }
+
+    public function edit($id = null)
+    {
+        $find_data = model($this->model_name)->find($id);
+
+        $data = [
+            'base_api'  => $this->base_api,
+            'base_name' => $this->base_name,
+            'data'      => $find_data,
+            'title'     => 'Edit ' . ucwords(str_replace('_', ' ', $this->base_name)),
+        ];
+
+        $view['sidebar'] = view('dashboard/sidebar');
+        $view['content'] = view($this->base_name . '/edit', $data);
         return view('dashboard/header', $view);
     }
 
@@ -58,6 +86,10 @@ class Kategori extends BaseController
 
         foreach ($data as $key => $v) {
             $data[$key]['no_urut'] = $offset + $key + 1;
+            $data[$key]['potongan'] = formatRupiah($v['potongan']);
+            $data[$key]['minimal_belanja'] = formatRupiah($v['minimal_belanja']);
+            $data[$key]['periode_awal'] = date('d-m-Y', strtotime($v['periode_awal']));
+            $data[$key]['periode_akhir'] = date('d-m-Y', strtotime($v['periode_akhir']));
             $data[$key]['created_at'] = date('d-m-Y H:i:s', strtotime($v['created_at']));
         }
 
@@ -71,7 +103,12 @@ class Kategori extends BaseController
     public function create()
     {
         $rules = [
-            'nama' => "required|is_unique[ecommerce_$this->base_name.nama]",
+            'nama'            => "required|is_unique[ecommerce_$this->base_name.nama]",
+            'kode'            => "required|is_unique[ecommerce_$this->base_name.kode]",
+            'potongan'        => 'required',
+            'minimal_belanja' => 'required',
+            'periode_awal'    => 'required',
+            'periode_akhir'   => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -84,11 +121,13 @@ class Kategori extends BaseController
         }
 
         // Lolos Validasi
-        $nama = $this->request->getVar('nama');
-        $slug = url_title($nama, '-', true);
         $data = [
-            'nama' => $nama,
-            'slug' => $slug,
+            'nama'            => $this->request->getVar('nama'),
+            'kode'            => $this->request->getVar('kode'),
+            'potongan'        => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
+            'minimal_belanja' => $this->request->getVar('minimal_belanja', FILTER_SANITIZE_NUMBER_INT),
+            'periode_awal'    => $this->request->getVar('periode_awal'),
+            'periode_akhir'   => $this->request->getVar('periode_akhir'),
         ];
 
         model($this->model_name)->insert($data);
@@ -103,7 +142,13 @@ class Kategori extends BaseController
     public function update($id = null)
     {
         $rules = [
-            'nama' => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
+            'nama'            => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
+            'kode'            => "required|is_unique[ecommerce_$this->base_name.kode,id,$id]",
+            'potongan'        => 'required',
+            'minimal_belanja' => 'required',
+            'periode_awal'    => 'required',
+            'periode_akhir'   => 'required',
+            
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -116,23 +161,15 @@ class Kategori extends BaseController
         }
 
         // Lolos Validasi
-        $nama = $this->request->getVar('nama');
-        $slug = url_title($nama, '-', true);
         $data = [
-            'nama' => $nama,
-            'slug' => $slug,
+            'nama'            => $this->request->getVar('nama'),
+            'kode'            => $this->request->getVar('kode'),
+            'potongan'        => $this->request->getVar('potongan', FILTER_SANITIZE_NUMBER_INT),
+            'minimal_belanja' => $this->request->getVar('minimal_belanja', FILTER_SANITIZE_NUMBER_INT),
+            'periode_awal'    => $this->request->getVar('periode_awal'),
+            'periode_akhir'   => $this->request->getVar('periode_akhir'),
         ];
         model($this->model_name)->update($id, $data);
-
-        model('SubKategori')->set([
-            'nama_kategori' => $nama,
-            'slug_kategori' => $slug,
-        ])->update($id);
-
-        model('TipeProduk')->set([
-            'nama_kategori' => $nama,
-            'slug_kategori' => $slug,
-        ])->update($id);
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',

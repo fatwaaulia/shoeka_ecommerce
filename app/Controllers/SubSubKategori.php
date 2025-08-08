@@ -72,7 +72,7 @@ class SubSubKategori extends BaseController
     {
         $rules = [
             'sub_kategori' => 'required',
-            'nama'         => "required|is_unique[$this->base_name.nama]",
+            'nama'         => "required|is_unique[ecommerce_$this->base_name.nama]",
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -112,7 +112,7 @@ class SubSubKategori extends BaseController
     {
         $rules = [
             'sub_kategori' => 'required',
-            'nama'         => "required|is_unique[$this->base_name.nama,id,$id]",
+            'nama'         => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());

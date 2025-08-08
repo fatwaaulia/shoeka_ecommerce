@@ -33,21 +33,17 @@ footer a:hover { color: white; }
                     </a>
                 </div>
             </div>
-            <div class="col-lg-3 pb-3">
+            <div class="col-lg-5 pb-3">
                 <h5 class="mb-3">Alamat</h5>
-                <table class="mb-2">
-                    <tr>
-                        <td>
-                            <?= $app_settings['alamat'] ?>
-                        </td>
-                    </tr>
-                </table>
+                <p class="mb-2">
+                    <?= $app_settings['alamat'] ?>
+                </p>
             </div>
         </div>
         <hr style="opacity: .25;">
         <div class="row">
             <div class="col-12 py-1">
-                <span>Copyright © <?= date('Y') ?> | CV </span>
+                <span>Copyright © <?= date('Y') ?> | Shoeka Shoes</span>
             </div>
         </div>
     </div>

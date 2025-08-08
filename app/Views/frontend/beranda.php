@@ -2,7 +2,7 @@
 $get_order_by = $_GET['order_by'] ?? '';
 
 
-$array_id_varian_produk = $array_id_varian_produk ? json_decode($array_id_varian_produk) : [];
+$array_id_varian_produk = $array_id_varian_produk ? json_decode($array_id_varian_produk, true) : [];
 if ($array_id_varian_produk) {
     $data = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
     $total_produk  = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->countAllResults();
@@ -14,7 +14,7 @@ if ($array_id_varian_produk) {
 <link rel="stylesheet" href="<?= base_url() ?>assets/modules/dselect/dselect.min.css">
 <script src="<?= base_url() ?>assets/modules/dselect/dselect.min.js"></script>
 
-<body style="padding-top: 121.88px;">
+<body style="padding-top: 111.88px;">
 
 <section class="container">
     <div class="row">
@@ -57,8 +57,8 @@ if ($array_id_varian_produk) {
             foreach ($data as $v) :
         ?>
         <div class="col-6 col-md-4 col-xl-3">
-            <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>">
-                <img src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" alt="<?= $v['nama'] ?>">
+            <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>?kategori=<?= $kategori['slug'] ?>">
+                <img data-src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
                 <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
                 <p class="mb-0 fw-500"><?= formatRupiah($v['harga_ecommerce']) ?></p>
             </a>
