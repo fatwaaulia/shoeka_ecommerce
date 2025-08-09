@@ -120,6 +120,11 @@ class FrontEnd extends BaseController
 
     public function checkout()
     {
+        $session = [
+            'datetime' => date('Y-m-d H:i:s'),
+        ];
+        session()->set($session);
+
         $data['title'] = 'Checkout';
 
         $view['navbar'] = view('frontend/components/navbar');
@@ -128,18 +133,17 @@ class FrontEnd extends BaseController
         return view('frontend/header', $view);
     }
 
-    public function detailTransaksi()
+    public function detailPesanan()
     {
         $kode = $this->request->getVar('kode', FILTER_SANITIZE_SPECIAL_CHARS);
-        $transaksi = model('Transaksi')->where('kode', $kode)->first();
-        $item_transaksi = model('ItemTransaksi')->where('id_transaksi', $transaksi['id'])->findAll();
+        $pesanan = model('Pesanan')->where('kode', $kode)->first();
 
-        if (! $transaksi) {
+        if (! $pesanan) {
             return redirect()->back()->with('message',
             '<script>
             Swal.fire({
                 icon: "error",
-                title: "Invoice tidak ditemukan!",
+                title: "Pesanan tidak ditemukan!",
                 showConfirmButton: false,
                 timer: 2500,
                 timerProgressBar: true,
@@ -147,14 +151,15 @@ class FrontEnd extends BaseController
             </script>');
         }
 
+        $item_pesanan = model('ItemPesanan')->where('id_pesanan', $pesanan['id'])->findAll();
         $data = [
-            'data'  => $transaksi,
-            'item_transaksi'  => $item_transaksi,
-            'title' => 'Detail Transaksi #' . $transaksi['kode'],
+            'data'  => $pesanan,
+            'item_pesanan'  => $item_pesanan,
+            'title' => 'Detail Pesanan #' . $pesanan['kode'],
         ];
 
         $view['navbar'] = view('frontend/components/navbar');
-        $view['content'] = view('frontend/detail_transaksi', $data);
+        $view['content'] = view('frontend/detail_pesanan', $data);
         $view['footer'] = view('frontend/components/footer');
         return view('frontend/header', $view);
     }

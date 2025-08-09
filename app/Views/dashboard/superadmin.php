@@ -13,7 +13,7 @@
                         <i class="fa-solid fa-receipt me-1"></i>
                         Menunggu Pembayaran
                     </p>
-                    <?php $menunggu_pembayaran = model('Transaksi')->where('status', 'Menunggu Pembayaran')->countAllResults() ?>
+                    <?php $menunggu_pembayaran = model('Pesanan')->where('status', 'Menunggu Pembayaran')->countAllResults() ?>
                     <h4 class="mb-0"><?= $menunggu_pembayaran ?></h4>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                         <i class="fa-solid fa-receipt me-1"></i>
                         Lunas
                     </p>
-                    <?php $lunas = model('Transaksi')->where('status', 'Lunas')->countAllResults() ?>
+                    <?php $lunas = model('Pesanan')->where('status', 'Lunas')->countAllResults() ?>
                     <h4 class="mb-0"><?= $lunas ?></h4>
                 </div>
             </div>

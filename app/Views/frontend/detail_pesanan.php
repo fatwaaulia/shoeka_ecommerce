@@ -9,7 +9,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
         <div class="col-12">
             <a href="<?= base_url() ?>">Home</a>
             <span> > </span>
-            <span>Detail Transaksi</span>
+            <span>Detail Pesanan</span>
             <span> > </span>
             <span class="fw-500"><?= $data['kode'] ?></span>
         </div>
@@ -18,15 +18,16 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
         <div class="col-12">
             <table>
                 <tr>
-                    <td>Kode Pemesanan</td>
+                    <td>Kode Pesanan</td>
                     <td>
-                        : <span class="fw-600" id="kode_transaksi"><?= $data['kode'] ?></span>
-                        <a href="#" id="copyBtn">Salin</a>
+                        : <span class="fw-600" id="kode_pesanan"><?= $data['kode'] ?></span>
+                        <a href="#" id="salinKode">Salin</a>
                     </td>
 
                     <script>
-                    document.getElementById("copyBtn").addEventListener("click", function () {
-                        let text = document.getElementById("kode_transaksi").innerText;
+                    document.getElementById("salinKode").addEventListener("click", function (event) {
+                        event.preventDefault();
+                        let text = document.getElementById("kode_pesanan").innerText;
 
                         navigator.clipboard.writeText(text).then(() => {
                             return Swal.fire({
@@ -43,7 +44,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                     </script>
                 </tr>
                 <tr>
-                    <td>Tanggal Transaksi</td>
+                    <td>Tanggal Pesanan</td>
                     <td>: <?= dateFormatter($data['created_at'], 'd MMMM yyyy HH:mm') ?></td>
                 </tr>
             </table>
@@ -61,7 +62,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                         <td class="text-center">Qty</td>
                         <td class="text-end">Total</td>
                     </tr>
-                    <?php foreach ($item_transaksi as $key => $v) : ?>
+                    <?php foreach ($item_pesanan as $key => $v) : ?>
                     <tr>
                         <td style="width: 100px;">
                             <img src="<?= webFile('image', 'varian_produk', $v['gambar_varian_produk'], $v['updated_at']) ?>" class="wh-100 cover-center me-3" alt="<?= $v['nama_varian_produk'] ?>">
@@ -171,9 +172,83 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                         <span><?= $data['tipe_pembayaran'] ?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
+                        <span>Metode Pembayaran</span>
+                        <span><?= $data['payment_channel'] ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
                         <span>Status</span>
                         <span><?= $data['status'] ?></span>
                     </div>
+
+                    <hr style="border: 1px solid #ddd;">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Kurir</span>
+                        <span><?= $data['tarif_ongkir_name'] ?></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Nomor Resi</span>
+                        <span>
+                            <?php if ($data['nomor_resi']) : ?>
+                            <a href="#" id="salinResi">Salin</a>
+                            <script>
+                            document.getElementById("salinResi").addEventListener("click", function (event) {
+                                event.preventDefault();
+                                let text = document.getElementById("nomor_resi").innerText;
+
+                                navigator.clipboard.writeText(text).then(() => {
+                                    return Swal.fire({
+                                        icon: 'success',
+                                        title: 'Nomor resi disalin',
+                                        showConfirmButton: false,
+                                        timer: 2000,
+                                        timerProgressBar: true,
+                                    });
+                                }).catch(err => {
+                                    console.error("Gagal menyalin kode", err);
+                                });
+                            });
+                            </script>
+                            <?php endif; ?>
+                            <span id="nomor_resi"><?= $data['nomor_resi'] ?: '-' ?></span>
+                        </span>
+                    </div>
+
+                    <?php if ($data['nomor_resi']) : ?>
+                    <div id="manifest_resi" class="mt-3"></div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', async() => {
+                        dom('#manifest_resi').innerHTML = `<div class="spinner-border text-primary"></div>`;
+                        try {
+                            const response = await fetch(`<?= base_url() ?>api/ongkir/resi?awb=<?= $data['nomor_resi'] ?>&kurir=<?= $data['tarif_ongkir_code'] ?>`);
+                            const data = await response.json();
+
+                            dom('#manifest_resi').innerHTML = 
+                            data.data.map(manifest => {
+                                let date = new Date(manifest.manifest_date);
+                                let formatted = new Intl.DateTimeFormat('id-ID', { 
+                                    weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' 
+                                }).format(date);
+
+                                return `
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-500">${formatted}</span>
+                                        <span>${manifest.manifest_time}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <small>${manifest.manifest_description}</small>
+                                    </div>
+                                </div>`;
+                            }).join('');
+                        } catch (error) {
+                            dom('#manifest_resi').innerHTML = ``;
+                            console.error(error);
+                        }
+                    });
+                    </script>
+                    <?php endif; ?>
                 </div>
 
 

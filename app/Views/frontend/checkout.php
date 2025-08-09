@@ -1,11 +1,3 @@
-<?php
-$potongan_ongkir = model('PotonganOngkir')->where([
-    'periode_awal <='  => date('Y-m-d'),
-    'periode_akhir >=' => date('Y-m-d'),
-])
-->orderBy('periode_awal DESC')
-->first()['potongan'] ?? 0;
-?>
 
 <link rel="stylesheet" href="<?= base_url() ?>assets/modules/dselect/dselect.min.css">
 <script src="<?= base_url() ?>assets/modules/dselect/dselect.min.js"></script>
@@ -331,7 +323,6 @@ async function tarif(weight) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                // destination: 31000,
                 destination: kode_desa,
                 weight: weight,
                 kurir: kurir
@@ -419,19 +410,29 @@ dom('#submit_kode_voucher_belanja').addEventListener('click', async() => {
     }
 });
 
-function updateRincianPembayaran(diskon_belanja = 0) {
-    const total_belanja = <?= $total_belanja ?> - diskon_belanja;
-    const ongkir = parseInt(dom('#layanan_kurir option:checked')?.getAttribute('data-tarif')) || 0;
-    const potongan_ongkir = <?= $potongan_ongkir ?>;
+async function updateRincianPembayaran(diskon_belanja = 0) {
+    try {
+        const response = await fetch(`<?= base_url() ?>api/potongan-ongkir/aktif`);
+        const data = await response.json();
 
-    const final_ongkir = ongkir - potongan_ongkir;
-    const total_tagihan = total_belanja + final_ongkir;
+        const total_belanja = <?= $total_belanja ?> - diskon_belanja;
 
-    dom('#diskon_belanja').innerHTML = formatRupiah(0 - diskon_belanja);
-    dom('#ongkir').innerHTML = formatRupiah(ongkir);
-    dom('#potongan_ongkir').innerHTML = formatRupiah(0 - potongan_ongkir);
-    dom('#total_tagihan').innerHTML = formatRupiah(total_tagihan);
+        const ongkir = parseInt(dom('#layanan_kurir option:checked')?.getAttribute('data-tarif')) || 0;
+        let potongan_ongkir = data.potongan_ongkir;
+        if (potongan_ongkir >= ongkir) {
+            potongan_ongkir = ongkir;
+        }
 
+        const final_ongkir = ongkir - potongan_ongkir;
+        const total_tagihan = total_belanja + final_ongkir;
+
+        dom('#diskon_belanja').innerHTML = formatRupiah(0 - diskon_belanja);
+        dom('#ongkir').innerHTML = formatRupiah(ongkir);
+        dom('#potongan_ongkir').innerHTML = formatRupiah(0 - potongan_ongkir);
+        dom('#total_tagihan').innerHTML = formatRupiah(total_tagihan);
+    } catch (error) {
+        console.error(error);
+    }
 }
 </script>
 
@@ -451,7 +452,7 @@ form.addEventListener('submit', function(event) {
         input.value = tombol.value;
         form.appendChild(input);
     }
-    const endpoint = '<?= base_url() ?>api/transaksi/create';
-    submitDataWithConfirm(form, endpoint, confirm_title = 'Proses Transaksi');
+    const endpoint = '<?= base_url() ?>api/pesanan/create';
+    submitDataWithConfirm(form, endpoint, confirm_title = 'Proses Pesanan');
 });
 </script>

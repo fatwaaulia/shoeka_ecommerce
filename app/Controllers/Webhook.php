@@ -17,9 +17,9 @@ class Webhook extends BaseController
         model('Webhook')->insert($data);
 
         if (isset($response['id'])) {
-            $transaksi = model('Transaksi')->where('invoice_id', $response['id'])->first();
+            $pesanan = model('Pesanan')->where('invoice_id', $response['id'])->first();
 
-            if ($transaksi) {
+            if ($pesanan) {
                 $api_key = 'xnd_development_Z745AIUbLnrvgz9JtyGSV8mF1UNarORVsj62mirDsKFHCDtsxrzgA9rcueAR9nd';
                 $api_key_base64 = base64_encode($api_key);
 
@@ -55,7 +55,7 @@ class Webhook extends BaseController
                     $status = 'Kedaluwarsa';
                 }
 
-                $data_transaksi_web = [
+                $data_pesanan = [
                     'currency'        => $response['currency'],
                     'bank_code'       => $response['bank_code'],
                     'payment_id'      => $response['payment_id'],
@@ -69,11 +69,10 @@ class Webhook extends BaseController
                     'invoice_status' => $response['status'],
                     'paid_at'        => $response['paid_at'] ?? null,
                 ];
-                model('Transaksi')->update($transaksi['id'], $data_transaksi_web);
+                model('Pesanan')->update($pesanan['id'], $data_pesanan);
 
                 // Proses Transaksi Kasir
-                $status = 'Lunas';
-                if ($status == 'Lunas' && $transaksi['paid_at'] == null) {
+                if ($status == 'Lunas' && $pesanan['paid_at'] == null) {
                     $kode_transaksi_terakhir = model('KasirTransaksi')->select('kode')->orderBy('id DESC')->first()['kode'] ?? '';
                     $tanggal_transaksi = substr($kode_transaksi_terakhir, 6, 6);
                     $nomor_urut_transaksi = substr($kode_transaksi_terakhir, 12, 4);
@@ -85,42 +84,42 @@ class Webhook extends BaseController
                     }
 
                     $biaya_marketplace = 0;
-                    $total_penghasilan = $transaksi['total_tagihan'] - $biaya_marketplace;
+                    $total_penghasilan = $pesanan['total_tagihan'] - $biaya_marketplace;
 
                     $warehouse = model('KasirWarehouse')->find(2); // Outlet Online
 
                     $data_transaksi = [
-                        'id_transaksi_web' => $transaksi['id'],
+                        'id_pesanan' => $pesanan['id'],
                         'kode'          => $kode_transaksi,
                         'id_customer'   => 0,
-                        'nama_customer' => $transaksi['nama_customer'],
+                        'nama_customer' => $pesanan['nama_customer'],
                         'jenis_kelamin_customer' => '',
-                        'alamat_customer' => $transaksi['alamat_customer'],
-                        'no_hp_customer'  => $transaksi['no_hp_customer'],
-                        'email_customer'  => $transaksi['email_customer'],
+                        'alamat_customer' => $pesanan['alamat_customer'],
+                        'no_hp_customer'  => $pesanan['no_hp_customer'],
+                        'email_customer'  => $pesanan['email_customer'],
                         'id_warehouse'    => $warehouse['id'],
                         'nama_warehouse'  => $warehouse['nama'],
                         'id_kasir'        => 0,
                         'nama_kasir'      => 'WEB',
                         'order_id'          => '',
                         'biaya_marketplace' => $biaya_marketplace,
-                        'total_belanja'   => $transaksi['total_belanja'],
-                        'ongkir'          => $transaksi['final_ongkir'],
-                        'diskon'          => $transaksi['diskon_voucher_belanja'],
-                        'jenis_diskon'    => $transaksi['jenis_diskon_voucher_belanja'],
-                        'potongan_diskon' => $transaksi['potongan_diskon'],
-                        'total_tagihan'   => $transaksi['total_tagihan'],
-                        'jumlah_bayar'    => $transaksi['paid_amount'],
+                        'total_belanja'   => $pesanan['total_belanja'],
+                        'ongkir'          => $pesanan['final_ongkir'],
+                        'diskon'          => $pesanan['diskon_voucher_belanja'],
+                        'jenis_diskon'    => $pesanan['jenis_diskon_voucher_belanja'],
+                        'potongan_diskon' => $pesanan['potongan_diskon'],
+                        'total_tagihan'   => $pesanan['total_tagihan'],
+                        'jumlah_bayar'    => $pesanan['paid_amount'],
                         'kembalian'       => 0,
                         'metode_pembayaran' => $response['payment_channel'],
-                        'marketplace'       => 'SHOEKA',
+                        'marketplace'       => 'WEB',
                         'total_penghasilan' => $total_penghasilan,
                     ];
 
                     model('KasirTransaksi')->insert($data_transaksi);
                     $id_transaksi_kasir = model('KasirTransaksi')->getInsertID();
 
-                    $keranjang = model('ItemTransaksi')->where('id_transaksi', $transaksi['id'])->findAll();
+                    $keranjang = model('ItemPesanan')->where('id_pesanan', $pesanan['id'])->findAll();
 
                     $data_item_transaksi = [];
                     $data_stok = [];
@@ -130,11 +129,11 @@ class Webhook extends BaseController
                         if ($v['qty'] == 0) continue;
                         $id_stok += 1;
                         $data_item_transaksi[] = [
-                            'id_transaksi_web' => $transaksi['id'],
+                            'id_pesanan' => $pesanan['id'],
                             'id_transaksi'   => $id_transaksi_kasir,
                             'kode_transaksi' => $kode_transaksi,
                             'metode_pembayaran' => $response['payment_channel'],
-                            'marketplace'       => 'SHOEKA',
+                            'marketplace'       => 'WEB',
                             'id_stok'        => $id_stok,
                             'id_warehouse'   => $warehouse['id'],
                             'nama_warehouse' => $warehouse['nama'],
@@ -154,11 +153,11 @@ class Webhook extends BaseController
                             'qty'          => $v['qty'],
                             'total_harga'  => $v['total_harga'],
                             'id_customer'   => 0,
-                            'nama_customer' => $transaksi['nama_customer'],
+                            'nama_customer' => $pesanan['nama_customer'],
                             'jenis_kelamin_customer' => '',
-                            'alamat_customer' => $transaksi['alamat_customer'],
-                            'no_hp_customer'  => $transaksi['no_hp_customer'],
-                            'email_customer'  => $transaksi['email_customer'],
+                            'alamat_customer' => $pesanan['alamat_customer'],
+                            'no_hp_customer'  => $pesanan['no_hp_customer'],
+                            'email_customer'  => $pesanan['email_customer'],
                         ];
 
                         $data_stok[] = [
@@ -198,7 +197,8 @@ class Webhook extends BaseController
 
                     // return $this->response->setStatusCode(200)->setJSON([
                     //     'status'  => 'success',
-                    //     'transaksi_web' => $data_transaksi_web,
+                    //     'pesanan' => $data_pesanan,
+                    // 'data_transaksi' => $data_transaksi,
                     //     'data_item_transaksi' => $data_item_transaksi,
                     //     'data_stok'           => $data_stok,
                     //     'data_stok_konfig'    => $data_stok_konfig,

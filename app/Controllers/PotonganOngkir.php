@@ -62,6 +62,21 @@ class PotonganOngkir extends BaseController
     /*--------------------------------------------------------------
     # API
     --------------------------------------------------------------*/
+    public function aktif()
+    {
+        $potongan_ongkir = model('PotonganOngkir')->where([
+            'periode_awal <='  => date('Y-m-d'),
+            'periode_akhir >=' => date('Y-m-d'),
+        ])
+        ->orderBy('periode_awal DESC')
+        ->first()['potongan'] ?? 0;
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'status'  => 'success',
+            'potongan_ongkir' => $potongan_ongkir,
+        ]);
+    }
+
     public function index()
     {
         $select     = ['*'];

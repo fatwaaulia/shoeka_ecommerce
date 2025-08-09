@@ -36,7 +36,7 @@ $routes->get('keranjang', 'FrontEnd::keranjang');
 // Checkout
 $routes->get('checkout', 'FrontEnd::checkout');
 $routes->get('api/voucher-belanja/kode/(:segment)', 'VoucherBelanja::cekKode/$1');
-$routes->post('api/transaksi/create', 'Transaksi::create');
+$routes->post('api/pesanan/create', 'Pesanan::create');
 
 // Keranjang Session
 $routes->post('session/keranjang/create', 'KeranjangSession::create');
@@ -46,11 +46,12 @@ $routes->post('session/keranjang/delete/(:segment)', 'KeranjangSession::delete/$
 // Raja Ongkir
 $routes->get('api/ongkir/wilayah', 'Ongkir::index');
 $routes->post('api/ongkir/tarif', 'Ongkir::tarif');
+$routes->get('api/ongkir/resi', 'Ongkir::lacakResi');
 
-// Transaksi
-$routes->get('detail-transaksi', 'FrontEnd::detailTransaksi');
+// Pesanan
+$routes->get('detail-pesanan', 'FrontEnd::detailPesanan');
 $routes->post('webhook/xendit', 'Webhook::xendit');
-$routes->get('api/transaksi/detail/(:segment)', 'Transaksi::detail/$1');
+$routes->get('api/pesanan/detail/(:segment)', 'Pesanan::detail/$1');
 
 /*--------------------------------------------------------------
   # Autentikasi
@@ -115,13 +116,15 @@ if (userSession('id_role') == 1) {
     });
 }
 
-if (in_array($id_role, roleAccessByTitle('Transaksi'))) {
-    $routes->group("$slug_role/transaksi", ['filter' => 'EnsureLogin'], static function ($routes) {
-        $routes->get('/', 'Transaksi::main');
+if (in_array($id_role, roleAccessByTitle('Pesanan'))) {
+    $routes->group("$slug_role/pesanan", ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'Pesanan::main');
     });
-    $routes->group('api/transaksi', ['filter' => 'EnsureLogin'], static function ($routes) {
-        $routes->get('/', 'Transaksi::index');
-        $routes->post('delete/(:segment)', 'Transaksi::delete/$1');
+    $routes->group('api/pesanan', ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'Pesanan::index');
+        $routes->post('update/(:segment)/nomor-resi', 'Pesanan::updateNomorResi/$1');
+        $routes->post('update/(:segment)/status', 'Pesanan::updateStatus/$1');
+        $routes->post('delete/(:segment)', 'Pesanan::delete/$1');
     });
 }
 
@@ -139,6 +142,8 @@ if (in_array($id_role, roleAccessByTitle('Voucher Belanja'))) {
     });
 }
 
+$routes->get('api/metode-pembayaran', 'MetodePembayaran::index');
+$routes->get('api/potongan-ongkir/aktif', 'PotonganOngkir::aktif');
 if (in_array($id_role, roleAccessByTitle('Potongan Ongkir'))) {
     $routes->group("$slug_role/potongan-ongkir", ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'PotonganOngkir::main');

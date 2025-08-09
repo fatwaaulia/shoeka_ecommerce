@@ -2,14 +2,14 @@
 
 namespace App\Controllers;
 
-class Transaksi extends BaseController
+class Pesanan extends BaseController
 {
     protected $base_name;
     protected $model_name;
 
     public function __construct()
     {
-        $this->base_name   = 'transaksi';
+        $this->base_name   = 'pesanan';
         $this->model_name  = str_replace(' ', '', ucwords(str_replace('_', ' ', $this->base_name)));
     }
 
@@ -118,7 +118,6 @@ class Transaksi extends BaseController
 
         // Get API Tarif Ongkir
         $origin = 46740; // Sawojajar, Kec. Kedungkandang, Malang.
-        // $destination = 31000; // Genteng Kulon, Kec. Genteng, Banyuwangi.
         $destination = $this->request->getVar('desa');
         $kurir = $this->request->getVar('kurir');
 
@@ -198,6 +197,9 @@ class Transaksi extends BaseController
         if ($potongan_ongkir) {
             $id_potongan_ongkir = $potongan_ongkir['id'];
             $potongan_ongkir = $potongan_ongkir['potongan'];
+            if ($potongan_ongkir >= $tarif_ongkir['cost']) {
+                $potongan_ongkir = $tarif_ongkir['cost'];
+            }
             $final_ongkir = $tarif_ongkir['cost'] - $potongan_ongkir;
         } else {
             $id_potongan_ongkir = 0;
@@ -209,8 +211,8 @@ class Transaksi extends BaseController
         $total_tagihan = $final_total_belanja + $final_ongkir;
 
         for (;;) {
-            $random_string = 'INV' . strtoupper(random_string('alnum', 6));
-            $cek_kode = model('Transaksi')->where('kode', $random_string)->countAllResults();
+            $random_string = 'INV' . date('ymd') . strtoupper(random_string('alnum', 5));
+            $cek_kode = model('Pesanan')->where('kode', $random_string)->countAllResults();
             if ($cek_kode == 0) {
                 $kode = $random_string;
                 break;
@@ -222,7 +224,7 @@ class Transaksi extends BaseController
         $email_customer   = $this->request->getVar('email', FILTER_SANITIZE_SPECIAL_CHARS);
         $alamat_customer  = $this->request->getVar('alamat', FILTER_SANITIZE_SPECIAL_CHARS);
         $submit           = $this->request->getVar('submit', FILTER_SANITIZE_SPECIAL_CHARS);
-        $detail_transaksi = base_url() . 'detail-transaksi?kode=' . $kode;
+        $detail_pesanan = base_url() . 'detail-pesanan?kode=' . $kode;
 
         if ($submit == 'VA') {
             // Payment Gateway
@@ -236,8 +238,8 @@ class Transaksi extends BaseController
                     "email"         => $email_customer,
                     "mobile_number" => $no_hp_customer,
                 ],
-                "success_redirect_url" => $detail_transaksi,
-                "failure_redirect_url" => $detail_transaksi,
+                "success_redirect_url" => $detail_pesanan,
+                "failure_redirect_url" => $detail_pesanan,
                 "currency" => "IDR"
             ];
             $invoice_sent = json_encode($invoice_data);
@@ -327,10 +329,11 @@ class Transaksi extends BaseController
             'expired_at'       => $response_xendit['expiry_date'] ?? null,
             'paid_at'          => null,
         ];
-        model('Transaksi')->insert($data);
-        $id_transaksi = model($this->model_name)->getInsertID();
 
-        $data_item_transaksi = [];
+        model('Pesanan')->insert($data);
+        $id_pesanan = model($this->model_name)->getInsertID();
+
+        $data_item_pesanan = [];
         foreach ($varian_produk as $v) {
             $total_harga = 0;
             $total_berat = 0;
@@ -343,9 +346,9 @@ class Transaksi extends BaseController
                 }
             }
 
-            $data_item_transaksi[] = [
-                'id_transaksi' => $id_transaksi,
-                'kode_transaksi' => $kode,
+            $data_item_pesanan[] = [
+                'id_pesanan' => $id_pesanan,
+                'kode_pesanan' => $kode,
                 'id_kategori'   => $v['id_kategori'],
                 'nama_kategori' => $v['nama_kategori'],
                 'id_produk'     => $v['id_produk'],
@@ -368,17 +371,17 @@ class Transaksi extends BaseController
             ];
         }
 
-        model('ItemTransaksi')->insertBatch($data_item_transaksi);
+        model('ItemPesanan')->insertBatch($data_item_pesanan);
         session()->remove('keranjang');
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',
-            'message' => 'Transaksi berhasil. Segera lakukan pembayaran.',
-            'route'   => $detail_transaksi,
+            'message' => 'Pesanan berhasil. Segera lakukan pembayaran.',
+            'route'   => $detail_pesanan,
         ]);
     }
 
-    public function detail($id)
+    public function detail($id = null)
     {
         $api_key = 'xnd_development_Z745AIUbLnrvgz9JtyGSV8mF1UNarORVsj62mirDsKFHCDtsxrzgA9rcueAR9nd';
         $api_key_base64 = base64_encode($api_key);
@@ -416,10 +419,204 @@ class Transaksi extends BaseController
         }
     }
 
-    public function delete($id)
+    public function updateNomorResi($id = null)
+    {
+        $rules = [
+            'nomor_resi' => 'required',
+        ];
+        if (! $this->validate($rules)) {
+            $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
+
+            return $this->response->setStatusCode(400)->setJSON([
+                'status'  => 'error',
+                'message' => 'Data yang dimasukkan tidak valid!',
+                'errors'  => $errors,
+            ]);
+        }
+
+        $data = [
+            'nomor_resi' => $this->request->getVar('nomor_resi'),
+        ];
+        model($this->model_name)->update($id, $data);
+        return $this->response->setStatusCode(200)->setJSON([
+            'status'  => 'success',
+            'message' => 'Nomor resi berhasil disimpan',
+            'route'   => $this->base_route,
+        ]);
+    }
+
+    public function updateStatus($id = null)
+    {
+        $pesanan = model($this->model_name)->find($id);
+
+        $rules = [
+            'status'            => 'required',
+            'metode_pembayaran' => 'required',
+        ];
+        if (! $this->validate($rules)) {
+            $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
+
+            return $this->response->setStatusCode(400)->setJSON([
+                'status'  => 'error',
+                'message' => 'Data yang dimasukkan tidak valid!',
+                'errors'  => $errors,
+            ]);
+        }
+
+        $status = $this->request->getVar('status');
+        $data = [
+            'status'  => $status,
+            'payment_channel' => $this->request->getVar('metode_pembayaran'),
+            'paid_at' => $status == 'Lunas' ? date('Y-m-d H:i:s') : null,
+        ];
+        model($this->model_name)->update($id, $data);
+
+        // Proses Transaksi Kasir
+        if ($status == 'Lunas' && $pesanan['paid_at'] == null) {
+            $kode_transaksi_terakhir = model('KasirTransaksi')->select('kode')->orderBy('id DESC')->first()['kode'] ?? '';
+            $tanggal_transaksi = substr($kode_transaksi_terakhir, 6, 6);
+            $nomor_urut_transaksi = substr($kode_transaksi_terakhir, 12, 4);
+
+            if ($tanggal_transaksi == date('ymd')) {
+                $kode_transaksi = 'SHOEKA' . date('ymd') . str_pad($nomor_urut_transaksi + 1, 4, '0', STR_PAD_LEFT);
+            } else {
+                $kode_transaksi = 'SHOEKA' . date('ymd') . str_pad(1, 4, '0', STR_PAD_LEFT);
+            }
+
+            $biaya_marketplace = 0;
+            $total_penghasilan = $pesanan['total_tagihan'] - $biaya_marketplace;
+
+            $warehouse = model('KasirWarehouse')->find(2); // Outlet Online
+
+            $data_transaksi = [
+                'id_pesanan' => $pesanan['id'],
+                'kode'          => $kode_transaksi,
+                'id_customer'   => 0,
+                'nama_customer' => $pesanan['nama_customer'],
+                'jenis_kelamin_customer' => '',
+                'alamat_customer' => $pesanan['alamat_customer'],
+                'no_hp_customer'  => $pesanan['no_hp_customer'],
+                'email_customer'  => $pesanan['email_customer'],
+                'id_warehouse'    => $warehouse['id'],
+                'nama_warehouse'  => $warehouse['nama'],
+                'id_kasir'        => 0,
+                'nama_kasir'      => 'WEB',
+                'order_id'          => '',
+                'biaya_marketplace' => $biaya_marketplace,
+                'total_belanja'   => $pesanan['total_belanja'],
+                'ongkir'          => $pesanan['final_ongkir'],
+                'diskon'          => $pesanan['diskon_voucher_belanja'],
+                'jenis_diskon'    => $pesanan['jenis_diskon_voucher_belanja'],
+                'potongan_diskon' => $pesanan['potongan_diskon'],
+                'total_tagihan'   => $pesanan['total_tagihan'],
+                'jumlah_bayar'    => $pesanan['paid_amount'],
+                'kembalian'       => 0,
+                'metode_pembayaran' => $this->request->getVar('metode_pembayaran'),
+                'marketplace'       => 'WEB',
+                'total_penghasilan' => $total_penghasilan,
+            ];
+
+            model('KasirTransaksi')->insert($data_transaksi);
+            $id_transaksi_kasir = model('KasirTransaksi')->getInsertID();
+
+            $keranjang = model('ItemPesanan')->where('id_pesanan', $pesanan['id'])->findAll();
+
+            $data_item_transaksi = [];
+            $data_stok = [];
+            $data_stok_konfig = [];
+            $id_stok = model('KasirStok')->select('id')->orderBy('id DESC')->first()['id'];
+            foreach ($keranjang as $v) {
+                if ($v['qty'] == 0) continue;
+                $id_stok += 1;
+                $data_item_transaksi[] = [
+                    'id_pesanan' => $pesanan['id'],
+                    'id_transaksi'   => $id_transaksi_kasir,
+                    'kode_transaksi' => $kode_transaksi,
+                    'metode_pembayaran' => $this->request->getVar('metode_pembayaran'),
+                    'marketplace'       => 'WEB',
+                    'id_stok'        => $id_stok,
+                    'id_warehouse'   => $warehouse['id'],
+                    'nama_warehouse' => $warehouse['nama'],
+                    'id_kasir'   => 0,
+                    'nama_kasir' => 'WEB',
+                    'order_id'   => '',
+                    'id_kategori'   => $v['id_kategori'],
+                    'nama_kategori' => $v['nama_kategori'],
+                    'id_produk'     => $v['id_produk'],
+                    'nama_produk'   => $v['nama_produk'],
+                    'id_varian_produk'   => $v['id_varian_produk'],
+                    'sku_varian_produk'  => $v['sku_varian_produk'],
+                    'nama_varian_produk' => $v['nama_varian_produk'],
+                    'harga_pokok_varian_produk' => $v['harga_pokok_varian_produk'],
+                    'biaya_produk_varian_produk' => $v['biaya_produk_varian_produk'],
+                    'harga_satuan' => $v['harga_ecommerce'],
+                    'qty'          => $v['qty'],
+                    'total_harga'  => $v['total_harga'],
+                    'id_customer'   => 0,
+                    'nama_customer' => $pesanan['nama_customer'],
+                    'jenis_kelamin_customer' => '',
+                    'alamat_customer' => $pesanan['alamat_customer'],
+                    'no_hp_customer'  => $pesanan['no_hp_customer'],
+                    'email_customer'  => $pesanan['email_customer'],
+                ];
+
+                $data_stok[] = [
+                    'id_warehouse'   => $warehouse['id'],
+                    'nama_warehouse' => $warehouse['nama'],
+                    'tipe'         => 'KELUAR',
+                    'sub_tipe'     => 'WEB',
+                    'id_varian_produk'   => $v['id_varian_produk'],
+                    'sku_varian_produk'  => $v['sku_varian_produk'],
+                    'nama_varian_produk' => $v['nama_varian_produk'],
+                    'qty'          => -abs($v['qty']),
+                    'catatan'      => '',
+                    'tanggal'      => date('Y-m-d H:i:s'),
+                    'created_by'   => 0,
+                ];
+
+                $stok_konfig = model('KasirStokKonfig')->where([
+                    'id_warehouse' => $warehouse['id'],
+                    'id_varian_produk' => $v['id_varian_produk']
+                ])->first();
+                $stok_in = $stok_konfig['stok_in'];
+                $stok_out = $stok_konfig['stok_out'];
+                $stok_out_pos = $stok_konfig['stok_out_pos'] + -abs($v['qty']);
+                $stok = $stok_in + $stok_out + $stok_out_pos;
+                $data_stok_konfig[] = [
+                    'id'       => $stok_konfig['id'],
+                    'stok_in'  => $stok_in,
+                    'stok_out' => $stok_out,
+                    'stok_out_pos' => $stok_out_pos,
+                    'stok'     => $stok,
+                ];
+            }
+
+            model('KasirItemTransaksi')->insertBatch($data_item_transaksi);
+            model('KasirStok')->insertBatch($data_stok);
+            model('KasirStokKonfig')->updateBatch($data_stok_konfig, 'id');
+
+            // return $this->response->setStatusCode(200)->setJSON([
+            //     'status'  => 'success',
+            //     'pesanan' => $data,
+            //     'data_transaksi' => $data_transaksi,
+            //     'data_item_transaksi' => $data_item_transaksi,
+            //     'data_stok'           => $data_stok,
+            //     'data_stok_konfig'    => $data_stok_konfig,
+            // ]);
+        }
+        // END - Proses Transaksi Kasir
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'status'  => 'success',
+            'message' => 'Ubah status berhasil',
+            'route'   => $this->base_route,
+        ]);
+    }
+
+    public function delete($id = null)
     {
         model($this->model_name)->delete($id);
-        model('ItemTransaksi')->where('id_transaksi', $id)->delete();
+        model('ItemPesanan')->where('id_pesanan', $id)->delete();
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',

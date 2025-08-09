@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ItemTransaksi extends Model
+class ItemPesanan extends Model
 {
-    protected $table         = 'ecommerce_item_transaksi';
+    protected $table         = 'ecommerce_item_pesanan';
     protected $protectFields = false;
     protected $useTimestamps = true;
 }

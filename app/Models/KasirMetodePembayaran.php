@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Transaksi extends Model
+class KasirMetodePembayaran extends Model
 {
-    protected $table         = 'ecommerce_transaksi';
+    protected $table         = 'metode_pembayaran';
     protected $protectFields = false;
     protected $useTimestamps = true;
 }

@@ -144,11 +144,11 @@ foreach ($keranjang as $item) {
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Lacak Pesanan</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="<?= base_url() ?>detail-transaksi" method="get">
+            <form action="<?= base_url() ?>detail-pesanan" method="get">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="kode" class="form-label">Kode Invoice</label>
-                        <input type="text" class="form-control" id="kode" name="kode" placeholder="Masukkan kode invoice" required oninput="this.value = this.value.toUpperCase()">
+                        <label for="kode" class="form-label">Kode Pesanan</label>
+                        <input type="text" class="form-control" id="kode" name="kode" placeholder="Masukkan kode pesanan" required oninput="this.value = this.value.toUpperCase()">
                     </div>
                 </div>
                 <div class="modal-footer">

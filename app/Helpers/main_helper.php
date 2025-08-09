@@ -130,9 +130,9 @@ function menuSidebar()
 			'type'	=> 'no-collapse',
 		],
         [
-            'title'	=> 'Transaksi',
+            'title'	=> 'Pesanan',
             'icon'	=> 'fa-solid fa-receipt',
-            'url'	=> base_url(userSession('slug_role')) . '/transaksi',
+            'url'	=> base_url(userSession('slug_role')) . '/pesanan',
             'role'	=> [1],
             'type'	=> 'no-collapse',
         ],
