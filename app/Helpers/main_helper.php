@@ -130,6 +130,13 @@ function menuSidebar()
 			'type'	=> 'no-collapse',
 		],
         [
+            'title'	=> 'Transaksi',
+            'icon'	=> 'fa-solid fa-receipt',
+            'url'	=> base_url(userSession('slug_role')) . '/transaksi',
+            'role'	=> [1],
+            'type'	=> 'no-collapse',
+        ],
+        [
             'title'	=> 'Voucher Belanja',
             'icon'	=> 'fa-solid fa-tags',
             'url'	=> base_url(userSession('slug_role')) . '/voucher-belanja',

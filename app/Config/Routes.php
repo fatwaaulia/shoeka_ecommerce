@@ -115,6 +115,16 @@ if (userSession('id_role') == 1) {
     });
 }
 
+if (in_array($id_role, roleAccessByTitle('Transaksi'))) {
+    $routes->group("$slug_role/transaksi", ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'Transaksi::main');
+    });
+    $routes->group('api/transaksi', ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'Transaksi::index');
+        $routes->post('delete/(:segment)', 'Transaksi::delete/$1');
+    });
+}
+
 if (in_array($id_role, roleAccessByTitle('Voucher Belanja'))) {
     $routes->group("$slug_role/voucher-belanja", ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'VoucherBelanja::main');

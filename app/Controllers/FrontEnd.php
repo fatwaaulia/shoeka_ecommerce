@@ -132,6 +132,7 @@ class FrontEnd extends BaseController
     {
         $kode = $this->request->getVar('kode', FILTER_SANITIZE_SPECIAL_CHARS);
         $transaksi = model('Transaksi')->where('kode', $kode)->first();
+        $item_transaksi = model('ItemTransaksi')->where('id_transaksi', $transaksi['id'])->findAll();
 
         if (! $transaksi) {
             return redirect()->back()->with('message',
@@ -148,6 +149,7 @@ class FrontEnd extends BaseController
 
         $data = [
             'data'  => $transaksi,
+            'item_transaksi'  => $item_transaksi,
             'title' => 'Detail Transaksi #' . $transaksi['kode'],
         ];
 

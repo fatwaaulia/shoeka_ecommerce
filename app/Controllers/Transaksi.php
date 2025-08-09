@@ -14,8 +14,62 @@ class Transaksi extends BaseController
     }
 
     /*--------------------------------------------------------------
+    # Front-End
+    --------------------------------------------------------------*/
+    public function main()
+    {
+        $query = $_SERVER['QUERY_STRING'] ? ('?' . $_SERVER['QUERY_STRING']) : '';
+        $data = [
+            'get_data'   => $this->base_api . $query,
+            'base_route' => $this->base_route,
+            'base_api'   => $this->base_api,
+            'title'      => ucwords(str_replace('_', ' ', $this->base_name)),
+        ];
+
+        $view['sidebar'] = view('dashboard/sidebar');
+        $view['content'] = view($this->base_name . '/main', $data);
+        return view('dashboard/header', $view);
+    }
+
+    /*--------------------------------------------------------------
     # API
     --------------------------------------------------------------*/
+    public function index()
+    {
+        $select     = ['*'];
+        $base_query = model($this->model_name)->select($select);
+        $limit      = (int)$this->request->getVar('length');
+        $offset     = (int)$this->request->getVar('start');
+        $records_total = $base_query->countAllResults(false);
+
+        // Datatables
+        $columns = array_column($this->request->getVar('columns') ?? [], 'name');
+        $search = $this->request->getVar('search')['value'] ?? null;
+        dataTablesSearch($columns, $search, $select, $base_query);
+
+        $order = $this->request->getVar('order')[0] ?? null;
+        if (isset($order['column'], $order['dir']) && !empty($columns[$order['column']])) {
+            $base_query->orderBy($columns[$order['column']], $order['dir'] === 'desc' ? 'desc' : 'asc');
+        } else {
+            $base_query->orderBy('id DESC');
+        }
+        // End | Datatables
+
+        $total_rows = $base_query->countAllResults(false);
+        $data       = $base_query->findAll($limit, $offset);
+
+        foreach ($data as $key => $v) {
+            $data[$key]['no_urut'] = $offset + $key + 1;
+            $data[$key]['created_at'] = date('d-m-Y H:i:s', strtotime($v['created_at']));
+        }
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'recordsTotal'    => $records_total,
+            'recordsFiltered' => $total_rows,
+            'data'            => $data,
+        ]);
+    }
+
     public function create()
     {
         $rules = [
@@ -44,6 +98,24 @@ class Transaksi extends BaseController
         $destination = $this->request->getVar('desa');
         $kurir = $this->request->getVar('kurir');
 
+        $keranjang_session = json_decode(session('keranjang'), true) ?? [];
+        $array_id_varian_produk = array_column($keranjang_session, 'id_varian_produk');
+        $total_berat = 0;
+        $total_belanja = 0;
+
+        $varian_produk = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
+        foreach ($varian_produk as $v) {
+            foreach ($keranjang_session as $v2) {
+                if ($v2['id_varian_produk'] === $v['id']) {
+                    $qty = (int)$v2['qty'];
+                    break;
+                }
+            }
+
+            $total_berat += ($v['berat'] * $qty);
+            $total_belanja += ($v['harga_ecommerce'] * $qty);
+        }
+
         // Get API Tarif Ongkir
         $origin = 46740; // Sawojajar, Kec. Kedungkandang, Malang.
         // $destination = 31000; // Genteng Kulon, Kec. Genteng, Banyuwangi.
@@ -52,7 +124,7 @@ class Transaksi extends BaseController
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost?origin=$origin&destination=$destination&weight=500&courier=$kurir",
+            CURLOPT_URL => "https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost?origin=$origin&destination=$destination&weight=$total_berat&courier=$kurir",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -69,26 +141,6 @@ class Transaksi extends BaseController
         curl_close($curl);
         $response = json_decode($response, true);
         // END | Get API Tarif Ongkir
-
-        $keranjang_session = json_decode(session('keranjang'), true) ?? [];
-        $array_id_varian_produk = array_column($keranjang_session, 'id_varian_produk');
-        $total_berat = 0;
-        $total_belanja = 0;
-
-        $varian_produk = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
-        $total_belanja = 0;
-        $total_berat = 0;
-        foreach ($varian_produk as $v) {
-            foreach ($keranjang_session as $v2) {
-                if ($v2['id_varian_produk'] === $v['id']) {
-                    $qty = (int)$v2['qty'];
-                    break;
-                }
-            }
-
-            $total_berat += ($v['berat'] * $qty);
-            $total_belanja += ($v['harga_ecommerce'] * $qty);
-        }
 
         $index_layanan_kurir = $this->request->getVar('layanan_kurir');
         $tarif_ongkir = $response['data'][$index_layanan_kurir];
@@ -172,7 +224,7 @@ class Transaksi extends BaseController
         $submit           = $this->request->getVar('submit', FILTER_SANITIZE_SPECIAL_CHARS);
         $detail_transaksi = base_url() . 'detail-transaksi?kode=' . $kode;
 
-        if ($submit == 'va') {
+        if ($submit == 'VA') {
             // Payment Gateway
             $invoice_data = [
                 "external_id" => $kode,
@@ -216,9 +268,9 @@ class Transaksi extends BaseController
             $response_xendit = json_decode($response_xendit, true);
             // END | Payment Gateway
 
-            $tipe_pembayaran = 'va';
+            $tipe_pembayaran = 'VA';
         } else {
-            $tipe_pembayaran = 'admin';
+            $tipe_pembayaran = 'Admin';
             $invoice_sent = '';
             $response_xendit = '';
         }
@@ -275,9 +327,8 @@ class Transaksi extends BaseController
             'expired_at'       => $response_xendit['expiry_date'] ?? null,
             'paid_at'          => null,
         ];
-        // model('Transaksi')->insert($data);
-        // $id_transaksi = model($this->model_name)->getInsertID();
-        $id_transaksi = 123;
+        model('Transaksi')->insert($data);
+        $id_transaksi = model($this->model_name)->getInsertID();
 
         $data_item_transaksi = [];
         foreach ($varian_produk as $v) {
@@ -298,6 +349,7 @@ class Transaksi extends BaseController
                 'id_varian_produk' => $v['id'],
                 'sku_varian_produk' => $v['sku'],
                 'nama_varian_produk' => $v['nama'],
+                'gambar_varian_produk' => $v['gambar'],
                 'harga_pokok_varian_produk' => $v['harga_pokok'],
                 'harga_ecommerce' => $v['harga_ecommerce'],
                 'berat' => $v['berat'],
@@ -311,14 +363,8 @@ class Transaksi extends BaseController
             ];
         }
 
-        return $this->response->setStatusCode(200)->setJSON([
-            'status'  => 'success',
-            'transaksi' => $data,
-            'item'   => $data_item_transaksi,
-        ]);
-
-        // model('ItemTransaksi')->insertBatch($data_item_transaksi);
-        // session()->remove('keranjang');
+        model('ItemTransaksi')->insertBatch($data_item_transaksi);
+        session()->remove('keranjang');
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',
@@ -363,5 +409,16 @@ class Transaksi extends BaseController
                 'data'   => $response_xendit,
             ]);
         }
+    }
+
+    public function delete($id)
+    {
+        model($this->model_name)->delete($id);
+        model('ItemTransaksi')->where('id_transaksi', $id)->delete();
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'status'  => 'success',
+            'message' => 'Data berhasil dihapus',
+        ]);
     }
 }

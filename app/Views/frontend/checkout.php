@@ -10,65 +10,71 @@ $potongan_ongkir = model('PotonganOngkir')->where([
 <link rel="stylesheet" href="<?= base_url() ?>assets/modules/dselect/dselect.min.css">
 <script src="<?= base_url() ?>assets/modules/dselect/dselect.min.js"></script>
 
-<body style="padding-top: 121.88px;">
+<body style="padding-top: 111.88px;">
 
 <section class="container">
     <div class="row">
         <div class="col-12">
-            <h1>Checkout</h1>
+            <a href="<?= base_url() ?>">Home</a>
+            <span> > </span>
+            <span class="fw-500">Checkout</span>
         </div>
     </div>
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-12">
-            <table class="table">
-                <tr>
-                    <td>Gambar</td>
-                    <td>Produk</td>
-                    <td class="text-end">Harga</td>
-                    <td class="text-center">Qty</td>
-                    <td class="text-end">Total</td>
-                </tr>
-                <?php
-                $keranjang_session = json_decode(session('keranjang'), true) ?? [];
-                $array_id_varian_produk = array_column($keranjang_session, 'id_varian_produk');
-                $total_belanja = 0;
-                if ($array_id_varian_produk) :
-                    $varian_produk = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <td>Gambar</td>
+                        <td>Produk</td>
+                        <td class="text-end">Harga</td>
+                        <td class="text-center">Qty</td>
+                        <td class="text-end">Total</td>
+                    </tr>
+                    <?php
+                    $keranjang_session = json_decode(session('keranjang'), true) ?? [];
+                    $array_id_varian_produk = array_column($keranjang_session, 'id_varian_produk');
+                    $total_berat = 0;
+                    $total_belanja = 0;
+                    if ($array_id_varian_produk) :
+                        $varian_produk = model('VarianProduk')->whereIn('id', $array_id_varian_produk)->findAll();
 
-                    foreach ($varian_produk as $key => $v) :
-                        $total_harga_ecommerce = 0;
-                        foreach ($keranjang_session as $v2) {
-                            if ($v2['id_varian_produk'] === $v['id']) {
-                                $qty = (int)$v2['qty'];
-                                break;
+                        foreach ($varian_produk as $key => $v) :
+                            $total_harga_ecommerce = 0;
+                            foreach ($keranjang_session as $v2) {
+                                if ($v2['id_varian_produk'] === $v['id']) {
+                                    $qty = (int)$v2['qty'];
+                                    $total_berat += ($v['berat'] * $qty);
+                                    break;
+                                }
                             }
-                        }
 
-                        $total_harga_ecommerce += $v['harga_ecommerce'] * $qty;
-                        $total_belanja += $total_harga_ecommerce;
-                ?>
-                <tr>
-                    <td style="width: 100px;">
-                        <img src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="wh-100 cover-center me-3" alt="<?= $v['nama'] ?>">
-                    </td>
-                    <td class="text-wrap">
-                        <?= $v['nama'] ?>
-                    </td>
-                    <td class="text-end"><?= formatRupiah($v['harga_ecommerce']) ?></td>
-                    <td class="text-center">
-                        <div class="d-flex justify-content-center gap-2">
-                            <input type="number" class="form-control text-center" value="<?= $qty ?>" disabled style="width: 100px;">
-                        </div>
-                    </td>
-                    <td class="text-end" id="total_belanja_item_<?= $key ?>"><?= formatRupiah($total_harga_ecommerce) ?></td>
-                </tr>
-                <?php endforeach; ?>
-                <tr>
-                    <td colspan="4" class="text-end fw-600">Total Belanja</td>
-                    <td class="text-end fw-600" id="total_belanja"><?= formatRupiah($total_belanja) ?></td>
-                </tr>
-                <?php endif; ?>
-            </table>
+                            $total_harga_ecommerce += $v['harga_ecommerce'] * $qty;
+                            $total_belanja += $total_harga_ecommerce;
+                    ?>
+                    <tr>
+                        <td style="width: 100px;">
+                            <img src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="wh-100 cover-center me-3" alt="<?= $v['nama'] ?>">
+                        </td>
+                        <td class="text-wrap">
+                            <?= $v['nama'] ?>
+                        </td>
+                        <td class="text-end"><?= formatRupiah($v['harga_ecommerce']) ?></td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <input type="number" class="form-control text-center" value="<?= $qty ?>" disabled style="width: 100px;">
+                            </div>
+                        </td>
+                        <td class="text-end" id="total_belanja_item_<?= $key ?>"><?= formatRupiah($total_harga_ecommerce) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="4" class="text-end fw-600">Total Belanja</td>
+                        <td class="text-end fw-600" id="total_belanja"><?= formatRupiah($total_belanja) ?></td>
+                    </tr>
+                    <?php endif; ?>
+                </table>
+            </div>
         </div>
     </div>
     <?php if ($keranjang_session) : ?>
@@ -134,7 +140,7 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                 </div>
                 <div class="mb-3">
                     <label for="kurir" class="form-label">Kurir</label>
-                    <select class="form-select" id="kurir" name="kurir">
+                    <select class="form-select" id="kurir" name="kurir" onchange="tarif('<?= $total_berat ?>')">
                         <option value="">Pilih</option>
                         <?php
                         $kurir = model('Kurir')->where('status', 'ENABLE')->findAll();
@@ -163,7 +169,7 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Total Belanja</span>
-                        <span>Rp500.000</span>
+                        <span><?= formatRupiah($total_belanja) ?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Diskon Belanja</span>
@@ -184,10 +190,10 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                 </div>
 
                 <div class="text-end mt-5">
-                    <button type="submit" name="submit" value="admin" class="btn btn-primary me-2">
+                    <button type="submit" name="submit" value="Admin" class="btn btn-primary me-2">
                         Chat Admin
                     </button>
-                    <button type="submit" name="submit" value="va" class="btn btn-primary">
+                    <button type="submit" name="submit" value="VA" class="btn btn-primary">
                         Bayar Pakai VA
                     </button>
                 </div>
@@ -304,9 +310,7 @@ async function desa(id_kecamatan) {
     }
 }
 
-dom('#kurir').addEventListener('change', tarif);
-
-async function tarif() {
+async function tarif(weight) {
     const kode_desa = dom('#desa').value;
     if (! kode_desa) {
         await Swal.fire({
@@ -329,11 +333,11 @@ async function tarif() {
             body: JSON.stringify({
                 // destination: 31000,
                 destination: kode_desa,
+                weight: weight,
                 kurir: kurir
             }),
         });
         const data = await response.json();
-
         // console.log(data);
 
         if (data.status == 'success') {

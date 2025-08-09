@@ -121,11 +121,12 @@ class Ongkir extends BaseController
     {
         $origin      = 46740; // Sawojajar, Kec. Kedungkandang, Malang.
         $destination = $this->request->getVar('destination');
+        $weight      = $this->request->getVar('weight');
         $kurir       = $this->request->getVar('kurir');
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost?origin=$origin&destination=$destination&weight=500&courier=$kurir",
+            CURLOPT_URL => "https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost?origin=$origin&destination=$destination&weight=$weight&courier=$kurir",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

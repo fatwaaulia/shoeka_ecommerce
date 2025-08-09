@@ -44,8 +44,8 @@ async function submitDataWithConfirm(form, endpoint, confirm_title = '', confirm
                 }
             });
 
-            console.log(data);
-            return;
+            // console.log(data);
+            // return;
 
             if (['success', 'error'].includes(data.status)) {
                 await Swal.fire({
