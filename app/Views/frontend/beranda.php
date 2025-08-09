@@ -26,31 +26,6 @@ if ($array_id_varian_produk) {
             <small><?= $total_produk ?> produk</small>
         </div>
     </div>
-    <form action="" method="get" class="mt-3">
-        <div class="row gx-2 gy-3">
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-                <label for="order_by" class="form-label">Urutkan</label>
-                <select id="order_by" name="order_by">
-                    <option value="">Pilih</option>
-                    <?php
-                    $order_by = ['Harga Termurah', 'Harga Tertinggi'];
-                    foreach ($order_by as $v) :
-                        $selected = ($v == $get_order_by) ? 'selected' : '';
-                    ?>
-                    <option value="<?= $v ?>" <?= $selected ?>><?= $v ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="col-12 col-md-3 col-lg-2 col-xl-1 d-flex justify-content-start align-items-end">
-                <button type="submit" class="btn btn-primary me-2 w-100" title="Cari">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-                <a href="<?= current_url() ?>" class="btn btn-secondary w-100" title="Reset">
-                    <i class="fa-solid fa-xmark"></i>
-                </a>
-            </div>
-        </div>
-    </form>
     <div class="row mt-0 gx-4 gy-5">
         <?php
         if ($array_id_varian_produk) :
