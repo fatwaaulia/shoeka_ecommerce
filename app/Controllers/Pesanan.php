@@ -42,6 +42,21 @@ class Pesanan extends BaseController
         $offset     = (int)$this->request->getVar('start');
         $records_total = $base_query->countAllResults(false);
 
+        $get_status = $this->request->getVar('status');
+        if ($get_status) {
+            $base_query->where('status', $get_status);
+        }
+
+        $get_tanggal_awal = $this->request->getVar('tanggal_awal');
+        if ($get_tanggal_awal) {
+            $base_query->where('DATE(created_at) >=', $get_tanggal_awal);
+        }
+        
+        $get_tanggal_akhir = $this->request->getVar('tanggal_akhir');
+        if ($get_tanggal_akhir) {
+            $base_query->where('DATE(created_at) <=', $get_tanggal_akhir);
+        }
+
         // Datatables
         $columns = array_column($this->request->getVar('columns') ?? [], 'name');
         $search = $this->request->getVar('search')['value'] ?? null;

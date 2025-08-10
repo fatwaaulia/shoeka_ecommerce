@@ -22,6 +22,8 @@
             }
             </style>
             <div class="overflow-auto scrollbar-hidden d-flex flex-nowrap gap-2 d-md-block">
+                
+            <img src="<?= webFile('image', 'varian_produk', $data['gambar'], $data['updated_at']) ?>" class="mb-2" id="sub_gambar" style="cursor: pointer;" onclick="previewGambar('<?= webFile('image', 'varian_produk', $data['gambar'], $data['updated_at']) ?>')">
             <?php
             $json_gambar_ecommerce = json_decode($data['json_gambar_ecommerce'], true);
             if ($json_gambar_ecommerce) :
@@ -50,7 +52,7 @@
             <img src="<?= webFile('image', 'varian_produk', $data['gambar'], $data['updated_at']) ?>" class="w-100 mb-3" id="sampul" alt="<?= $data['nama'] ?>">
         </div>
         <div class="col-12 col-md-5 col-lg-6 order-3">
-            <h4><?= $data['nama'] ?></h4>
+            <h4 class="mt-4 mt-md-0"><?= $data['nama'] ?></h4>
             <h5><?= formatRupiah($data['harga_ecommerce']) ?></h5>
 
             <hr style="border: 1px solid #ddd;">

@@ -1,5 +1,7 @@
 <?php
-$get_created_by = $_GET['created_by'] ?? '';
+$get_status = $_GET['status'] ?? '';
+$get_tanggal_awal = $_GET['tanggal_awal'] ?? '';
+$get_tanggal_akhir = $_GET['tanggal_akhir'] ?? '';
 ?>
 
 <script src="<?= base_url() ?>assets/js/jquery.min.js"></script>
@@ -14,6 +16,45 @@ $get_created_by = $_GET['created_by'] ?? '';
     <div class="row">
         <div class="col-12">
             <div class="card p-3">
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <form action="" method="get">
+                            <div class="row g-3">
+                                <div class="col-6 col-md-5 col-lg-3 col-xl-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="">Semua</option>
+                                        <?php
+                                        $status = ['Menunggu Pembayaran', 'Lunas', 'Kedaluwarsa'];
+                                        foreach ($status as $v) :
+                                            $selected = ($get_status == $v) ? 'selected' : '';
+                                        ?>
+                                        <option value="<?= $v ?>" <?= $selected ?>><?= $v ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-5 col-lg-2 col-xl-2">
+                                    <label for="tanggal_awal" class="form-label">Tanggal Awal</label>
+                                    <input type="date" class="form-control" id="tanggal_awal" name="tanggal_awal" value="<?= $_GET['tanggal_awal'] ?? '' ?>">
+                                </div>
+                                <div class="col-6 col-md-5 col-lg-2 col-xl-2">
+                                    <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
+                                    <input type="date" class="form-control" id="tanggal_akhir" name="tanggal_akhir" value="<?= $_GET['tanggal_akhir'] ?? '' ?>">
+                                </div>
+                                <div class="col-12 col-md-2 col-lg-1 col-xl-2 d-flex justify-content-end align-items-end">
+                                    <button type="submit" class="btn btn-primary me-2 w-100" title="Filter">
+                                        <i class="fa-solid fa-filter"></i>
+                                        <span class="ms-1 d-md-none">Filter</span>
+                                    </button>
+                                    <a href="<?= $base_route ?>" class="btn btn-outline-danger w-100" title="Reset">
+                                        <i class="fa-solid fa-filter-circle-xmark"></i>
+                                        <span class="ms-1 d-md-none">Reset</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <table class="display nowrap" id="myTable">
                     <thead class="bg-primary-subtle">
                         <tr>
@@ -230,11 +271,15 @@ function actionNomorResi(id) {
 }
 
 function renderOpsi(data) {
-    let endpoint_hapus_data = `<?= $base_api ?>delete/${data.id}`;
-    return `
-    <a onclick="deleteData('${endpoint_hapus_data}')" title="Delete">
-        <i class="fa-regular fa-trash-can fa-lg text-danger"></i>
-    </a>`;
+    if (data.status != 'Lunas') {
+        let endpoint_hapus_data = `<?= $base_api ?>delete/${data.id}`;
+        return `
+        <a onclick="deleteData('${endpoint_hapus_data}')" title="Delete">
+            <i class="fa-regular fa-trash-can fa-lg text-danger"></i>
+        </a>`;
+    } else {
+        return '';
+    }
 }
 </script>
 

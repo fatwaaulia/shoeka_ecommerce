@@ -33,7 +33,7 @@ foreach ($keranjang as $item) {
     background-color:var(--main-color)!important;
 }
 </style>
-<nav class="navbar navbar-expand-lg bg-light fixed-top flex-wrap" style="z-index: 100;">
+<nav class="navbar navbar-expand-md bg-light fixed-top flex-wrap" style="z-index: 100;">
     <div class="container">
         <a class="navbar-brand" href="<?= base_url() ?>">
             <img src="<?= $logo_web ?>" style="height: 35px; filter: brightness(0) saturate(100%) sepia(1) hue-rotate(170deg) saturate(600%) brightness(1.2);" alt="<?= $app_settings['nama_aplikasi'] ?>">

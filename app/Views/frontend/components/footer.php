@@ -34,7 +34,6 @@ footer a:hover { color: white; }
                 </div>
             </div>
             <div class="col-lg-5 pb-3">
-                <h5 class="mb-3">Alamat</h5>
                 <p class="mb-2">
                     <?= $app_settings['alamat'] ?>
                 </p>
