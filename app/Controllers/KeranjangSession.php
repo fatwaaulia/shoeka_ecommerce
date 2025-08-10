@@ -42,6 +42,7 @@ class KeranjangSession extends BaseController
         $keranjang_session = json_decode(session('keranjang'), true) ?? [];
 
         $tipe = $this->request->getVar('tipe');
+        $qty = $this->request->getVar('qty');
         foreach ($keranjang_session as &$v) {
             if ($v['id_varian_produk'] == $id) {
                 if ($tipe == 'increment') {
@@ -50,14 +51,19 @@ class KeranjangSession extends BaseController
                 if ($tipe == 'decrement' && $v['qty'] > 1) {
                     $v['qty'] -= 1;
                 }
+                if ($tipe == 'input' && $v['qty'] >= 1) {
+                    $v['qty'] = $qty;
+                }
                 break;
             }
         }
         unset($v);
 
+        $total_qty_keranjang = 0;
         $total_belanja = 0;
         foreach ($keranjang_session as $v) {
             $varian_produk = model('VarianProduk')->select('harga_ecommerce')->find($v['id_varian_produk']);
+            $total_qty_keranjang += $v['qty'];
             $total_belanja += $varian_produk['harga_ecommerce'] * $v['qty'];
         }
 
@@ -66,7 +72,8 @@ class KeranjangSession extends BaseController
         return $this->response->setStatusCode(200)->setJSON([
             'status'        => 'success',
             // 'data'          => $keranjang_session,
-            'total_belanja' => $total_belanja,
+            'total_belanja'       => $total_belanja,
+            'total_qty_keranjang' => $total_qty_keranjang,
         ]);
     }
 

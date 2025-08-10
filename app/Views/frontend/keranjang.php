@@ -54,7 +54,7 @@
                                 <button type="button" class="btn btn-light" data-id="<?= $v['id'] ?>" onclick="kurang_qty(this, dom('#qty_<?= $key ?>'), <?= $v['harga_ecommerce'] ?>, dom('#total_belanja_item_<?= $key ?>'))">
                                     <i class="fa-solid fa-minus"></i>
                                 </button>
-                                <input type="number" class="form-control text-center" id="qty_<?= $key ?>" name="qty" value="<?= $qty ?>" min="1" style="width: 100px;" placeholder="qty" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                                <input type="number" class="form-control text-center" data-id="<?= $v['id'] ?>" id="qty_<?= $key ?>" name="qty" value="<?= $qty ?>" min="1" style="width: 100px;" placeholder="qty" required autocomplete="off" oninput="input_qty(this, dom('#qty_<?= $key ?>'), <?= $v['harga_ecommerce'] ?>, dom('#total_belanja_item_<?= $key ?>'))">
                                 <button type="button" class="btn btn-light" data-id="<?= $v['id'] ?>" onclick="tambah_qty(this, dom('#qty_<?= $key ?>'), <?= $v['harga_ecommerce'] ?>, dom('#total_belanja_item_<?= $key ?>'))">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
@@ -88,6 +88,21 @@
 </section>
 
 <script>
+function input_qty(el_input, el_qty, harga_ecommerce, el_total_harga_item) {
+    el_input.value=el_input.value.replace(/[^0-9]/g,'');
+    if (el_input.value == '') return;
+
+    let qty = parseInt(el_qty.value) || 0;
+    const total = harga_ecommerce * qty;
+    el_total_harga_item.innerHTML = formatRupiah(total);
+
+    let navbar_qty_keranjang = parseInt(dom('#total_qty_keranjang').innerText) || 0;
+    dom('#total_qty_keranjang').innerText = navbar_qty_keranjang - 1;
+
+    const id = el_input.getAttribute('data-id');
+    updateItem(id, 'input', qty);
+}
+
 function kurang_qty(el_kurang, el_qty, harga_ecommerce, el_total_harga_item) {
     let qty = parseInt(el_qty.value) || 0;
     if (qty > 1) {
@@ -95,6 +110,9 @@ function kurang_qty(el_kurang, el_qty, harga_ecommerce, el_total_harga_item) {
         el_qty.value = qty;
         const total = harga_ecommerce * qty;
         el_total_harga_item.innerHTML = formatRupiah(total);
+
+        let navbar_qty_keranjang = parseInt(dom('#total_qty_keranjang').innerText) || 0;
+        dom('#total_qty_keranjang').innerText = navbar_qty_keranjang - 1;
     }
 
     const id = el_kurang.getAttribute('data-id');
@@ -108,17 +126,21 @@ function tambah_qty(el_tambah, el_qty, harga_ecommerce, el_total_harga_item) {
     const total = harga_ecommerce * qty;
     el_total_harga_item.innerHTML = formatRupiah(total);
 
+    let navbar_qty_keranjang = parseInt(dom('#total_qty_keranjang').innerText) || 0;
+    dom('#total_qty_keranjang').innerText = navbar_qty_keranjang + 1;
+
     const id = el_tambah.getAttribute('data-id');
     updateItem(id, 'increment');
 }
 
-async function updateItem(id, tipe) {
+async function updateItem(id, tipe, qty = null) {
     try {
         const response = await fetch(`<?= base_url() ?>session/keranjang/update/${id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipe: tipe
+                tipe: tipe,
+                qty: qty
             })
         });
         const data = await response.json();
@@ -127,6 +149,7 @@ async function updateItem(id, tipe) {
         // return;
         
         dom('#total_belanja').innerHTML = formatRupiah(data.total_belanja);
+        dom('#total_qty_keranjang').innerHTML = data.total_qty_keranjang;
     } catch (error) {
         console.error(error);
         await Swal.fire({
