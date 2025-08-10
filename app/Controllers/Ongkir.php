@@ -121,6 +121,8 @@ class Ongkir extends BaseController
 
     public function tarif()
     {
+        if (empty(session('datetime'))) return;
+
         $origin      = 46740; // Sawojajar, Kec. Kedungkandang, Malang.
         $destination = $this->request->getVar('destination');
         $weight      = $this->request->getVar('weight');
@@ -160,12 +162,15 @@ class Ongkir extends BaseController
 
     public function lacakResi()
     {
+        if (empty(session('datetime'))) return;
+
         $awb   = $this->request->getVar('awb');
         $kurir = $this->request->getVar('kurir');
+        $last_phone_number = $this->request->getVar('last_phone_number'); // required by JNE.
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://rajaongkir.komerce.id/api/v1/track/waybill?awb=$awb&courier=$kurir",
+            CURLOPT_URL => "https://rajaongkir.komerce.id/api/v1/track/waybill?awb=$awb&courier=$kurir&last_phone_number=$last_phone_number",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

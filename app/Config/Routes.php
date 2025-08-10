@@ -67,7 +67,7 @@ $routes->get('logout', 'Auth::logout');
 $id_role   = userSession('id_role');
 $slug_role = userSession('slug_role');
 
-if (in_array($id_role, [1, 2])) {
+if (in_array($id_role, [1, 3])) {
     $routes->get("$slug_role/dashboard", "Dashboard::$slug_role", ['filter' => 'EnsureLogin']);
     $routes->get("$slug_role/profile", "Profile::profilev1", ['filter' => 'EnsureLogin']);
     $routes->group("api/profile", ['filter' => 'EnsureLogin'], static function ($routes) {
@@ -128,7 +128,6 @@ if (in_array($id_role, roleAccessByTitle('Pesanan'))) {
         $routes->get('sinkronisasi/(:segment)', 'Pesanan::sinkronisasi/$1');
     });
 }
-$routes->get('api/pesanan/sinkronisasi/(:segment)', 'Pesanan::sinkronisasi/$1');
 
 if (in_array($id_role, roleAccessByTitle('Voucher Belanja'))) {
     $routes->group("$slug_role/voucher-belanja", ['filter' => 'EnsureLogin'], static function ($routes) {

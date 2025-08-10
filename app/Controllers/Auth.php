@@ -59,7 +59,7 @@ class Auth extends BaseController
 
         $user = model($this->model_name)
         ->select(['id', 'id_role', 'nama', 'username', 'password'])
-        ->where('id_role', 1)
+        ->whereIn('id_role', [1, 3])
         ->where('username', $username)
         ->first();
 

@@ -185,9 +185,9 @@ class Pesanan extends BaseController
             $diskon_voucher_belanja = $voucher_belanja['diskon'];
             $jenis_diskon_voucher_belanja = $voucher_belanja['jenis_diskon'];
             $minimal_belanja_voucher_belanja = $voucher_belanja['minimal_belanja'];
-            $potongan_diskon = $diskon_belanja;
+            $potongan_diskon = (0 - $diskon_belanja);
             $total_belanja = $total_belanja;
-            $final_total_belanja = $total_belanja - $potongan_diskon;
+            $final_total_belanja = $total_belanja + $potongan_diskon;
 
         } else {
             $id_voucher_belanja = 0;
@@ -211,11 +211,11 @@ class Pesanan extends BaseController
 
         if ($potongan_ongkir) {
             $id_potongan_ongkir = $potongan_ongkir['id'];
-            $potongan_ongkir = $potongan_ongkir['potongan'];
-            if ($potongan_ongkir >= $tarif_ongkir['cost']) {
-                $potongan_ongkir = $tarif_ongkir['cost'];
+            $potongan_ongkir = (0 - $potongan_ongkir['potongan']);
+            if (abs($potongan_ongkir) >= $tarif_ongkir['cost']) {
+                $potongan_ongkir = (0 - $tarif_ongkir['cost']);
             }
-            $final_ongkir = $tarif_ongkir['cost'] - $potongan_ongkir;
+            $final_ongkir = $tarif_ongkir['cost'] + $potongan_ongkir;
         } else {
             $id_potongan_ongkir = 0;
             $potongan_ongkir = 0;
@@ -342,7 +342,7 @@ class Pesanan extends BaseController
             'invoice_id'       => $response_xendit['id'] ?? '',
             'invoice_status'   => $response_xendit['status'] ?? '',
             'expired_at'       => $response_xendit['expiry_date'] ?? null,
-            'paid_at'          => null,
+            'paid_at'          => $response_xendit['paid_at'] ?? null,
         ];
 
         model('Pesanan')->insert($data);
@@ -436,8 +436,25 @@ class Pesanan extends BaseController
                 $status = 'Kedaluwarsa';
             }
 
+            $data_pesanan = [
+                'currency'        => $response_xendit['currency'] ?? '',
+                'bank_code'       => $response_xendit['bank_code'] ?? '',
+                'payment_id'      => $response_xendit['payment_id'] ?? '',
+                'paid_amount'     => $response_xendit['paid_amount'] ?? '',
+                'merchant_name'   => $response_xendit['merchant_name'] ?? '',
+                'payment_method'  => $response_xendit['payment_method'] ?? '',
+                'payment_channel' => $response_xendit['payment_channel'] ?? '',
+                'payment_destination' => $response_xendit['payment_destination'] ?? '',
+
+                'status'         => $status,
+                'invoice_status' => $response_xendit['status'],
+                'paid_at'        => $response_xendit['paid_at'] ?? null,
+            ];
+            model('Pesanan')->update($pesanan['id'], $data_pesanan);
+
             // Proses Transaksi Kasir
-            if ($status == 'Lunas' && $pesanan['paid_at'] == null) {
+            $transaksi = model('KasirTransaksi')->find($pesanan['id']);
+            if ($status == 'Lunas' && !$transaksi) {
                 $kode_transaksi_terakhir = model('KasirTransaksi')->select('kode')->orderBy('id DESC')->first()['kode'] ?? '';
                 $tanggal_transaksi = substr($kode_transaksi_terakhir, 6, 6);
                 $nomor_urut_transaksi = substr($kode_transaksi_terakhir, 12, 4);
@@ -464,8 +481,8 @@ class Pesanan extends BaseController
                     'email_customer'  => $pesanan['email_customer'],
                     'id_warehouse'    => $warehouse['id'],
                     'nama_warehouse'  => $warehouse['nama'],
-                    'id_kasir'        => 0,
-                    'nama_kasir'      => 'WEB',
+                    'id_kasir'   => userSession('id'),
+                    'nama_kasir' => userSession('nama'),
                     'order_id'          => '',
                     'biaya_marketplace' => $biaya_marketplace,
                     'total_belanja'   => $pesanan['total_belanja'],
@@ -502,8 +519,8 @@ class Pesanan extends BaseController
                         'id_stok'        => $id_stok,
                         'id_warehouse'   => $warehouse['id'],
                         'nama_warehouse' => $warehouse['nama'],
-                        'id_kasir'   => 0,
-                        'nama_kasir' => 'WEB',
+                        'id_kasir'   => userSession('id'),
+                        'nama_kasir' => userSession('nama'),
                         'order_id'   => '',
                         'id_kategori'   => $v['id_kategori'],
                         'nama_kategori' => $v['nama_kategori'],
@@ -573,23 +590,19 @@ class Pesanan extends BaseController
                     'status'  => 'success',
                     'message' => 'Berhasil sinkronisasi pembayaran',
                     'route'   => base_url() . 'detail-pesanan?kode=' . $pesanan['kode'],
-                    // 'data'    => $response_xendit,
                 ]);
             } else {
                 return $this->response->setStatusCode(200)->setJSON([
                     'status'  => 'success',
                     'message' => 'Status pembayaran: ' . $status,
                     'route'   => base_url() . 'detail-pesanan?kode=' . $pesanan['kode'],
-                    // 'data'    => $response_xendit,
                 ]);
-
             }
             // END - Proses Transaksi Kasir
         } else {
             return $this->response->setStatusCode(400)->setJSON([
                 'status'  => 'error',
                 'message' => 'Gagal sinkronisasi pembayaran',
-                // 'data'    => $response_xendit,
             ]);
         }
     }
@@ -647,7 +660,8 @@ class Pesanan extends BaseController
         model($this->model_name)->update($id, $data);
 
         // Proses Transaksi Kasir
-        if ($status == 'Lunas' && $pesanan['paid_at'] == null) {
+        $transaksi = model('KasirTransaksi')->find($pesanan['id']);
+        if ($status == 'Lunas' && !$transaksi) {
             $kode_transaksi_terakhir = model('KasirTransaksi')->select('kode')->orderBy('id DESC')->first()['kode'] ?? '';
             $tanggal_transaksi = substr($kode_transaksi_terakhir, 6, 6);
             $nomor_urut_transaksi = substr($kode_transaksi_terakhir, 12, 4);
@@ -674,8 +688,8 @@ class Pesanan extends BaseController
                 'email_customer'  => $pesanan['email_customer'],
                 'id_warehouse'    => $warehouse['id'],
                 'nama_warehouse'  => $warehouse['nama'],
-                'id_kasir'        => 0,
-                'nama_kasir'      => 'WEB',
+                'id_kasir'   => userSession('id'),
+                'nama_kasir' => userSession('nama'),
                 'order_id'          => '',
                 'biaya_marketplace' => $biaya_marketplace,
                 'total_belanja'   => $pesanan['total_belanja'],
@@ -712,8 +726,8 @@ class Pesanan extends BaseController
                     'id_stok'        => $id_stok,
                     'id_warehouse'   => $warehouse['id'],
                     'nama_warehouse' => $warehouse['nama'],
-                    'id_kasir'   => 0,
-                    'nama_kasir' => 'WEB',
+                    'id_kasir'   => userSession('id'),
+                    'nama_kasir' => userSession('nama'),
                     'order_id'   => '',
                     'id_kategori'   => $v['id_kategori'],
                     'nama_kategori' => $v['nama_kategori'],

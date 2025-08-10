@@ -67,12 +67,14 @@ class Webhook extends BaseController
 
                     'status'         => $status,
                     'invoice_status' => $response['status'],
+                    'expired_at'     => $response['expiry_date'] ?? null,
                     'paid_at'        => $response['paid_at'] ?? null,
                 ];
                 model('Pesanan')->update($pesanan['id'], $data_pesanan);
 
                 // Proses Transaksi Kasir
-                if ($status == 'Lunas' && $pesanan['paid_at'] == null) {
+                $transaksi = model('KasirTransaksi')->find($pesanan['id']);
+                if ($status == 'Lunas' && !$transaksi) {
                     $kode_transaksi_terakhir = model('KasirTransaksi')->select('kode')->orderBy('id DESC')->first()['kode'] ?? '';
                     $tanggal_transaksi = substr($kode_transaksi_terakhir, 6, 6);
                     $nomor_urut_transaksi = substr($kode_transaksi_terakhir, 12, 4);

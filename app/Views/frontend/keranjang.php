@@ -69,8 +69,8 @@
                     </tr>
                     <?php endforeach; ?>
                     <tr>
-                        <td colspan="4" class="text-end fw-600">Total Belanja</td>
-                        <td class="text-end fw-600" id="total_belanja"><?= formatRupiah($total_belanja) ?></td>
+                        <td colspan="4" class="text-end fw-500">Total Belanja</td>
+                        <td class="text-end fw-500" id="total_belanja"><?= formatRupiah($total_belanja) ?></td>
                     </tr>
                     <?php endif; ?>
                 </table>

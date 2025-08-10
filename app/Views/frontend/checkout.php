@@ -61,8 +61,8 @@
                     </tr>
                     <?php endforeach; ?>
                     <tr>
-                        <td colspan="4" class="text-end fw-600">Total Belanja</td>
-                        <td class="text-end fw-600" id="total_belanja"><?= formatRupiah($total_belanja) ?></td>
+                        <td colspan="4" class="text-end fw-500">Total Belanja</td>
+                        <td class="text-end fw-500" id="total_belanja"><?= formatRupiah($total_belanja) ?></td>
                     </tr>
                     <?php endif; ?>
                 </table>
@@ -72,11 +72,11 @@
     <?php if ($keranjang_session) : ?>
     <div class="row mt-4">
         <div class="col-12 col-lg-6">
-            <h4 class="mb-3">Dikirim Dari</h4>
+            <h5 class="mb-3">Dikirim Dari</h5>
             <p>Sawojajar, Kec. Kedungkandang, Kota Malang</p>
         </div>
         <div class="col-12 col-lg-6">
-            <h4 class="mb-3">Lengkapi Data Penerima</h4>
+            <h5 class="mb-3">Lengkapi Data Penerima</h5>
             <form id="form">
                 <input type="hidden" id="nama_provinsi" name="nama_provinsi">
                 <input type="hidden" id="nama_kabupaten" name="nama_kabupaten">
@@ -152,7 +152,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <h4 class="mb-3">Rincian Pembayaran</h4>
+                    <h5 class="mb-3">Rincian Pembayaran</h5>
                     <div class="d-flex justify-content-between mb-2">
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" id="kode_voucher_belanja" name="kode_voucher_belanja" placeholder="Punya kode promo? Masukkan disini ✨" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" autocomplete="off">
@@ -176,16 +176,17 @@
                         <span id="potongan_ongkir">Silakan pilih kurir</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-600">Total Tagihan</span>
-                        <span class="fw-600" id="total_tagihan">-</span>
+                        <span class="fw-500">Total Tagihan</span>
+                        <span class="fw-500" id="total_tagihan">-</span>
                     </div>
                 </div>
 
                 <div class="text-end mt-5">
-                    <button type="submit" name="submit" value="Admin" class="btn btn-primary me-2">
+                    <input type="hidden" name="submit" id="submit">
+                    <button type="submit" id="btn_chat_admin" onclick="dom('#submit').value='Admin'" class="btn btn-primary me-2">
                         Chat Admin
                     </button>
-                    <button type="submit" name="submit" value="VA" class="btn btn-primary">
+                    <button type="submit" id="btn_va" onclick="dom('#submit').value='VA'" class="btn btn-primary">
                         Bayar Pakai VA
                     </button>
                 </div>
@@ -220,6 +221,7 @@ async function provinsi() {
             dom('#nama_provinsi').value = dom('#provinsi').options[dom('#provinsi').selectedIndex].text;
             kabupaten(this.value);
             dom('#component_kecamatan').innerHTML = `<input type="text" class="form-control" disabled>`;
+            dom('#component_desa').innerHTML = `<input type="text" class="form-control" disabled>`;
         });
     } catch (error) {
         console.error(error);
@@ -437,21 +439,9 @@ async function updateRincianPembayaran(diskon_belanja = 0) {
 </script>
 
 <script>
-let tombol = null;
-document.querySelectorAll('#form button[type="submit"]').forEach(btn => {
-    btn.addEventListener('click', () => tombol = btn);
-});
-
 const form = document.getElementById('form');
 form.addEventListener('submit', function(event) {
     event.preventDefault();
-    if (tombol && tombol.name) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = tombol.name;
-        input.value = tombol.value;
-        form.appendChild(input);
-    }
     const endpoint = '<?= base_url() ?>api/pesanan/create';
     submitPesanan(form, endpoint, confirm_title = 'Proses Pesanan');
 });

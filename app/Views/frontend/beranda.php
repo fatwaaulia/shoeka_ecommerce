@@ -26,7 +26,7 @@ if ($array_id_varian_produk) {
             <small><?= $total_produk ?> produk</small>
         </div>
     </div>
-    <div class="row mt-0 gx-4 gy-5">
+    <div class="row mt-0 gx-2 gx-md-4 gy-5">
         <?php
         if ($array_id_varian_produk) :
             foreach ($data as $v) :

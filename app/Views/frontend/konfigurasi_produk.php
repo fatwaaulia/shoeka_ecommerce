@@ -88,6 +88,7 @@ div.dt-processing > div:last-child > div {
                                 <th>Harga Ecommerce</th>
                                 <th>Berat (gram)</th>
                                 <th>SKU</th>
+                                <th>Stok</th>
                             </tr>
                         </thead>
                     </table>
@@ -235,6 +236,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }, {
                 name: 'sku',
                 data: 'sku',
+            }, {
+                name: '',
+                data: 'stok',
             },
         ].map(col => ({ ...col, orderable: col.name !== '' })),
     });

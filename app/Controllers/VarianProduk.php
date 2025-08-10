@@ -24,6 +24,7 @@ class VarianProduk extends BaseController
         $base_query = model($this->model_name)->baseQuery()->where([
             'berat !=' => 0,
             'status'   => 'ENABLE',
+            'stok !='  => 0,
         ]);
         $limit      = (int)$this->request->getVar('length');
         $offset     = (int)$this->request->getVar('start');

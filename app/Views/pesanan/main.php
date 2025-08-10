@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 function renderStatusPembayaran(data) {
-    if (data.tipe_pembayaran == 'VA') {
+    if (data.tipe_pembayaran == 'VA' || data.status == 'Lunas') {
         return `${data.status}`;
     } else {
         const status = ['Menunggu Pembayaran', 'Lunas'];

@@ -119,21 +119,21 @@ function menuSidebar()
 			'title'	=> 'Dashboard',
 			'icon'	=> 'fa-solid fa-chart-line',
 			'url'	=> base_url(userSession('slug_role')) . '/dashboard',
-			'role'	=> [1],
+			'role'	=> [1, 3],
 			'type'	=> 'no-collapse',
 		],
 		[
 			'title'	=> 'Website',
 			'icon'	=> 'fa-solid fa-house',
 			'url'	=> '/',
-			'role'	=> [1],
+			'role'	=> [1, 3],
 			'type'	=> 'no-collapse',
 		],
         [
             'title'	=> 'Pesanan',
             'icon'	=> 'fa-solid fa-receipt',
             'url'	=> base_url(userSession('slug_role')) . '/pesanan',
-            'role'	=> [1],
+            'role'	=> [1, 3],
             'type'	=> 'no-collapse',
         ],
         [
@@ -185,7 +185,7 @@ function menuSidebar()
         ],
 		[
 			'title'	=> 'ACCOUNT',
-			'role'	=> [1],
+			'role'	=> [1, 3],
 			'type'	=> 'heading',
 		],
 		[
@@ -199,7 +199,7 @@ function menuSidebar()
 			'title'	=> 'Keluar',
 			'icon'	=> 'fa-solid fa-arrow-right-from-bracket',
 			'url'	=> base_url('logout'),
-			'role'	=> [1],
+			'role'	=> [1, 3],
 			'type'	=> 'no-collapse',
 		],
 	];

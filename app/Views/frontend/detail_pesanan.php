@@ -80,8 +80,8 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                     </tr>
                     <?php endforeach; ?>
                     <tr>
-                        <td colspan="4" class="text-end fw-600">Total Belanja</td>
-                        <td class="text-end fw-600" id="total_belanja"><?= formatRupiah($data['total_belanja']) ?></td>
+                        <td colspan="4" class="text-end fw-500">Total Belanja</td>
+                        <td class="text-end fw-500" id="total_belanja"><?= formatRupiah($data['total_belanja']) ?></td>
                     </tr>
                 </table>
             </div>
@@ -89,11 +89,11 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
     </div>
     <div class="row mt-4">
         <div class="col-12 col-lg-6">
-            <h4 class="mb-3">Dikirim Dari</h4>
+            <h5 class="mb-3">Dikirim Dari</h5>
             <p>Sawojajar, Kec. Kedungkandang, Kota Malang</p>
         </div>
         <div class="col-12 col-lg-6">
-            <h4 class="mb-3">Data Penerima</h4>
+            <h5 class="mb-3">Data Penerima</h5>
             <form id="form">
                 <div class="mb-3">
                     <label class="form-label">Nama Lengkap</label>
@@ -137,7 +137,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                 </div>
 
                 <div class="mt-4">
-                    <h4 class="mb-3">Rincian Pembayaran</h4>
+                    <h5 class="mb-3">Rincian Pembayaran</h5>
                     <div class="d-flex justify-content-between mb-2">
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" value="<?= $data['kode_voucher_belanja'] ?>" placeholder="Punya kode promo? Masukkan disini ✨" disabled>
@@ -150,7 +150,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Diskon Belanja</span>
-                        <span id="diskon_belanja"><?= formatRupiah($data['diskon_voucher_belanja']) ?></span>
+                        <span id="diskon_belanja"><?= formatRupiah($data['potongan_diskon']) ?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Ongkir</span>
@@ -161,8 +161,8 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                         <span id="potongan_ongkir"><?= formatRupiah($data['potongan_ongkir']) ?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-600">Total Tagihan</span>
-                        <span class="fw-600" id="total_tagihan"><?= formatRupiah($data['total_tagihan']) ?></span>
+                        <span class="fw-500">Total Tagihan</span>
+                        <span class="fw-500" id="total_tagihan"><?= formatRupiah($data['total_tagihan']) ?></span>
                     </div>
                     
                     <hr style="border: 1px solid #ddd;">
@@ -205,6 +205,9 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
 
                                 dom('#loading').innerHTML = ``;
 
+                                // console.log(data);
+                                // return;
+
                                 if (['success', 'error'].includes(data.status)) {
                                     await Swal.fire({
                                         icon: data.status,
@@ -235,6 +238,11 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                     <div class="d-flex justify-content-between mb-2">
                         <span>Kurir</span>
                         <span><?= $data['tarif_ongkir_name'] ?></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Berat</span>
+                        <span><?= $data['total_berat'] ?> gram</span>
                     </div>
 
                     <div class="d-flex justify-content-between mb-2">
@@ -271,7 +279,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                     document.addEventListener('DOMContentLoaded', async() => {
                         dom('#manifest_resi').innerHTML = `<div class="spinner-border text-primary"></div>`;
                         try {
-                            const response = await fetch(`<?= base_url() ?>api/ongkir/resi?awb=<?= $data['nomor_resi'] ?>&kurir=<?= $data['tarif_ongkir_code'] ?>`);
+                            const response = await fetch(`<?= base_url() ?>api/ongkir/resi?awb=<?= $data['nomor_resi'] ?>&kurir=<?= $data['tarif_ongkir_code'] ?>&last_phone_number=<?= substr($data['no_hp_customer'], -5) ?>`);
                             const data = await response.json();
 
                             dom('#manifest_resi').innerHTML = 
@@ -303,7 +311,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
 
 
                 <div class="text-end mt-4">
-                    <?php if ($data['status'] != 'Lunas') : if ($data['tipe_pembayaran'] == 'VA') : ?>
+                    <?php if ($data['status'] == 'Menunggu Pembayaran') : if ($data['tipe_pembayaran'] == 'VA') : ?>
                     <a href="<?= $data['invoice_url'] ?>" target="_blank" class="btn btn-primary mt-3">Bayar Sekarang</a>
                     <?php else : ?>
                     <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="btn btn-primary mt-3">Hubungi Admin</a>

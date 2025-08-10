@@ -120,10 +120,7 @@ class FrontEnd extends BaseController
 
     public function checkout()
     {
-        $session = [
-            'datetime' => date('Y-m-d H:i:s'),
-        ];
-        session()->set($session);
+        session()->set(['datetime' => date('Y-m-d H:i:s')]);
 
         $data['title'] = 'Checkout';
 
@@ -135,6 +132,8 @@ class FrontEnd extends BaseController
 
     public function detailPesanan()
     {
+        session()->set(['datetime' => date('Y-m-d H:i:s')]);
+
         $kode = $this->request->getVar('kode', FILTER_SANITIZE_SPECIAL_CHARS);
         $pesanan = model('Pesanan')->where('kode', $kode)->first();
 

@@ -1,5 +1,10 @@
 <?php
-$get_created_by = $_GET['created_by'] ?? '';
+$potongan_ongkir = model('PotonganOngkir')->where([
+    'periode_awal <='  => date('Y-m-d'),
+    'periode_akhir >=' => date('Y-m-d'),
+])
+->orderBy('periode_awal DESC')
+->first();
 ?>
 
 <script src="<?= base_url() ?>assets/js/jquery.min.js"></script>
@@ -9,6 +14,17 @@ $get_created_by = $_GET['created_by'] ?? '';
     <div class="row">
         <div class="col-12">
             <h4 class="my-4"><?= isset($title) ? $title : '' ?></h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-primary">
+                <?php if ($potongan_ongkir) : ?>
+                <?= $potongan_ongkir['nama'] ?> berlaku <?= date('d-m-Y', strtotime($potongan_ongkir['periode_awal'])) ?> s/d <?= date('d-m-Y', strtotime($potongan_ongkir['periode_akhir'])) ?>
+                <?php else : ?>
+                Tidak ada potongan ongkir yang berlaku.
+                <?php endif; ?>
+            </div>
         </div>
     </div>
     <div class="row">
