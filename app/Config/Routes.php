@@ -125,8 +125,10 @@ if (in_array($id_role, roleAccessByTitle('Pesanan'))) {
         $routes->post('update/(:segment)/nomor-resi', 'Pesanan::updateNomorResi/$1');
         $routes->post('update/(:segment)/status', 'Pesanan::updateStatus/$1');
         $routes->post('delete/(:segment)', 'Pesanan::delete/$1');
+        $routes->get('sinkronisasi/(:segment)', 'Pesanan::sinkronisasi/$1');
     });
 }
+$routes->get('api/pesanan/sinkronisasi/(:segment)', 'Pesanan::sinkronisasi/$1');
 
 if (in_array($id_role, roleAccessByTitle('Voucher Belanja'))) {
     $routes->group("$slug_role/voucher-belanja", ['filter' => 'EnsureLogin'], static function ($routes) {

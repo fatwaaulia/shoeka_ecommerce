@@ -179,6 +179,56 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                         <span>Status</span>
                         <span><?= $data['status'] ?></span>
                     </div>
+                    <?php if (userSession() && $data['tipe_pembayaran'] == 'VA' && $data['status'] == 'Menunggu Pembayaran') : ?>
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="#" id="sinkronisasi_pembayaran">Sinkronisasi</a>
+                    </div>
+                    <script>
+                    dom('#sinkronisasi_pembayaran').addEventListener('click', async(event) => {
+                        event.preventDefault();
+
+                        try {
+                            const result = await Swal.fire({
+                                icon: 'question',
+                                title: 'Sinkronisasi Pembayaran',
+                                confirmButtonText: 'Iya, Sinkronkan',
+                                cancelButtonText: 'Batal',
+                                showCancelButton: true,
+                                reverseButtons: true,
+                            });
+
+                            if (result.isConfirmed) {
+                                dom('#loading').innerHTML = `<div class="full-transparent"> <div class="spinner"> </div> </div>`;
+
+                                const response = await fetch(`<?= base_url() ?>api/pesanan/sinkronisasi/<?= $data['id'] ?>`);
+                                const data = await response.json();
+
+                                dom('#loading').innerHTML = ``;
+
+                                if (['success', 'error'].includes(data.status)) {
+                                    await Swal.fire({
+                                        icon: data.status,
+                                        title: data.message,
+                                        showConfirmButton: false,
+                                        timer: 2500,
+                                        timerProgressBar: true,
+                                    });
+                                    data.route && (window.location.href = data.route);
+                                } else {
+                                    await Swal.fire({
+                                        icon: 'error',
+                                        title: data.message,
+                                        showConfirmButton: false,
+                                    });
+                                }
+                            }
+                        } catch (error) {
+                            dom('#loading').innerHTML = ``;
+                            console.error(error);
+                        }
+                    });
+                    </script>
+                    <?php endif; ?>
 
                     <hr style="border: 1px solid #ddd;">
 
