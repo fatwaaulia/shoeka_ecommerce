@@ -493,7 +493,7 @@ class Pesanan extends BaseController
                     'total_tagihan'   => $pesanan['total_tagihan'],
                     'jumlah_bayar'    => $pesanan['paid_amount'],
                     'kembalian'       => 0,
-                    'metode_pembayaran' => $this->request->getVar('metode_pembayaran'),
+                    'metode_pembayaran' => $response_xendit['payment_channel'],
                     'marketplace'       => 'WEB',
                     'total_penghasilan' => $total_penghasilan,
                 ];
@@ -514,7 +514,7 @@ class Pesanan extends BaseController
                         'id_pesanan' => $pesanan['id'],
                         'id_transaksi'   => $id_transaksi_kasir,
                         'kode_transaksi' => $kode_transaksi,
-                        'metode_pembayaran' => $this->request->getVar('metode_pembayaran'),
+                        'metode_pembayaran' => $response_xendit['payment_channel'],
                         'marketplace'       => 'WEB',
                         'id_stok'        => $id_stok,
                         'id_warehouse'   => $warehouse['id'],
