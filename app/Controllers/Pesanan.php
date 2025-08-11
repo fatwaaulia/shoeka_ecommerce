@@ -453,7 +453,7 @@ class Pesanan extends BaseController
             model('Pesanan')->update($pesanan['id'], $data_pesanan);
 
             // Proses Transaksi Kasir
-            $transaksi = model('KasirTransaksi')->find($pesanan['id']);
+            $transaksi = model('KasirTransaksi')->where('id_pesanan', $pesanan['id'])->first();
             if ($status == 'Lunas' && !$transaksi) {
                 $kode_transaksi_terakhir = model('KasirTransaksi')->select('kode')->orderBy('id DESC')->first()['kode'] ?? '';
                 $tanggal_transaksi = substr($kode_transaksi_terakhir, 6, 6);
@@ -660,7 +660,7 @@ class Pesanan extends BaseController
         model($this->model_name)->update($id, $data);
 
         // Proses Transaksi Kasir
-        $transaksi = model('KasirTransaksi')->find($pesanan['id']);
+        $transaksi = model('KasirTransaksi')->where('id_pesanan', $pesanan['id'])->first();
         if ($status == 'Lunas' && !$transaksi) {
             $kode_transaksi_terakhir = model('KasirTransaksi')->select('kode')->orderBy('id DESC')->first()['kode'] ?? '';
             $tanggal_transaksi = substr($kode_transaksi_terakhir, 6, 6);
