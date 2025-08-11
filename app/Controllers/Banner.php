@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-class SubKategori extends BaseController
+class Banner extends BaseController
 {
     protected $base_name;
     protected $model_name;
@@ -10,7 +10,7 @@ class SubKategori extends BaseController
 
     public function __construct()
     {
-        $this->base_name   = 'sub_kategori';
+        $this->base_name   = 'banner';
         $this->model_name  = str_replace(' ', '', ucwords(str_replace('_', ' ', $this->base_name)));
         $this->upload_path = dirUpload() . $this->base_name . '/';
     }
@@ -33,16 +33,44 @@ class SubKategori extends BaseController
         return view('dashboard/header', $view);
     }
 
+    public function new()
+    {
+        $data = [
+            'base_api' => $this->base_api,
+            'title'    => 'Add ' . ucwords(str_replace('_', ' ', $this->base_name)),
+        ];
+
+        $view['sidebar'] = view('dashboard/sidebar');
+        $view['content'] = view($this->base_name . '/new', $data);
+        return view('dashboard/header', $view);
+    }
+
+    public function edit($id = null)
+    {
+        $find_data = model($this->model_name)->find($id);
+
+        $data = [
+            'base_api'  => $this->base_api,
+            'base_name' => $this->base_name,
+            'data'      => $find_data,
+            'title'     => 'Edit ' . ucwords(str_replace('_', ' ', $this->base_name)),
+        ];
+
+        $view['sidebar'] = view('dashboard/sidebar');
+        $view['content'] = view($this->base_name . '/edit', $data);
+        return view('dashboard/header', $view);
+    }
+
     /*--------------------------------------------------------------
     # API
     --------------------------------------------------------------*/
     public function index()
     {
-        $select     = ['*'];
-        $base_query = model($this->model_name)->select($select);
-        $limit      = (int)$this->request->getVar('length');
-        $offset     = (int)$this->request->getVar('start');
-        $records_total = $base_query->countAllResults(false);
+        $select          = ['*'];
+        $base_query      = model($this->model_name)->select($select);
+        $limit           = (int)$this->request->getVar('length');
+        $offset          = (int)$this->request->getVar('start');
+        $records_total   = $base_query->countAllResults(false);
 
         // Datatables
         $columns = array_column($this->request->getVar('columns') ?? [], 'name');
@@ -52,11 +80,13 @@ class SubKategori extends BaseController
         $order = $this->request->getVar('order')[0] ?? null;
         if (isset($order['column'], $order['dir']) && !empty($columns[$order['column']])) {
             $base_query->orderBy($columns[$order['column']], $order['dir'] === 'desc' ? 'desc' : 'asc');
+        } else {
+            $base_query->orderBy('created_at DESC');
         }
         // End | Datatables
 
         $total_rows = $base_query->countAllResults(false);
-        $data       = $base_query->findAll($limit, $offset);
+        $data       = $base_query->limit($limit, $offset)->get()->getResultArray();
 
         foreach ($data as $key => $v) {
             $data[$key]['no_urut'] = $offset + $key + 1;
@@ -74,9 +104,9 @@ class SubKategori extends BaseController
     public function create()
     {
         $rules = [
-            'kategori' => 'required',
-            'nama'     => 'required',
-            'gambar'   => 'max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'judul'  => 'required',
+            'gambar' => 'uploaded[gambar]|max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'tautan' => 'permit_empty|valid_url_strict',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -99,24 +129,11 @@ class SubKategori extends BaseController
         } else {
             $filename_gambar = '';
         }
-        
-        $kategori = model('Kategori')->find($this->request->getVar('kategori'));
-
-        $nama = $this->request->getVar('nama');
-        $slug = url_title($nama, '-', true);
-        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
-        if ($cek_nama != 0) {
-            $random_string = strtolower(random_string('alpha', 3));
-            $slug = $slug . '-' . $random_string;
-        }
 
         $data = [
-            'id_kategori'   => $kategori['id'],
-            'nama_kategori' => $kategori['nama'],
-            'slug_kategori' => $kategori['slug'],
-            'nama' => $nama,
-            'slug' => $slug,
-            'gambar' => $filename_gambar,
+            'gambar'  => $filename_gambar,
+            'judul'   => $this->request->getVar('judul'),
+            'tautan'  => $this->request->getVar('tautan'),
         ];
 
         model($this->model_name)->insert($data);
@@ -133,9 +150,9 @@ class SubKategori extends BaseController
         $find_data = model($this->model_name)->find($id);
 
         $rules = [
-            'kategori' => 'required',
-            'nama'     => 'required',
-            'gambar'   => 'max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'judul'  => 'required',
+            'gambar' => 'max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'tautan' => 'permit_empty|valid_url_strict',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -159,50 +176,18 @@ class SubKategori extends BaseController
             $filename_gambar = $find_data['gambar'];
         }
 
-        $kategori = model('Kategori')->find($this->request->getVar('kategori'));
-
-        $nama = $this->request->getVar('nama');
-        $slug = url_title($nama, '-', true);
-        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
-        if ($cek_nama != 0) {
-            $random_string = strtolower(random_string('alpha', 3));
-            $slug = $slug . '-' . $random_string;
-        }
-        
         $data = [
-            'id_kategori'   => $kategori['id'],
-            'nama_kategori' => $kategori['nama'],
-            'slug_kategori' => $kategori['slug'],
-            'nama' => $nama,
-            'slug' => $slug,
-            'gambar' => $filename_gambar,
+            'gambar'  => $filename_gambar,
+            'judul'   => $this->request->getVar('judul'),
+            'tautan'  => $this->request->getVar('tautan'),
         ];
-        model($this->model_name)->update($id, $data);
 
-        model('SubSubKategori')->set([
-            'nama_kategori' => $kategori['nama'],
-            'slug_kategori' => $kategori['slug'],
-            'nama_sub_kategori' => $nama,
-            'slug_sub_kategori' => $slug,
-        ])->update($id);
+        model($this->model_name)->update($id, $data);
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',
             'message' => 'Perubahan disimpan',
             'route'   => $this->base_route,
-        ]);
-    }
-
-    public function updateJsonIdVarianProduk($id = null)
-    {
-        $data = [
-            'json_id_varian_produk' => json_encode($this->request->getVar('json_id_varian_produk')),
-        ];
-        model($this->model_name)->update($id, $data);
-
-        return $this->response->setStatusCode(200)->setJSON([
-            'status'  => 'success',
-            'message' => 'Konfigurasi produk disimpan',
         ]);
     }
 

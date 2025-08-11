@@ -3,6 +3,7 @@ $app_settings = model('AppSettings')->find(1);
 $logo_web = webFile('image', 'app_settings', $app_settings['logo'], $app_settings['updated_at']);
 $uri = service('uri');
 $uri->setSilent(true);
+$segment_1 = $uri->getSegment(1);
 
 $get_kategori = $_GET['kategori'] ?? '';
 $get_sub = $_GET['sub'] ?? '';
@@ -14,6 +15,13 @@ $total_qty = 0;
 foreach ($keranjang as $item) {
     $total_qty += (int) $item['qty'];
 }
+
+$potongan_ongkir = model('PotonganOngkir')->where([
+    'periode_awal <='  => date('Y-m-d'),
+    'periode_akhir >=' => date('Y-m-d'),
+])
+->orderBy('periode_awal DESC')
+->first();
 ?>
 
 <style>
@@ -59,12 +67,13 @@ foreach ($keranjang as $item) {
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav w-100 pt-3 pt-md-1">
                 <?php
-                $kategori = model('Kategori')->findAll();
+                $kategori = model('Kategori')->whereNotIn('nama', ['KATEGORI POPULER', 'KOLEKSI SPESIAL'])->findAll();
+                if (($_GET['config'] ?? '') == 'produk') {
+                    $kategori = model('Kategori')->findAll();
+                }
                 foreach ($kategori as $key => $v) :
                     $active = '';
-                    if ($get_kategori == '' && $key === array_key_first($kategori)) {
-                        $active = 'nav-active';
-                    } elseif ($get_kategori == $v['slug']) {
+                    if ($get_kategori == $v['slug']) {
                         $active = 'nav-active';
                     }
                 ?>
@@ -84,22 +93,44 @@ foreach ($keranjang as $item) {
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
                     <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
                 </svg>
-                <span class="position-absolute top-0 start-100 translate-middle badge bg-dark" id="total_qty_keranjang">
+                <span class="position-absolute top-0 start-100 fw-500 translate-middle badge bg-dark" id="total_qty_keranjang" style="border-radius: 6px!important;">
                     <?= $total_qty ?>
                 </span>
             </a>
         </div>
     </div>
-    <div class="container py-3">
+    <div class="container py-3" style="height: 60px;">
+        <?php if ($segment_1 == '') : ?>
+        <div class="d-flex gap-3 align-items-center">
+            <i class="fa-solid fa-truck-fast text-secondary"></i>
+            <div>
+                <div class="fw-500 text-nowrap">Gratis Ongkir</div>
+                <small class="d-none d-lg-block">Hingga <?= formatRupiah($potongan_ongkir['potongan']) ?>, min. ongkir <?= formatRupiah($potongan_ongkir['minimal_ongkir']) ?></small>
+            </div>
+        </div>
+        <hr style="border: 1px solid #ddd; height: 20px;">
+        <div class="d-flex gap-3 align-items-center">
+            <i class="fa-solid fa-credit-card text-secondary"></i>
+            <div>
+                <div class="fw-500 text-nowrap">Bayar Mudah</div>
+                <small class="d-none d-lg-block">Pembayaran pakai VA atau chat admin</small>
+            </div>
+        </div>
+        <hr style="border: 1px solid #ddd; height: 20px;">
+        <div class="d-flex gap-3 align-items-center">
+            <i class="fa-solid fa-scissors text-secondary"></i>
+            <div>
+                <div class="fw-500 text-nowrap">Tersedia Promo</div>
+                <small class="d-none d-lg-block">Dapatkan potongan harga terbaik</small>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <?php if ($segment_1 == 'koleksi') : ?>
         <div class="overflow-auto scrollbar-hidden">
-            <div class="d-flex flex-nowrap gap-4">
+            <div class="d-flex flex-nowrap gap-4 mt-2">
                 <?php
                 $sub_kategori = model('SubKategori')->where('slug_kategori', $get_kategori)->findAll();
-                if (! $sub_kategori) {
-                    $kategori = model('Kategori')->first();
-                    $sub_kategori = model('SubKategori')->where('id_kategori', $kategori['id'])->findAll();
-                }
-
                 foreach ($sub_kategori as $key => $v) :
                     $active_sub = '';
                     if ($get_sub == $v['slug']) {
@@ -130,10 +161,11 @@ foreach ($keranjang as $item) {
                 </div>
                 <?php else : ?>
                 <a class="nav-link text-nowrap <?= $active_sub ?>" href="<?= base_url() ?>koleksi?kategori=<?= $v['slug_kategori'] ?>&sub=<?= $v['slug'] ?><?= $get_config ?>"><?= $v['nama'] ?></a>
-                <?php endif ?>
+                <?php endif; ?>
                 <?php endforeach; ?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 </nav>
 

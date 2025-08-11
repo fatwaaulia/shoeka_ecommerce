@@ -103,7 +103,6 @@ function compressConvertImage($get_file, $upload_path, $filename)
     $image->withFile($get_file);
     $image->convert(IMAGETYPE_JPEG);
     $image->flatten(255, 255, 255);
-    if ($image->getWidth() > 800 || $image->getHeight() > 800) $image->resize(800, 800, true);
     $image->save($upload_path . $filename, 60);
 }
 
@@ -154,6 +153,13 @@ function menuSidebar()
 			'title'	=> 'MASTER DATA',
 			'role'	=> [1],
 			'type'	=> 'heading',
+		],
+        [
+			'title'	=> 'Banner',
+			'icon'	=> 'fa-solid fa-image',
+			'url'	=> base_url() . userSession('slug_role') . '/banner',
+			'role'	=> [1],
+			'type'	=> 'no-collapse',
 		],
 		[
 			'title'	=> 'Kategori',

@@ -72,7 +72,7 @@ class SubSubKategori extends BaseController
     {
         $rules = [
             'sub_kategori' => 'required',
-            'nama'         => "required|is_unique[ecommerce_$this->base_name.nama]",
+            'nama' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -86,8 +86,15 @@ class SubSubKategori extends BaseController
 
         // Lolos Validasi
         $sub_kategori = model('SubKategori')->find($this->request->getVar('sub_kategori'));
+
         $nama = $this->request->getVar('nama');
         $slug = url_title($nama, '-', true);
+        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
+        if ($cek_nama != 0) {
+            $random_string = strtolower(random_string('alpha', 3));
+            $slug = $slug . '-' . $random_string;
+        }
+
         $data = [
             'id_kategori'   => $sub_kategori['id_kategori'],
             'nama_kategori' => $sub_kategori['nama_kategori'],
@@ -112,7 +119,7 @@ class SubSubKategori extends BaseController
     {
         $rules = [
             'sub_kategori' => 'required',
-            'nama'         => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
+            'nama' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -126,8 +133,15 @@ class SubSubKategori extends BaseController
 
         // Lolos Validasi
         $sub_kategori = model('SubKategori')->find($this->request->getVar('sub_kategori'));
+
         $nama = $this->request->getVar('nama');
         $slug = url_title($nama, '-', true);
+        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
+        if ($cek_nama != 0) {
+            $random_string = strtolower(random_string('alpha', 3));
+            $slug = $slug . '-' . $random_string;
+        }
+
         $data = [
             'id_kategori'   => $sub_kategori['id_kategori'],
             'nama_kategori' => $sub_kategori['nama_kategori'],

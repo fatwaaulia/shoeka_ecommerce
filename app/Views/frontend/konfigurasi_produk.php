@@ -57,7 +57,7 @@ div.dt-processing > div:last-child > div {
 }
 </style>
 
-<body style="padding-top: 121.88px;">
+<body style="padding-top: 130px;">
 
 <section class="container">
     <div class="row">
@@ -69,6 +69,10 @@ div.dt-processing > div:last-child > div {
             </h5>
         </div>
     </div>
+    <a href="<?= base_url(userSession('slug_role')) ?>/dashboard" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Kembali
+    </a>
     <?php if ($sub_kategori || $sub_sub_kategori) : ?>
     <div class="row mt-4">
         <div class="col-12">

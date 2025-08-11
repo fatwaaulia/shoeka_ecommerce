@@ -71,7 +71,7 @@ class Kategori extends BaseController
     public function create()
     {
         $rules = [
-            'nama' => "required|is_unique[ecommerce_$this->base_name.nama]",
+            'nama' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -86,6 +86,12 @@ class Kategori extends BaseController
         // Lolos Validasi
         $nama = $this->request->getVar('nama');
         $slug = url_title($nama, '-', true);
+        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
+        if ($cek_nama != 0) {
+            $random_string = strtolower(random_string('alpha', 3));
+            $slug = $slug . '-' . $random_string;
+        }
+
         $data = [
             'nama' => $nama,
             'slug' => $slug,
@@ -103,7 +109,7 @@ class Kategori extends BaseController
     public function update($id = null)
     {
         $rules = [
-            'nama' => "required|is_unique[ecommerce_$this->base_name.nama,id,$id]",
+            'nama' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -118,6 +124,12 @@ class Kategori extends BaseController
         // Lolos Validasi
         $nama = $this->request->getVar('nama');
         $slug = url_title($nama, '-', true);
+        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
+        if ($cek_nama != 0) {
+            $random_string = strtolower(random_string('alpha', 3));
+            $slug = $slug . '-' . $random_string;
+        }
+
         $data = [
             'nama' => $nama,
             'slug' => $slug,
@@ -129,7 +141,7 @@ class Kategori extends BaseController
             'slug_kategori' => $slug,
         ])->update($id);
 
-        model('TipeProduk')->set([
+        model('SubSubKategori')->set([
             'nama_kategori' => $nama,
             'slug_kategori' => $slug,
         ])->update($id);

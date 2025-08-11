@@ -25,6 +25,16 @@ class FrontEnd extends BaseController
 
     public function beranda()
     {
+        $data['title'] = $this->app_settings['nama_aplikasi'];
+
+        $view['navbar'] = view('frontend/components/navbar');
+        $view['content'] = view('frontend/beranda', $data);
+        $view['footer'] = view('frontend/components/footer');
+        return view('frontend/header', $view);
+    }
+
+    public function koleksi()
+    {
         $kategori = model('Kategori')->where('slug', $_GET['kategori'] ?? '')->first();
         if (! $kategori) {
             $kategori = model('Kategori')->first();
@@ -71,7 +81,7 @@ class FrontEnd extends BaseController
             'sub_sub_kategori'          => $sub_sub_kategori,
             'api_json_id_varian_produk' => $api_json_id_varian_produk,
             'array_id_varian_produk'    => $array_id_varian_produk,
-            'title'                     => $this->app_settings['nama_aplikasi'],
+            'title'                     => $kategori['nama'] . ($sub_kategori ? ' - ' . $sub_kategori['nama'] : ''),
         ];
 
         $view['navbar'] = view('frontend/components/navbar');
@@ -82,15 +92,10 @@ class FrontEnd extends BaseController
             }
             $view['content'] = view('frontend/konfigurasi_produk', $data);
         } else {
-            $view['content'] = view('frontend/beranda', $data);
+            $view['content'] = view('frontend/produk', $data);
         }
         $view['footer'] = view('frontend/components/footer');
         return view('frontend/header', $view);
-    }
-
-    public function koleksi()
-    {
-        return $this->beranda();
     }
 
     public function detailProduk($slug)

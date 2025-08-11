@@ -45,6 +45,19 @@
                                                 <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama">
                                                 <div class="invalid-feedback" id="invalid_nama"></div>
                                             </div>
+                                            <div class="mb-3">
+                                                <label for="gambar" class="form-label">Gambar</label>
+                                                <div class="col-12 col-md-6 col-lg-5 col-xl-4 position-relative">
+                                                    <img src="<?= webFile('image') ?>" class="w-100 cover-center" id="frame_gambar">
+                                                    <div class="position-absolute" style="bottom: 0px; right: 0px;">
+                                                        <label for="gambar" class="btn btn-secondary rounded-circle" style="padding: 8px;">
+                                                            <i class="fa-solid fa-camera fa-lg"></i>
+                                                        </label>
+                                                        <input type="file" class="form-control d-none" id="gambar" name="gambar" accept=".png,.jpg,.jpeg" onchange="dom('#frame_gambar').src = window.URL.createObjectURL(this.files[0]);">
+                                                    </div>
+                                                </div>
+                                                <div class="invalid-feedback" id="invalid_gambar"></div>
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -69,6 +82,7 @@
                             <th>No.</th>
                             <th>Kategori</th>
                             <th>Nama</th>
+                            <th>Gambar</th>
                             <th>Opsi</th>
                         </tr>
                     </thead>
@@ -88,6 +102,14 @@ document.addEventListener('DOMContentLoaded', function() {
         initComplete: function (settings, json) {
             $('#myTable').wrap('<div style="overflow: auto; width: 100%; position: relative;"></div>');
         },
+        drawCallback: function () {
+            new LazyLoad({
+                elements_selector: '.lazy-shimmer',
+                callback_loaded: (el) => {
+                    el.classList.remove('lazy-shimmer');
+                }
+            });
+        },
         columns: [
             {
                 name: '',
@@ -98,6 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }, {
                 name: 'nama',
                 data: 'nama',
+            }, {
+                name: '',
+                data: null,
+                render: data => `<img data-src="${data.gambar}" class="wh-40 cover-center lazy-shimmer">`,
             }, {
                 name: '',
                 data: null,
@@ -135,6 +161,19 @@ function renderOpsi(data) {
                             <label for="nama" class="form-label">Nama</label>
                             <input type="text" class="form-control" id="nama" name="nama" value="${data.nama}" placeholder="Masukkan nama">
                             <div class="invalid-feedback" id="invalid_nama"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gambar" class="form-label">Gambar</label>
+                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 position-relative">
+                                <img src="${data.gambar}" class="w-100 cover-center" id="frame_edit_gambar_${data.id}">
+                                <div class="position-absolute" style="bottom: 0px; right: 0px;">
+                                    <label for="gambar_${data.id}" class="btn btn-secondary rounded-circle" style="padding: 8px;">
+                                        <i class="fa-solid fa-camera fa-lg"></i>
+                                    </label>
+                                    <input type="file" class="form-control d-none" id="gambar_${data.id}" name="gambar" accept=".png,.jpg,.jpeg" onchange="dom('#frame_edit_gambar_${data.id}').src = window.URL.createObjectURL(this.files[0]);">
+                                </div>
+                            </div>
+                            <div class="invalid-feedback" id="invalid_gambar"></div>
                         </div>
                     </div>
                     <div class="modal-footer">

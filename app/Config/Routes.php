@@ -162,6 +162,20 @@ if (in_array($id_role, roleAccessByTitle('Potongan Ongkir'))) {
 /*--------------------------------------------------------------
   # Master Data
 --------------------------------------------------------------*/
+if (in_array($id_role, roleAccessByTitle('Banner'))) {
+    $routes->group("$slug_role/banner", ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'Banner::main');
+        $routes->get('new', 'Banner::new');
+        $routes->get('edit/(:segment)', 'Banner::edit/$1');
+    });
+    $routes->group('api/banner', ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'Banner::index');
+        $routes->post('create', 'Banner::create');
+        $routes->post('update/(:segment)', 'Banner::update/$1');
+        $routes->post('delete/(:segment)', 'Banner::delete/$1');
+    });
+}
+
 if (in_array($id_role, roleAccessByTitle('Kategori'))) {
     $routes->get("$slug_role/kategori", 'Kategori::main', ['filter' => 'EnsureLogin']);
     $routes->group('api/kategori', ['filter' => 'EnsureLogin'], static function ($routes) {

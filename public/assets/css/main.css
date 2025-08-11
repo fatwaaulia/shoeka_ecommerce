@@ -4,7 +4,7 @@
     --dark-color: #202124;
     --light-color: #fafafa;
     --gray-color: #aab7cf;
-    --border-radius: var(--bs-border-radius);
+    --border-radius: 0px;
     --box-shadow-form-input: unset;
     scroll-behavior: smooth;
 }
