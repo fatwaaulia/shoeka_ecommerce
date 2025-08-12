@@ -50,6 +50,8 @@ class Kategori extends BaseController
         $order = $this->request->getVar('order')[0] ?? null;
         if (isset($order['column'], $order['dir']) && !empty($columns[$order['column']])) {
             $base_query->orderBy($columns[$order['column']], $order['dir'] === 'desc' ? 'desc' : 'asc');
+        } else {
+            $base_query->orderBy('urutan ASC');
         }
         // End | Datatables
 
@@ -72,6 +74,7 @@ class Kategori extends BaseController
     {
         $rules = [
             'nama' => 'required',
+            'urutan' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -95,6 +98,7 @@ class Kategori extends BaseController
         $data = [
             'nama' => $nama,
             'slug' => $slug,
+            'urutan' => $this->request->getVar('urutan'),
         ];
 
         model($this->model_name)->insert($data);
@@ -110,6 +114,7 @@ class Kategori extends BaseController
     {
         $rules = [
             'nama' => 'required',
+            'urutan' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -123,28 +128,20 @@ class Kategori extends BaseController
 
         // Lolos Validasi
         $nama = $this->request->getVar('nama');
-        $slug = url_title($nama, '-', true);
-        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
-        if ($cek_nama != 0) {
-            $random_string = strtolower(random_string('alpha', 3));
-            $slug = $slug . '-' . $random_string;
-        }
 
         $data = [
             'nama' => $nama,
-            'slug' => $slug,
+            'urutan' => $this->request->getVar('urutan'),
         ];
         model($this->model_name)->update($id, $data);
 
         model('SubKategori')->set([
             'nama_kategori' => $nama,
-            'slug_kategori' => $slug,
-        ])->update($id);
+        ])->where('id_kategori', $id)->update();
 
         model('SubSubKategori')->set([
             'nama_kategori' => $nama,
-            'slug_kategori' => $slug,
-        ])->update($id);
+        ])->where('id_kategori', $id)->update();
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',

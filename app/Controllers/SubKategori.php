@@ -52,6 +52,9 @@ class SubKategori extends BaseController
         $order = $this->request->getVar('order')[0] ?? null;
         if (isset($order['column'], $order['dir']) && !empty($columns[$order['column']])) {
             $base_query->orderBy($columns[$order['column']], $order['dir'] === 'desc' ? 'desc' : 'asc');
+        } else {
+            $base_query->orderBy('id_kategori ASC');
+            $base_query->orderBy('urutan ASC');
         }
         // End | Datatables
 
@@ -77,6 +80,7 @@ class SubKategori extends BaseController
             'kategori' => 'required',
             'nama'     => 'required',
             'gambar'   => 'max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'urutan'   => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -117,6 +121,7 @@ class SubKategori extends BaseController
             'nama' => $nama,
             'slug' => $slug,
             'gambar' => $filename_gambar,
+            'urutan' => $this->request->getVar('urutan'),
         ];
 
         model($this->model_name)->insert($data);
@@ -136,6 +141,7 @@ class SubKategori extends BaseController
             'kategori' => 'required',
             'nama'     => 'required',
             'gambar'   => 'max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'urutan'   => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -162,20 +168,14 @@ class SubKategori extends BaseController
         $kategori = model('Kategori')->find($this->request->getVar('kategori'));
 
         $nama = $this->request->getVar('nama');
-        $slug = url_title($nama, '-', true);
-        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
-        if ($cek_nama != 0) {
-            $random_string = strtolower(random_string('alpha', 3));
-            $slug = $slug . '-' . $random_string;
-        }
         
         $data = [
             'id_kategori'   => $kategori['id'],
             'nama_kategori' => $kategori['nama'],
             'slug_kategori' => $kategori['slug'],
             'nama' => $nama,
-            'slug' => $slug,
             'gambar' => $filename_gambar,
+            'urutan' => $this->request->getVar('urutan'),
         ];
         model($this->model_name)->update($id, $data);
 
@@ -183,8 +183,7 @@ class SubKategori extends BaseController
             'nama_kategori' => $kategori['nama'],
             'slug_kategori' => $kategori['slug'],
             'nama_sub_kategori' => $nama,
-            'slug_sub_kategori' => $slug,
-        ])->update($id);
+        ])->where('id_sub_kategori', $id)->update();
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',

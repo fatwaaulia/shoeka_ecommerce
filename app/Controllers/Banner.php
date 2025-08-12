@@ -81,7 +81,7 @@ class Banner extends BaseController
         if (isset($order['column'], $order['dir']) && !empty($columns[$order['column']])) {
             $base_query->orderBy($columns[$order['column']], $order['dir'] === 'desc' ? 'desc' : 'asc');
         } else {
-            $base_query->orderBy('created_at DESC');
+            $base_query->orderBy('urutan ASC');
         }
         // End | Datatables
 
@@ -107,6 +107,7 @@ class Banner extends BaseController
             'judul'  => 'required',
             'gambar' => 'uploaded[gambar]|max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
             'tautan' => 'permit_empty|valid_url_strict',
+            'urutan' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -134,6 +135,7 @@ class Banner extends BaseController
             'gambar'  => $filename_gambar,
             'judul'   => $this->request->getVar('judul'),
             'tautan'  => $this->request->getVar('tautan'),
+            'urutan'  => $this->request->getVar('urutan'),
         ];
 
         model($this->model_name)->insert($data);
@@ -153,6 +155,7 @@ class Banner extends BaseController
             'judul'  => 'required',
             'gambar' => 'max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
             'tautan' => 'permit_empty|valid_url_strict',
+            'urutan' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -180,6 +183,7 @@ class Banner extends BaseController
             'gambar'  => $filename_gambar,
             'judul'   => $this->request->getVar('judul'),
             'tautan'  => $this->request->getVar('tautan'),
+            'urutan'  => $this->request->getVar('urutan'),
         ];
 
         model($this->model_name)->update($id, $data);

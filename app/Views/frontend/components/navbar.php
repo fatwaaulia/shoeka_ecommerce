@@ -134,14 +134,14 @@ $potongan_ongkir = model('PotonganOngkir')->where([
         <div class="overflow-auto scrollbar-hidden">
             <div class="d-flex flex-nowrap gap-4 mt-2">
                 <?php
-                $sub_kategori = model('SubKategori')->where('slug_kategori', $get_kategori)->findAll();
+                $sub_kategori = model('SubKategori')->where('slug_kategori', $get_kategori)->orderBy('urutan ASC')->findAll();
                 foreach ($sub_kategori as $key => $v) :
                     $active_sub = '';
                     if ($get_sub == $v['slug']) {
                         $active_sub = 'nav-active';
                     }
 
-                    $sub_sub_kategori = model('SubSubKategori')->where('id_sub_kategori', $v['id'])->findAll();
+                    $sub_sub_kategori = model('SubSubKategori')->where('id_sub_kategori', $v['id'])->orderBy('urutan ASC')->findAll();
                     if ($sub_sub_kategori) :
                 ?>
                 <div class="dropdown">

@@ -50,6 +50,9 @@ class SubSubKategori extends BaseController
         $order = $this->request->getVar('order')[0] ?? null;
         if (isset($order['column'], $order['dir']) && !empty($columns[$order['column']])) {
             $base_query->orderBy($columns[$order['column']], $order['dir'] === 'desc' ? 'desc' : 'asc');
+        } else {
+            $base_query->orderBy('id_kategori ASC');
+            $base_query->orderBy('urutan ASC');
         }
         // End | Datatables
 
@@ -73,6 +76,7 @@ class SubSubKategori extends BaseController
         $rules = [
             'sub_kategori' => 'required',
             'nama' => 'required',
+            'urutan' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -104,6 +108,7 @@ class SubSubKategori extends BaseController
             'slug_sub_kategori' => $sub_kategori['slug'],
             'nama' => $nama,
             'slug' => $slug,
+            'urutan' =>$this->request->getVar('urutan'),
         ];
 
         model($this->model_name)->insert($data);
@@ -120,6 +125,7 @@ class SubSubKategori extends BaseController
         $rules = [
             'sub_kategori' => 'required',
             'nama' => 'required',
+            'urutan' => 'required',
         ];
         if (! $this->validate($rules)) {
             $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
@@ -135,12 +141,6 @@ class SubSubKategori extends BaseController
         $sub_kategori = model('SubKategori')->find($this->request->getVar('sub_kategori'));
 
         $nama = $this->request->getVar('nama');
-        $slug = url_title($nama, '-', true);
-        $cek_nama = model($this->model_name)->select('nama')->where('nama', $nama)->countAllResults();
-        if ($cek_nama != 0) {
-            $random_string = strtolower(random_string('alpha', 3));
-            $slug = $slug . '-' . $random_string;
-        }
 
         $data = [
             'id_kategori'   => $sub_kategori['id_kategori'],
@@ -150,7 +150,7 @@ class SubSubKategori extends BaseController
             'nama_sub_kategori' => $sub_kategori['nama'],
             'slug_sub_kategori' => $sub_kategori['slug'],
             'nama' => $nama,
-            'slug' => $slug,
+            'urutan' => $this->request->getVar('urutan'),
         ];
 
         model($this->model_name)->update($id, $data);

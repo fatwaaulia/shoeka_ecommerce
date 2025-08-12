@@ -45,6 +45,11 @@
                                                 <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama">
                                                 <div class="invalid-feedback" id="invalid_nama"></div>
                                             </div>
+                                            <div class="mb-3">
+                                                <label for="urutan" class="form-label">Urutan</label>
+                                                <input type="text" class="form-control" id="urutan" name="urutan" placeholder="Masukkan urutan">
+                                                <div class="invalid-feedback" id="invalid_urutan"></div>
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -67,6 +72,7 @@
                     <thead class="bg-primary-subtle">
                         <tr>
                             <th>No.</th>
+                            <th>Urutan</th>
                             <th>Sub Kategori</th>
                             <th>Nama</th>
                             <th>Opsi</th>
@@ -92,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 name: '',
                 data: 'no_urut',
+            }, {
+                name: '',
+                data: 'urutan',
             }, {
                 name: 'nama_kategori',
                 data: null,
@@ -136,6 +145,11 @@ function renderOpsi(data) {
                             <label for="nama" class="form-label">Nama</label>
                             <input type="text" class="form-control" id="nama" name="nama" value="${data.nama}" placeholder="Masukkan nama">
                             <div class="invalid-feedback" id="invalid_nama"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="urutan" class="form-label">Urutan</label>
+                            <input type="text" class="form-control" id="urutan" name="urutan" value="${data.urutan}" placeholder="Masukkan urutan">
+                            <div class="invalid-feedback" id="invalid_urutan"></div>
                         </div>
                     </div>
                     <div class="modal-footer">

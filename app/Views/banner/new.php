@@ -32,6 +32,11 @@
                             <input type="text" class="form-control" id="tautan" name="tautan" placeholder="https://masukkan-tautan">
                             <div class="invalid-feedback" id="invalid_tautan"></div>
                         </div>
+                        <div class="mb-3">
+                            <label for="urutan" class="form-label">Urutan</label>
+                            <input type="number" class="form-control" id="urutan" name="urutan" placeholder="Masukkan urutan">
+                            <div class="invalid-feedback" id="invalid_urutan"></div>
+                        </div>
                         <button type="submit" class="btn btn-primary mt-3 float-end">Tambahkan</button>
                     </form>
                 </div>

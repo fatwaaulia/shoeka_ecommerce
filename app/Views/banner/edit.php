@@ -30,8 +30,13 @@
                         <div class="mb-3">
                             <label for="tautan" class="form-label">Tautan</label>
                             <input type="text" class="form-control" id="tautan" name="tautan" value="<?= $data['tautan'] ?>" placeholder="https://masukkan-tautan">
-                            <div class="invalid-feedback" id="invalid_tautan"></div>
-                        </div>
+                                <div class="invalid-feedback" id="invalid_tautan"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="urutan" class="form-label">Urutan</label>
+                                <input type="text" class="form-control" id="urutan" name="urutan" value="<?= $data['urutan'] ?>" placeholder="Masukkan urutan">
+                                <div class="invalid-feedback" id="invalid_urutan"></div>
+                            </div>
                         <button type="submit" class="btn btn-primary mt-3 float-end">Simpan Perubahan</button>
                     </form>
                 </div>

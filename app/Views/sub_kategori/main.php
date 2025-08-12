@@ -58,6 +58,11 @@
                                                 </div>
                                                 <div class="invalid-feedback" id="invalid_gambar"></div>
                                             </div>
+                                            <div class="mb-3">
+                                                <label for="urutan" class="form-label">Urutan</label>
+                                                <input type="text" class="form-control" id="urutan" name="urutan" placeholder="Masukkan urutan">
+                                                <div class="invalid-feedback" id="invalid_urutan"></div>
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -80,6 +85,7 @@
                     <thead class="bg-primary-subtle">
                         <tr>
                             <th>No.</th>
+                            <th>Urutan</th>
                             <th>Kategori</th>
                             <th>Nama</th>
                             <th>Gambar</th>
@@ -114,6 +120,9 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 name: '',
                 data: 'no_urut',
+            }, {
+                name: '',
+                data: 'urutan',
             }, {
                 name: 'nama_kategori',
                 data: 'nama_kategori',
@@ -174,6 +183,11 @@ function renderOpsi(data) {
                                 </div>
                             </div>
                             <div class="invalid-feedback" id="invalid_gambar"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="urutan" class="form-label">Urutan</label>
+                            <input type="text" class="form-control" id="urutan" name="urutan" value="${data.urutan}" placeholder="Masukkan urutan">
+                            <div class="invalid-feedback" id="invalid_urutan"></div>
                         </div>
                     </div>
                     <div class="modal-footer">

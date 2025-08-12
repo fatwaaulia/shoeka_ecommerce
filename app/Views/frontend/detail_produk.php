@@ -80,6 +80,47 @@
     </div>
 </section>
 
+<section class="container">
+    <div class="row">
+        <div class="col-12 mt-4 mb-3">
+            <h4>Produk Rekomendasi Lainnya</h4>
+        </div>
+    </div>
+    <div class="row gx-2 gx-md-4 gy-5">
+        <?php
+        $sub_json_id_varian_produk = model('SubKategori')->where('json_id_varian_produk !=', '')->findColumn('json_id_varian_produk');
+        $sub_sub_json_id_varian_produk = model('SubSubKategori')->where('json_id_varian_produk !=', '')->findColumn('json_id_varian_produk');
+        $json_id_varian_produk = array_merge($sub_json_id_varian_produk, $sub_sub_json_id_varian_produk);
+
+       $varian_produk = [];
+        foreach ($json_id_varian_produk as $v) {
+            if (!empty($v)) {
+                $ids = json_decode($v, true);
+                if (is_array($ids)) {
+                    $varian_produk = array_merge($varian_produk, $ids);
+                }
+            }
+        }
+
+        // Hapus duplikat jika perlu
+        $varian_produk = array_unique($varian_produk);
+        shuffle($varian_produk);
+        $varian_produk = array_slice($varian_produk, 0, 8);
+        if ($varian_produk) :
+            foreach ($varian_produk as $v) :
+                $v = model('VarianProduk')->find($v);
+        ?>
+        <div class="col-6 col-md-4 col-xl-3">
+            <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>">
+                <img data-src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
+                <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
+                <p class="mb-0 fw-500"><?= formatRupiah($v['harga_ecommerce']) ?></p>
+            </a>
+        </div>
+        <?php endforeach; endif; ?>
+    </div>
+</section>
+
 <script>
 dom('#kurang_qty').addEventListener('click', () => {
     const qty = parseInt(dom('#qty').value) || 0;

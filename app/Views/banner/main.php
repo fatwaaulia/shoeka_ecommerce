@@ -24,6 +24,7 @@
                     <thead class="bg-primary-subtle">
                         <tr>
                             <th>No.</th>
+                            <th>Urutan</th>
                             <th>Gambar</th>
                             <th>Judul</th>
                             <th>Created At</th>
@@ -58,6 +59,9 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 name: '',
                 data: 'no_urut',
+            }, {
+                name: '',
+                data: 'urutan',
             }, {
                 name: '',
                 data: null,

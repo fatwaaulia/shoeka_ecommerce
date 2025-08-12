@@ -18,7 +18,7 @@
             <div id="carouselExample" class="carousel slide carousel-fade" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <?php
-                    $banner = model('Banner')->findAll();
+                    $banner = model('Banner')->orderBy('urutan ASC')->findAll();
                     foreach ($banner as $key => $v) :
                     ?>
                     <div class="carousel-item <?= $key == 0 ? 'active' : '' ?>" data-bs-interval="5000">
