@@ -414,12 +414,12 @@ dom('#submit_kode_voucher_belanja').addEventListener('click', async() => {
 
 async function updateRincianPembayaran(diskon_belanja = 0) {
     try {
-        const response = await fetch(`<?= base_url() ?>api/potongan-ongkir/aktif`);
+        const ongkir = parseInt(dom('#layanan_kurir option:checked')?.getAttribute('data-tarif')) || 0;
+        const response = await fetch(`<?= base_url() ?>api/potongan-ongkir/aktif?ongkir=${ongkir}`);
         const data = await response.json();
 
         const total_belanja = <?= $total_belanja ?> - diskon_belanja;
 
-        const ongkir = parseInt(dom('#layanan_kurir option:checked')?.getAttribute('data-tarif')) || 0;
         let potongan_ongkir = data.potongan_ongkir;
         if (potongan_ongkir >= ongkir) {
             potongan_ongkir = ongkir;

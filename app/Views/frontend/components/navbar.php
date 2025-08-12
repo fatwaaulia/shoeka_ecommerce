@@ -56,7 +56,7 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
                     <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
                 </svg>
-                <span class="position-absolute top-0 start-100 translate-middle badge bg-dark">
+                <span class="position-absolute top-0 start-100 fw-500 translate-middle badge bg-dark" id="total_qty_keranjang" style="border-radius: 6px!important;">
                     <?= $total_qty ?>
                 </span>
             </a>
@@ -105,7 +105,11 @@ $potongan_ongkir = model('PotonganOngkir')->where([
             <i class="fa-solid fa-truck-fast text-secondary"></i>
             <div>
                 <div class="fw-500 text-nowrap">Gratis Ongkir</div>
+                <?php if ($potongan_ongkir) : ?>
                 <small class="d-none d-lg-block">Hingga <?= formatRupiah($potongan_ongkir['potongan']) ?>, min. ongkir <?= formatRupiah($potongan_ongkir['minimal_ongkir']) ?></small>
+                <?php else : ?>
+                <small class="d-none d-lg-block">Tersedia potongan hingga gratis ongkir</small>
+                <?php endif; ?>
             </div>
         </div>
         <hr style="border: 1px solid #ddd; height: 20px;">
@@ -116,8 +120,8 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                 <small class="d-none d-lg-block">Pembayaran pakai VA atau chat admin</small>
             </div>
         </div>
-        <hr style="border: 1px solid #ddd; height: 20px;">
-        <div class="d-flex gap-3 align-items-center">
+        <hr style="border: 1px solid #ddd; height: 20px;" class="d-none d-md-block">
+        <div class="d-flex gap-3 align-items-center d-none d-md-flex">
             <i class="fa-solid fa-scissors text-secondary"></i>
             <div>
                 <div class="fw-500 text-nowrap">Tersedia Promo</div>

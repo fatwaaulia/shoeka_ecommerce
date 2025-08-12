@@ -47,14 +47,14 @@
             <h4>Kategori Populer</h4>
         </div>
     </div>
-    <div class="row">
+    <div class="row gx-2 gx-md-4 gy-5">
         <?php
         $kategori_populer = model('SubKategori')->where('nama_kategori', 'KATEGORI POPULER')->findAll();
         foreach ($kategori_populer as $key => $v) :
         ?>
         <div class="col-6 col-md-4 col-xl-3">
             <a href="<?= base_url() ?>koleksi?kategori=<?= $v['slug_kategori'] ?>&sub=<?= $v['slug'] ?>">
-                <img src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" alt="<?= $v['nama'] ?>">
+                <img src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" style="aspect-ratio: 1 / 1.2;" alt="<?= $v['nama'] ?>">
             </a>
         </div>
         <?php endforeach; ?>
@@ -67,14 +67,14 @@
             <h4>Koleksi Spesial</h4>
         </div>
     </div>
-    <div class="row g-4">
+    <div class="row gx-2 gx-md-4 gy-5">
         <?php
         $kategori_populer = model('SubKategori')->where('nama_kategori', 'Koleksi Spesial')->findAll();
         foreach ($kategori_populer as $key => $v) :
         ?>
         <div class="col-6 col-md-4 col-xl-4">
             <a href="<?= base_url() ?>koleksi?kategori=<?= $v['slug_kategori'] ?>&sub=<?= $v['slug'] ?>">
-                <img src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" alt="<?= $v['nama'] ?>">
+                <img src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
             </a>
         </div>
         <?php endforeach; ?>

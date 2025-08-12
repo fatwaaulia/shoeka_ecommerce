@@ -64,9 +64,12 @@ class PotonganOngkir extends BaseController
     --------------------------------------------------------------*/
     public function aktif()
     {
+        $ongkir = $this->request->getVar('ongkir');
+
         $potongan_ongkir = model('PotonganOngkir')->where([
             'periode_awal <='  => date('Y-m-d'),
             'periode_akhir >=' => date('Y-m-d'),
+            'minimal_ongkir <=' => $ongkir,
         ])
         ->orderBy('periode_awal DESC')
         ->first()['potongan'] ?? 0;

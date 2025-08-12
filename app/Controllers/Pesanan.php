@@ -205,6 +205,7 @@ class Pesanan extends BaseController
         $potongan_ongkir = model('PotonganOngkir')->where([
             'periode_awal <='  => date('Y-m-d'),
             'periode_akhir >=' => date('Y-m-d'),
+            'minimal_ongkir <=' => $tarif_ongkir['cost'],
         ])
         ->orderBy('periode_awal DESC')
         ->first();
