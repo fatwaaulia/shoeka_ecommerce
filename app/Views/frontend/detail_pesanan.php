@@ -2,8 +2,6 @@
 $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
 ?>
 
-<body style="padding-top: 114.38px;">
-
 <section class="container">
     <div class="row">
         <div class="col-12">

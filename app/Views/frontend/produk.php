@@ -1,7 +1,4 @@
 <?php
-$get_order_by = $_GET['order_by'] ?? '';
-
-
 $array_id_produk = $array_id_produk ? json_decode($array_id_produk, true) : [];
 
 if ($array_id_produk) {
@@ -53,7 +50,3 @@ if ($array_id_produk) {
         <?php endforeach; endif; ?>
     </div>
 </section>
-
-<script>
-dselect(dom('#order_by'), { search: true, clearable: true });
-</script>

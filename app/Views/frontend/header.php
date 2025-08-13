@@ -65,7 +65,7 @@ $description  = isset($description) ? $description : $app_settings['deskripsi'];
     <script src="<?= base_url() ?>assets/js/fetch/submit_data_with_confirm.js"></script>
 </head>
 
-<body>
+<body style="padding-top: 114.38px;">
     <div id="loading"></div>
     <div id="preloader"></div>
     <script>

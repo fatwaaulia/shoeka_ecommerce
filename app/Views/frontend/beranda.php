@@ -10,8 +10,6 @@
 }
 </style>
 
-<body style="padding-top: 114.38px;">
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 p-0">
@@ -47,7 +45,7 @@
             <h4>Kategori Populer</h4>
         </div>
     </div>
-    <div class="row gx-2 gx-md-4 gy-5">
+    <div class="row gx-2 gx-md-4 gy-3">
         <?php
         $kategori_populer = model('SubKategori')->where('nama_kategori', 'KATEGORI POPULER')->findAll();
         foreach ($kategori_populer as $key => $v) :
@@ -67,7 +65,7 @@
             <h4>Koleksi Spesial</h4>
         </div>
     </div>
-    <div class="row gx-2 gx-md-4 gy-5">
+    <div class="row gx-2 gx-md-4 gy-3">
         <?php
         $kategori_populer = model('SubKategori')->where('nama_kategori', 'Koleksi Spesial')->findAll();
         foreach ($kategori_populer as $key => $v) :

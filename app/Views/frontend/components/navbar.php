@@ -141,7 +141,7 @@ $potongan_ongkir = model('PotonganOngkir')->where([
     <?php if ($segment_1 != '') : ?>
     <div class="container py-3" style="height: 55px;">
         <div class="overflow-auto scrollbar-hidden">
-            <div class="d-flex flex-nowrap gap-4">
+            <div class="d-flex flex-nowrap gap-4 mb-5">
                 <?php
                 $sub_kategori = model('SubKategori')->where('slug_kategori', $get_kategori)->orderBy('urutan ASC')->findAll();
                 if (! $sub_kategori) {

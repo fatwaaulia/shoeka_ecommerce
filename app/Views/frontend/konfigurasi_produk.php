@@ -53,8 +53,6 @@ div.dt-processing > div:last-child > div {
 }
 </style>
 
-<body style="padding-top: 130px;">
-
 <section class="container">
     <div class="row">
         <div class="col-12">

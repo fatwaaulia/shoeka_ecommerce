@@ -10,9 +10,6 @@ $varian_produk = model('VarianProduk')
 sort($varian_produk);
 ?>
 
-
-<body style="padding-top: 114.38px;">
-
 <section class="container">
     <div class="row">
         <div class="col-12">
