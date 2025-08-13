@@ -15,7 +15,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
         </div>
     </div>
     <div class="row mt-4">
-        <div class="col-12">
+        <div class="col-12 col-md-6">
             <table>
                 <tr>
                     <td>Kode Pesanan</td>
@@ -47,7 +47,34 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                     <td>Tanggal Pesanan</td>
                     <td>: <?= dateFormatter($data['created_at'], 'd MMMM yyyy HH:mm') ?></td>
                 </tr>
+                <tr>
+                    <td>Status</td>
+                    <?php
+                    if ($data['status'] == 'Lunas') {
+                        $color_status = 'text-success';
+                    } elseif ($data['status'] == 'Menunggu Pembayaran') {
+                        $color_status = 'text-warning';
+                    } else {
+                        $color_status = 'text-danger';
+                    }
+                    ?>
+                    <td>:
+                        <span class="<?= $color_status ?> fw-500"><?= $data['status'] ?></span>
+                    </td>
+                </tr>
             </table>
+        </div>
+        <div class="col-12 col-md-6 text-end">
+            <h4><?= formatRupiah($data['total_tagihan']) ?></h4>
+            <?php if ($data['status'] != 'Lunas') : ?>
+            <small class="text-danger fw-600">Jatuh Tempo pada <?= dateFormatter($data['expired_at'] ?? date('Y-m-d H:i', strtotime($data['created_at'] . ' +1 hour')), 'd MMMM yyyy HH:mm') ?> (GMT+07:00)</small>
+            <br>
+            <?php endif; ?>
+            <?php if ($data['status'] == 'Menunggu Pembayaran') : if ($data['tipe_pembayaran'] == 'VA') : ?>
+            <a href="<?= $data['invoice_url'] ?>" target="_blank" class="btn btn-primary mt-3">Bayar Sekarang</a>
+            <?php else : ?>
+            <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="btn btn-primary mt-3">Hubungi Admin</a>
+            <?php endif; endif; ?>
         </div>
     </div>
 
