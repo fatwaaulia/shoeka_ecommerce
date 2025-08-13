@@ -215,5 +215,6 @@ if (userSession()) {
 
     $routes->group('api/varian-produk', ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'VarianProduk::index');
+        $routes->get('(:segment)', 'VarianProduk::detail/$1');
     });
 }

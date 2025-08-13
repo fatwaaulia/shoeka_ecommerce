@@ -63,7 +63,7 @@ sort($varian_produk);
         </div>
         <div class="col-12 col-md-5 col-lg-6 order-3">
             <h4 class="mt-4 mt-md-0"><?= $data['nama'] ?></h4>
-            <h5><?= formatRupiah($varian_produk['0']['harga_ecommerce']) ?></h5>
+            <h5 id="harga_varian"><?= formatRupiah($varian_produk['0']['harga_ecommerce']) ?></h5>
 
             <hr style="border: 1px solid #ddd;">
 
@@ -72,7 +72,7 @@ sort($varian_produk);
                     <label class="mb-2">Varian</label> <br>
                     <?php foreach ($varian_produk as $key => $v) : ?>
                     <span class="me-2">
-                        <input type="radio" class="btn-check" id="checked_<?= $key ?>" name="varian_produk" value="<?= encode($v['id']) ?>" autocomplete="off">
+                        <input type="radio" class="btn-check" id="checked_<?= $key ?>" name="varian_produk" value="<?= encode($v['id']) ?>" onclick="pilihVarian(this)" autocomplete="off">
                         <label class="btn btn-outline-secondary" for="checked_<?= $key ?>"><?= $v['nama'] ?></label>
                     </span>
                     <?php endforeach; ?>
@@ -123,7 +123,7 @@ sort($varian_produk);
             }
         }
 
-        // Hapus duplikat jika perlu
+        // Hapus duplikat
         $produk = array_unique($produk);
         shuffle($produk);
         $produk = array_slice($produk, 0, 8);
@@ -146,7 +146,7 @@ sort($varian_produk);
 
         ?>
         <div class="col-6 col-md-4 col-xl-3">
-            <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>">
+            <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>?kategori=<?= $_GET['kategori'] ?? '' ?>">
                 <img data-src="<?= webFile('image', 'produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
                 <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
                 <p class="mb-0 fw-500"><?= formatRupiah($harga_varian_termurah) ?></p>
@@ -157,6 +157,14 @@ sort($varian_produk);
 </section>
 
 <script>
+async function pilihVarian(el) {
+    const response = await fetch(`<?= base_url() ?>api/varian-produk/${el.value}`);
+    const data = await response.json();
+
+    dom('#harga_varian').innerText = formatRupiah(data.data.harga_ecommerce);
+    previewGambar(data.gambar)
+}
+
 dom('#kurang_qty').addEventListener('click', () => {
     const qty = parseInt(dom('#qty').value) || 0;
     if (qty > 1) {

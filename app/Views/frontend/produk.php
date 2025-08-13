@@ -2,8 +2,32 @@
 $array_id_produk = $array_id_produk ? json_decode($array_id_produk, true) : [];
 
 if ($array_id_produk) {
-    $data = model('Produk')->whereIn('id', $array_id_produk)->findAll();
-    $total_produk  = model('Produk')->whereIn('id', $array_id_produk)->countAllResults();
+    $produk = model('Produk')->whereIn('id', $array_id_produk)->findAll();
+
+    foreach ($produk as $key => $v) {
+        $varian_produk = model('VarianProduk')
+        ->baseQuery()
+        ->where([
+            'id_produk' => $v['id'],
+            'berat !=' => 0,
+            'stok !=' => 0,
+        ])
+        ->get()->getResultArray();
+
+        if (empty($varian_produk)) {
+            unset($produk[$key]);
+            continue;
+        }
+
+        $harga_varian = array_column($varian_produk, 'harga_ecommerce');
+        sort($harga_varian);
+        $harga_varian_termurah = $harga_varian[0] ?? 0;
+
+        $produk[$key]['harga_varian_termurah'] = $harga_varian_termurah;
+    }
+    $produk = array_values($produk);
+
+    $total_produk  = count($produk);
 } else {
     $total_produk = 0;
 }
@@ -26,25 +50,13 @@ if ($array_id_produk) {
     <div class="row mt-0 gx-2 gx-md-4 gy-5">
         <?php
         if ($array_id_produk) :
-            foreach ($data as $v) :
-                $varian_produk = model('VarianProduk')
-                ->baseQuery()
-                ->where([
-                    'id_produk' => $v['id'],
-                    'berat !=' => 0,
-                    'stok !=' => 0,
-                ])
-                ->get()->getResultArray();
-                $harga_varian = array_column($varian_produk, 'harga_ecommerce');
-                sort($harga_varian);
-                $harga_varian_termurah = $harga_varian[0] ?? 0;
-                if ($harga_varian_termurah == 0) continue;
+            foreach ($produk as $v) :
         ?>
         <div class="col-6 col-md-4 col-xl-3">
             <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>?kategori=<?= $kategori['slug'] ?>">
                 <img data-src="<?= webFile('image', 'produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
                 <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
-                <p class="mb-0 fw-500"><?= formatRupiah($harga_varian_termurah) ?></p>
+                <p class="mb-0 fw-500"><?= formatRupiah($v['harga_varian_termurah']) ?></p>
             </a>
         </div>
         <?php endforeach; endif; ?>

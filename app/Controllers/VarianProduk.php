@@ -63,4 +63,16 @@ class VarianProduk extends BaseController
             'data'            => $data,
         ]);
     }
+
+    public function detail($id_encode)
+    {
+        $id = decode($id_encode);
+        $varian_produk = model('VarianProduk')->find($id);
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'status' => 'success',
+            'data'   => $varian_produk,
+            'gambar' => webFile('image', 'varian_produk', $varian_produk['gambar'], $varian_produk['updated_at']),
+        ]);
+    }
 }
