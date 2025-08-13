@@ -190,7 +190,8 @@ class Ongkir extends BaseController
         if (isset($response['data']['manifest'])) {
             return $this->response->setStatusCode(200)->setJSON([
                 'status' => 'success',
-                'data'   => $response['data']['manifest'],
+                'delivery_status' => $response['data']['delivery_status'],
+                'manifest' => $response['data']['manifest'],
             ]);
         } else {
             return $this->response->setStatusCode(400)->setJSON([

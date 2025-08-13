@@ -162,10 +162,10 @@ class SubSubKategori extends BaseController
         ]);
     }
 
-    public function updateJsonIdVarianProduk($id = null)
+    public function updateJsonIdProduk($id = null)
     {
         $data = [
-            'json_id_varian_produk' => json_encode($this->request->getVar('json_id_varian_produk')),
+            'json_id_produk' => json_encode($this->request->getVar('json_id_produk')),
         ];
         model($this->model_name)->update($id, $data);
 

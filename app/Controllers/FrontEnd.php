@@ -43,44 +43,44 @@ class FrontEnd extends BaseController
         $sub_kategori = model('SubKategori')->where('slug', $this->request->getVar('sub'))->first();
         $sub_sub_kategori = model('SubSubKategori')->where('slug', $this->request->getVar('sub_sub'))->first();
 
-        $api_json_id_varian_produk = '';
-        $array_id_varian_produk = [];
+        $api_json_id_produk = '';
+        $array_id_produk = [];
         if ($sub_sub_kategori) {
-            $api_json_id_varian_produk = base_url() . 'api/sub-sub-kategori/update/' . $sub_sub_kategori['id'] . '/json-id-varian-produk';
-            $array_id_varian_produk = $sub_sub_kategori['json_id_varian_produk'];
+            $api_json_id_produk = base_url() . 'api/sub-sub-kategori/update/' . $sub_sub_kategori['id'] . '/json-id-produk';
+            $array_id_produk = $sub_sub_kategori['json_id_produk'];
         } elseif ($sub_kategori) {
-            $api_json_id_varian_produk = base_url() . 'api/sub-kategori/update/' . $sub_kategori['id'] . '/json-id-varian-produk';
-            $array_id_varian_produk = $sub_kategori['json_id_varian_produk'];
+            $api_json_id_produk = base_url() . 'api/sub-kategori/update/' . $sub_kategori['id'] . '/json-id-produk';
+            $array_id_produk = $sub_kategori['json_id_produk'];
         } elseif ($kategori) {
-            $sub_json_id_varian_produk = model('SubKategori')->select('json_id_varian_produk')->where('slug_kategori', $kategori['slug'])->findAll();
-            $array_sub_id_varian_produk = [];
-            foreach ($sub_json_id_varian_produk as $v) {
-                $ids = json_decode($v['json_id_varian_produk'], true);
+            $sub_json_id_produk = model('SubKategori')->select('json_id_produk')->where('slug_kategori', $kategori['slug'])->findAll();
+            $array_sub_id_produk = [];
+            foreach ($sub_json_id_produk as $v) {
+                $ids = json_decode($v['json_id_produk'], true);
                 if (is_array($ids)) {
-                    $array_sub_id_varian_produk = array_merge($array_sub_id_varian_produk, $ids);
+                    $array_sub_id_produk = array_merge($array_sub_id_produk, $ids);
                 }
             }
-            //    dd($array_sub_id_varian_produk);
+            //    dd($array_sub_id_produk);
 
-            $sub_sub_json_id_varian_produk = model('SubSubKategori')->select('json_id_varian_produk')->where('slug_kategori', $kategori['slug'])->findAll();
-            $array_sub_sub_id_varian_produk = [];
-            foreach ($sub_sub_json_id_varian_produk as $v) {
-                $ids = json_decode($v['json_id_varian_produk'], true);
+            $sub_sub_json_id_produk = model('SubSubKategori')->select('json_id_produk')->where('slug_kategori', $kategori['slug'])->findAll();
+            $array_sub_sub_id_produk = [];
+            foreach ($sub_sub_json_id_produk as $v) {
+                $ids = json_decode($v['json_id_produk'], true);
                 if (is_array($ids)) {
-                    $array_sub_sub_id_varian_produk = array_merge($array_sub_sub_id_varian_produk, $ids);
+                    $array_sub_sub_id_produk = array_merge($array_sub_sub_id_produk, $ids);
                 }
             }
 
-            $array_id_varian_produk = array_unique(array_merge($array_sub_id_varian_produk, $array_sub_sub_id_varian_produk));
-            $array_id_varian_produk = json_encode($array_id_varian_produk);
+            $array_id_produk = array_unique(array_merge($array_sub_id_produk, $array_sub_sub_id_produk));
+            $array_id_produk = json_encode($array_id_produk);
         }
 
         $data = [
             'kategori'                  => $kategori,
             'sub_kategori'              => $sub_kategori,
             'sub_sub_kategori'          => $sub_sub_kategori,
-            'api_json_id_varian_produk' => $api_json_id_varian_produk,
-            'array_id_varian_produk'    => $array_id_varian_produk,
+            'api_json_id_produk' => $api_json_id_produk,
+            'array_id_produk'    => $array_id_produk,
             'title'                     => $kategori['nama'] . ($sub_kategori ? ' - ' . $sub_kategori['nama'] : ''),
         ];
 
@@ -100,11 +100,13 @@ class FrontEnd extends BaseController
 
     public function detailProduk($slug)
     {
-        $varian_produk = model('VarianProduk')->baseQuery()->where('slug', $slug)->get()->getRowArray();
+        $produk = model('Produk')->where('slug', $slug)->get()->getRowArray();
+        $varian_produk = model('VarianProduk')->where('id_produk', $produk['id'])->get()->getRowArray();
 
         $data = [
-            'data'  => $varian_produk,
-            'title' => $varian_produk['nama'],
+            'data'  => $produk,
+            'varian_produk' => $varian_produk,
+            'title' => $produk['nama'],
         ];
 
         $view['navbar'] = view('frontend/components/navbar');

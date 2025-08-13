@@ -36,9 +36,19 @@ $description  = isset($description) ? $description : $app_settings['deskripsi'];
     <!-- My Style -->
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/main.css?v=1.0">
     <style>
-    section {
-        padding: 25px;
+    section { padding: 25px; }
+
+    html, body {
+        height: 100%;
+        margin: 0;
     }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    main { flex: 1; }
     </style>
 
     <!-- My Script -->

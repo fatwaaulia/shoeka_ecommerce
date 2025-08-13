@@ -2,7 +2,7 @@
 $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
 ?>
 
-<body style="padding-top: 119.49px;">
+<body style="padding-top: 114.38px;">
 
 <section class="container">
     <div class="row">
@@ -244,7 +244,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                         <span>Total Berat</span>
                         <span><?= $data['total_berat'] ?> gram</span>
                     </div>
-
+                    
                     <div class="d-flex justify-content-between mb-2">
                         <span>Nomor Resi</span>
                         <span>
@@ -272,8 +272,13 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                             <span id="nomor_resi"><?= $data['nomor_resi'] ?: '-' ?></span>
                         </span>
                     </div>
-
+                    
                     <?php if ($data['nomor_resi']) : ?>
+                    <hr style="border: 1px solid #ddd;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Status</span>
+                        <span id="status_pengiriman" class="fw-500">-</span>
+                    </div>
                     <div id="manifest_resi" class="mt-3"></div>
                     <script>
                     document.addEventListener('DOMContentLoaded', async() => {
@@ -282,8 +287,10 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                             const response = await fetch(`<?= base_url() ?>api/ongkir/resi?awb=<?= $data['nomor_resi'] ?>&kurir=<?= $data['tarif_ongkir_code'] ?>&last_phone_number=<?= substr($data['no_hp_customer'], -5) ?>`);
                             const data = await response.json();
 
+                            dom('#status_pengiriman').innerText = data.delivery_status.status;
+
                             dom('#manifest_resi').innerHTML = 
-                            data.data.map(manifest => {
+                            data.manifest.map(manifest => {
                                 let date = new Date(manifest.manifest_date);
                                 let formatted = new Intl.DateTimeFormat('id-ID', { 
                                     weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' 

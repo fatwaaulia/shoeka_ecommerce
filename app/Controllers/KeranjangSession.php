@@ -6,10 +6,25 @@ class KeranjangSession extends BaseController
 {
     public function create()
     {
+
+        $rules = [
+            'varian_produk' => 'required',
+            'qty' => 'required',
+        ];
+        if (! $this->validate($rules)) {
+            $errors = array_map(fn($error) => str_replace('_', ' ', $error), $this->validator->getErrors());
+
+            return $this->response->setStatusCode(400)->setJSON([
+                'status'  => 'error',
+                'message' => 'Data yang dimasukkan tidak valid!',
+                'errors'  => $errors,
+            ]);
+        }
+
         $keranjang_session = json_decode(session('keranjang'), true) ?? [];
 
-        $id_varian_produk = decode($this->request->getVar('id_varian_produk'));
-        $slug_varian_produk = $this->request->getVar('slug_varian_produk');
+        $id_varian_produk = decode($this->request->getVar('varian_produk'));
+        $route = $this->request->getVar('route');
         $qty = $this->request->getVar('qty');
         $found = false;
         foreach ($keranjang_session as &$v) {
@@ -33,7 +48,7 @@ class KeranjangSession extends BaseController
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',
             'message' => 'Berhasil masuk keranjang',
-            'route'   => base_url() . 'detail-produk/' . $slug_varian_produk,
+            'route'   => $route,
         ]);
     }
 

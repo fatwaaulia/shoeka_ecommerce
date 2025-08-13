@@ -1,4 +1,17 @@
-<body style="padding-top: 119.49px;">
+<?php
+$varian_produk = model('VarianProduk')
+->baseQuery()
+->where([
+    'id_produk' => $data['id'],
+    'berat !=' => 0,
+    'stok !=' => 0,
+])
+->get()->getResultArray();
+sort($varian_produk);
+?>
+
+
+<body style="padding-top: 114.38px;">
 
 <section class="container">
     <div class="row">
@@ -23,13 +36,13 @@
             </style>
             <div class="overflow-auto scrollbar-hidden d-flex flex-nowrap gap-2 d-md-block">
                 
-            <img src="<?= webFile('image', 'varian_produk', $data['gambar'], $data['updated_at']) ?>" class="mb-2" id="sub_gambar" style="cursor: pointer;" onclick="previewGambar('<?= webFile('image', 'varian_produk', $data['gambar'], $data['updated_at']) ?>')">
+            <img src="<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>" class="mb-2" id="sub_gambar" style="cursor: pointer;" onclick="previewGambar('<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>')">
             <?php
             $json_gambar_ecommerce = json_decode($data['json_gambar_ecommerce'], true);
             if ($json_gambar_ecommerce) :
             foreach ($json_gambar_ecommerce as $v) :
             ?>
-            <img src="<?= webFile('image', 'varian_produk', $v, $data['updated_at']) ?>" class="mb-2" id="sub_gambar" style="cursor: pointer;" onclick="previewGambar('<?= webFile('image', 'varian_produk', $v, $data['updated_at']) ?>')">
+            <img src="<?= webFile('image', 'produk', $v, $data['updated_at']) ?>" class="mb-2" id="sub_gambar" style="cursor: pointer;" onclick="previewGambar('<?= webFile('image', 'produk', $v, $data['updated_at']) ?>')">
             <?php endforeach; endif; ?>
             </div>
 
@@ -49,15 +62,25 @@
             </script>
         </div>
         <div class="col-12 col-md-6 col-lg-5 order-1 order-md-2">
-            <img src="<?= webFile('image', 'varian_produk', $data['gambar'], $data['updated_at']) ?>" class="w-100 mb-3" id="sampul" alt="<?= $data['nama'] ?>">
+            <img src="<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>" class="w-100 mb-3" id="sampul" alt="<?= $data['nama'] ?>">
         </div>
         <div class="col-12 col-md-5 col-lg-6 order-3">
             <h4 class="mt-4 mt-md-0"><?= $data['nama'] ?></h4>
-            <h5><?= formatRupiah($data['harga_ecommerce']) ?></h5>
+            <h5><?= formatRupiah($varian_produk['0']['harga_ecommerce']) ?></h5>
 
             <hr style="border: 1px solid #ddd;">
 
             <form id="form">
+                <div class="mb-3">
+                    <label class="mb-2">Varian</label> <br>
+                    <?php foreach ($varian_produk as $key => $v) : ?>
+                    <span class="me-2">
+                        <input type="radio" class="btn-check" id="checked_<?= $key ?>" name="varian_produk" value="<?= encode($v['id']) ?>" autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="checked_<?= $key ?>"><?= $v['nama'] ?></label>
+                    </span>
+                    <?php endforeach; ?>
+                    <div class="invalid-feedback" id="invalid_varian_produk"></div>
+                </div>
                 <div class="mb-3">
                     <label for="qty" class="form-label">Kuantitas</label>
                     <div class="d-flex gap-2">
@@ -69,6 +92,7 @@
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
+                    <div class="invalid-feedback" id="invalid_qty"></div>
                 </div>
                 <button type="submit" class="btn btn-primary mt-3">Masukkan Keranjang</button>
             </form>
@@ -88,33 +112,47 @@
     </div>
     <div class="row gx-2 gx-md-4 gy-5">
         <?php
-        $sub_json_id_varian_produk = model('SubKategori')->where('json_id_varian_produk !=', '')->findColumn('json_id_varian_produk');
-        $sub_sub_json_id_varian_produk = model('SubSubKategori')->where('json_id_varian_produk !=', '')->findColumn('json_id_varian_produk');
-        $json_id_varian_produk = array_merge($sub_json_id_varian_produk, $sub_sub_json_id_varian_produk);
+        $sub_json_id_produk = model('SubKategori')->where('json_id_produk !=', '')->findColumn('json_id_produk');
+        $sub_sub_json_id_produk = model('SubSubKategori')->where('json_id_produk !=', '')->findColumn('json_id_produk');
+        $json_id_produk = array_merge($sub_json_id_produk, $sub_sub_json_id_produk);
 
-       $varian_produk = [];
-        foreach ($json_id_varian_produk as $v) {
+       $produk = [];
+        foreach ($json_id_produk as $v) {
             if (!empty($v)) {
                 $ids = json_decode($v, true);
                 if (is_array($ids)) {
-                    $varian_produk = array_merge($varian_produk, $ids);
+                    $produk = array_merge($produk, $ids);
                 }
             }
         }
 
         // Hapus duplikat jika perlu
-        $varian_produk = array_unique($varian_produk);
-        shuffle($varian_produk);
-        $varian_produk = array_slice($varian_produk, 0, 8);
-        if ($varian_produk) :
-            foreach ($varian_produk as $v) :
-                $v = model('VarianProduk')->find($v);
+        $produk = array_unique($produk);
+        shuffle($produk);
+        $produk = array_slice($produk, 0, 8);
+        $rekomendasi_produk = model('Produk')->whereIn('id', $produk)->findAll();
+        if ($rekomendasi_produk) :
+            foreach ($rekomendasi_produk as $v) :
+                
+                $varian_produk = model('VarianProduk')
+                ->baseQuery()
+                ->where([
+                    'id_produk' => $v['id'],
+                    'berat !=' => 0,
+                    'stok !=' => 0,
+                ])
+                ->get()->getResultArray();
+                $harga_varian = array_column($varian_produk, 'harga_ecommerce');
+                sort($harga_varian);
+                $harga_varian_termurah = $harga_varian[0] ?? 0;
+                if ($harga_varian_termurah == 0) continue;
+
         ?>
         <div class="col-6 col-md-4 col-xl-3">
             <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>">
-                <img data-src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
+                <img data-src="<?= webFile('image', 'produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
                 <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
-                <p class="mb-0 fw-500"><?= formatRupiah($v['harga_ecommerce']) ?></p>
+                <p class="mb-0 fw-500"><?= formatRupiah($harga_varian_termurah) ?></p>
             </a>
         </div>
         <?php endforeach; endif; ?>
@@ -139,19 +177,24 @@ dom('#form').addEventListener('submit', async function(event) {
 
     try {
         const id_varian_produk = '<?= encode($data['id']) ?>';
-        const slug_varian_produk = '<?= $data['slug'] ?>';
         const qty = dom('#qty').value;
 
+        const form_data = new FormData(form);
         const response = await fetch('<?= base_url() ?>session/keranjang/create', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id_varian_produk: id_varian_produk,
-                slug_varian_produk: slug_varian_produk,
-                qty: qty
-            })
+            body: form_data,
         });
         const data = await response.json();
+
+        Array.from(form.querySelectorAll('[id^="invalid_"]')).forEach(element => {
+            const field = element.id.replace('invalid_', '');
+            const element_by_name = form.querySelector(`[name="${field}"]`) || form.querySelector(`[name="${field}[]"]`);
+            element.textContent = data.errors?.[field] || '';
+            if (element_by_name && !['radio', 'checkbox'].includes(element_by_name.type)) {
+                element_by_name.classList.toggle('is-invalid', !!data.errors?.[field]);
+                element_by_name.nextElementSibling?.querySelector('.dselect-wrapper > .form-select')?.classList.toggle('is-invalid', !!data.errors?.[field]);
+            }
+        });
 
         if (['success', 'error'].includes(data.status)) {
             await Swal.fire({

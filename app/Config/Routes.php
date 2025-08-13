@@ -192,7 +192,7 @@ if (in_array($id_role, roleAccessByTitle('Sub Kategori'))) {
         $routes->get('/', 'SubKategori::index');
         $routes->post('create', 'SubKategori::create');
         $routes->post('update/(:segment)', 'SubKategori::update/$1');
-        $routes->post('update/(:segment)/json-id-varian-produk', 'SubKategori::updateJsonIdVarianProduk/$1');
+        $routes->post('update/(:segment)/json-id-produk', 'SubKategori::updateJsonIdProduk/$1');
         $routes->post('delete/(:segment)', 'SubKategori::delete/$1');
     });
 }
@@ -203,12 +203,16 @@ if (in_array($id_role, roleAccessByTitle('Sub Sub Kategori'))) {
         $routes->get('/', 'SubSubKategori::index');
         $routes->post('create', 'SubSubKategori::create');
         $routes->post('update/(:segment)', 'SubSubKategori::update/$1');
-        $routes->post('update/(:segment)/json-id-varian-produk', 'SubSubKategori::updateJsonIdVarianProduk/$1');
+        $routes->post('update/(:segment)/json-id-produk', 'SubSubKategori::updateJsonIdProduk/$1');
         $routes->post('delete/(:segment)', 'SubSubKategori::delete/$1');
     });
 }
 
 if (userSession()) {
+    $routes->group('api/produk', ['filter' => 'EnsureLogin'], static function ($routes) {
+        $routes->get('/', 'Produk::index');
+    });
+
     $routes->group('api/varian-produk', ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'VarianProduk::index');
     });

@@ -248,7 +248,8 @@ class Pesanan extends BaseController
                 "external_id" => $kode,
                 "amount"      => (int)$total_tagihan,
                 "description" => "Invoice Demo #$kode",
-                "invoice_duration" => 86400,
+                // "invoice_duration" => 86400,
+                "invoice_duration" => 3600,
                 "customer" => [
                     "given_names"   => $nama_customer,
                     "email"         => $email_customer,

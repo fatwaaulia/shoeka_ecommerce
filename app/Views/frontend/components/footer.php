@@ -53,11 +53,14 @@ footer a:hover { color: white; }
                 <p class="mb-2 fw-600">LACAK PESANAN</p>
                 <div class="mb-2">
                     <form action="<?= base_url() ?>detail-pesanan" method="get">
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="kode" class="form-label">Kode Pesanan</label>
                             <input type="text" class="form-control" id="kode" name="kode" placeholder="Masukkan kode pesanan" required oninput="this.value = this.value.toUpperCase()">
                         </div>
-                        <button type="submit" class="btn btn-primary float-end">Cari Sekarang</button>
+                        <div class="mb-2">
+                              <small><i>* Kode pesanan bisa dicek di email atau whatsapp yang digunakan untuk melakukan transaksi.</i></small>
+                        </div>
+                        <button type="submit" class="btn btn-primary float-start">Cari Sekarang</button>
                     </form>
                 </div>
             </div>

@@ -1,7 +1,3 @@
-<?php
-$base_api = base_url('api/varian-produk');
-?>
-
 <script src="<?= base_url() ?>assets/js/jquery.min.js"></script>
 <link rel="stylesheet" href="<?= base_url() ?>assets/modules/datatables/css/dataTables.dataTables.min.css">
 
@@ -84,15 +80,8 @@ div.dt-processing > div:last-child > div {
                                 <th>No.</th>
                                 <th class="text-center">#</th>
                                 <th>Kategori</th>
-                                <th>Produk</th>
-                                <th>Nama Varian</th>
+                                <th>Nama Produk</th>
                                 <th>Gambar</th>
-                                <th>Harga Pokok</th>
-                                <th>Biaya Produk</th>
-                                <th>Harga Ecommerce</th>
-                                <th>Berat (gram)</th>
-                                <th>SKU</th>
-                                <th>Stok</th>
                             </tr>
                         </thead>
                     </table>
@@ -112,8 +101,8 @@ div.dt-processing > div:last-child > div {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    <?php if (!empty($array_id_varian_produk)) : ?>
-    sessionStorage.setItem('checked_id', '<?= $array_id_varian_produk ?>');
+    <?php if (!empty($array_id_produk)) : ?>
+    sessionStorage.setItem('checked_id', '<?= $array_id_produk ?>');
     <?php else : ?>
     sessionStorage.removeItem('checked_id');
     <?php endif; ?>
@@ -143,10 +132,10 @@ dom('#submit_checked_box').addEventListener('click', async function(event) {
     const session_checked_id = JSON.parse(sessionStorage.getItem('checked_id')) || [];
 
     try {
-        const response = await fetch('<?= $api_json_id_varian_produk ?>', {
+        const response = await fetch('<?= $api_json_id_produk ?>', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ json_id_varian_produk: session_checked_id })
+            body: JSON.stringify({ json_id_produk: session_checked_id })
         });
         const data = await response.json();
 
@@ -193,7 +182,7 @@ dom('#submit_checked_box').addEventListener('click', async function(event) {
 
 document.addEventListener('DOMContentLoaded', function() {
     new DataTable('#myTable', {
-        ajax: '<?= base_url() ?>api/varian-produk',
+        ajax: '<?= base_url() ?>api/produk',
         processing: true,
         serverSide: true,
         order: [],
@@ -211,13 +200,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     const session_checked_id = JSON.parse(sessionStorage.getItem('checked_id')) || [];
                     const is_checked = session_checked_id.includes(String(data.id)) ? 'checked' : '';
                     return `<input type="checkbox" class="form-check-input fa-lg" value="${data.id}" ${is_checked} onchange="itemChecked(this)" style="cursor:pointer;">`;
-                }
+                },
+                className: 'text-center',
             }, {
                 name: '',
                 data: 'nama_kategori',
-            }, {
-                name: '',
-                data: 'nama_produk',
             }, {
                 name: 'nama',
                 data: 'nama',
@@ -225,24 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: '',
                 data: null,
                 render: data => `<img src="${data.gambar}" class="wh-40 cover-center" loading="lazy">`,
-            }, {
-                name: '',
-                data: 'harga_pokok',
-            }, {
-                name: '',
-                data: 'biaya_produk',
-            }, {
-                name: '',
-                data: 'harga_ecommerce',
-            }, {
-                name: '',
-                data: 'berat',
-            }, {
-                name: 'sku',
-                data: 'sku',
-            }, {
-                name: '',
-                data: 'stok',
             },
         ].map(col => ({ ...col, orderable: col.name !== '' })),
     });
