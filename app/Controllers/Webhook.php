@@ -8,7 +8,6 @@ class Webhook extends BaseController
     {
         $json     = file_get_contents('php://input');
         $response = json_decode($json, true);
-
         $data = [
             'input'      => json_encode($response, true),
             'invoice_id' => $response['id'] ?? '',
@@ -56,20 +55,20 @@ class Webhook extends BaseController
                 }
 
                 $data_pesanan = [
-                    'currency'        => $response['currency'],
-                    'bank_code'       => $response['bank_code'],
-                    'payment_id'      => $response['payment_id'],
-                    'paid_amount'     => $response['paid_amount'],
-                    'merchant_name'   => $response['merchant_name'],
-                    'payment_method'  => $response['payment_method'],
-                    'payment_channel' => $response['payment_channel'],
-                    'payment_destination' => $response['payment_destination'],
+                    'currency'        => $response['currency'] ?? '',
+                    'bank_code'       => $response['bank_code'] ?? '',
+                    'payment_id'      => $response['payment_id'] ?? '',
+                    'paid_amount'     => $response['paid_amount'] ?? '',
+                    'merchant_name'   => $response['merchant_name'] ?? '',
+                    'payment_method'  => $response['payment_method'] ?? '',
+                    'payment_channel' => $response['payment_channel'] ?? '',
+                    'payment_destination' => $response['payment_destination'] ?? '',
 
                     'status'         => $status,
                     'invoice_status' => $response['status'],
-                    'expired_at'     => $response['expiry_date'] ?? null,
                     'paid_at'        => $response['paid_at'] ?? null,
                 ];
+
                 model('Pesanan')->update($pesanan['id'], $data_pesanan);
 
                 // Proses Transaksi Kasir
@@ -214,14 +213,14 @@ class Webhook extends BaseController
                     'data'    => $response,
                 ]);
             } else {
-                return $this->response->setStatusCode(400)->setJSON([
+                return $this->response->setStatusCode(200)->setJSON([
                     'status'  => 'error',
                     'message' => 'Transaksi tidak ditemukan!',
                     'data'    => $response,
                 ]);
             }
         } else {
-            return $this->response->setStatusCode(400)->setJSON([
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'  => 'error',
                 'message' => 'Webhook xendit gagal',
                 'data'    => $response,

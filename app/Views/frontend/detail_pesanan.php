@@ -204,7 +204,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
                         <span>Status</span>
                         <span><?= $data['status'] ?></span>
                     </div>
-                    <?php if (userSession() && $data['tipe_pembayaran'] == 'VA' && $data['status'] == 'Menunggu Pembayaran') : ?>
+                    <?php if (userSession() && $data['tipe_pembayaran'] == 'VA' && userSession('id_role') == 1) : ?>
                     <div class="d-flex justify-content-end mb-2">
                         <a href="#" id="sinkronisasi_pembayaran">Sinkronisasi</a>
                     </div>
