@@ -6,7 +6,7 @@
 }
 
 @media (min-width: 1200px) {
-    .banner { height: 80vh; }
+    .banner { height: calc(100vh - 114.38px) }
 }
 </style>
 

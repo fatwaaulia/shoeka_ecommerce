@@ -27,17 +27,7 @@ class Produk extends BaseController
         $limit      = (int)$this->request->getVar('length');
         $offset     = (int)$this->request->getVar('start');
 
-        $data            = $base_query;
         $records_total   = $base_query->countAllResults(false);
-        $array_query_key = ['kategori'];
-
-        if (array_intersect(array_keys($_GET), $array_query_key)) {
-            $get_kategori = $this->request->getVar('kategori');
-            if ($get_kategori) {
-                $kategori = model('KategoriProduk')->select(['id', 'nama'])->where('nama', $get_kategori)->first();
-                $base_query->where('id_kategori', $kategori['id']);
-            }
-        }
 
         // Datatables
         $columns = array_column($this->request->getVar('columns') ?? [], 'name');

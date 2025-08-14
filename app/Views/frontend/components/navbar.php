@@ -128,7 +128,7 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                 <hr style="border: 1px solid #ddd; height: 20px;">
                 <div class="d-flex gap-3 align-items-center">
                     <i class="fa-solid fa-scissors text-secondary"></i>
-                    <div>
+                    <div class="me-3 me-md-0">
                         <div class="fw-500 text-nowrap">Tersedia Promo</div>
                         <small class="d-none d-lg-block">Dapatkan potongan harga terbaik</small>
                     </div>

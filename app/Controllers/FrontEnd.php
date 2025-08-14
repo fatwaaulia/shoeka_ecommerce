@@ -107,6 +107,8 @@ class FrontEnd extends BaseController
             'data'  => $produk,
             'varian_produk' => $varian_produk,
             'title' => $produk['nama'],
+            'favicon'     => webFile('image', 'produk', $produk['gambar'], $produk['updated_at']),
+            'description' => strip_tags($produk['deskripsi']),
         ];
 
         $view['navbar'] = view('frontend/components/navbar');

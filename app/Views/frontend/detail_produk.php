@@ -68,14 +68,17 @@ sort($varian_produk);
             <hr style="border: 1px solid #ddd;">
 
             <form id="form">
+                <input type="hidden" name="route" value="<?= current_url(true) ?>">
                 <div class="mb-3">
                     <label class="mb-2">Varian</label> <br>
-                    <?php foreach ($varian_produk as $key => $v) : ?>
-                    <span class="me-2">
-                        <input type="radio" class="btn-check" id="checked_<?= $key ?>" name="varian_produk" value="<?= encode($v['id']) ?>" onclick="pilihVarian(this)" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="checked_<?= $key ?>"><?= $v['nama'] ?></label>
-                    </span>
-                    <?php endforeach; ?>
+                    <div class="d-flex flex-wrap gap-2">
+                        <?php foreach ($varian_produk as $key => $v) : ?>
+                        <span>
+                            <input type="radio" class="btn-check" id="checked_<?= $key ?>" name="varian_produk" value="<?= encode($v['id']) ?>" onclick="pilihVarian(this)" autocomplete="off">
+                            <label class="btn btn-outline-secondary" for="checked_<?= $key ?>"><?= $v['nama'] ?></label>
+                        </span>
+                        <?php endforeach; ?>
+                    </div>
                     <div class="invalid-feedback" id="invalid_varian_produk"></div>
                 </div>
                 <div class="mb-3">
@@ -181,9 +184,6 @@ dom('#form').addEventListener('submit', async function(event) {
     event.preventDefault();
 
     try {
-        const id_varian_produk = '<?= encode($data['id']) ?>';
-        const qty = dom('#qty').value;
-
         const form_data = new FormData(form);
         const response = await fetch('<?= base_url() ?>session/keranjang/create', {
             method: 'POST',

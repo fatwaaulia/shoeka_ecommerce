@@ -271,7 +271,7 @@ function actionNomorResi(id) {
 }
 
 function renderOpsi(data) {
-    if (data.status != 'Lunas') {
+    if (data.status != 'Lunas' || <?= userSession('id_role') ?> == 1) {
         let endpoint_hapus_data = `<?= $base_api ?>delete/${data.id}`;
         return `
         <a onclick="deleteData('${endpoint_hapus_data}')" title="Delete">

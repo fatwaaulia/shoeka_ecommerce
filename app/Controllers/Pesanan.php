@@ -242,6 +242,7 @@ class Pesanan extends BaseController
         $submit           = $this->request->getVar('submit', FILTER_SANITIZE_SPECIAL_CHARS);
         $detail_pesanan = base_url() . 'detail-pesanan?kode=' . $kode;
 
+        $invoice_duration = 3600;
         if ($submit == 'VA') {
             // Payment Gateway
             $invoice_data = [
@@ -249,7 +250,7 @@ class Pesanan extends BaseController
                 "amount"      => (int)$total_tagihan,
                 "description" => "Invoice Demo #$kode",
                 // "invoice_duration" => 86400,
-                "invoice_duration" => 3600,
+                "invoice_duration" => $invoice_duration,
                 "customer" => [
                     "given_names"   => $nama_customer,
                     "email"         => $email_customer,
@@ -288,10 +289,12 @@ class Pesanan extends BaseController
             // END | Payment Gateway
 
             $tipe_pembayaran = 'VA';
+            $expired_at = date('Y-m-d H:i:s', strtotime($response_xendit['expiry_date']));
         } else {
             $tipe_pembayaran = 'Admin';
             $invoice_sent = '';
             $response_xendit = '';
+            $expired_at = date('Y-m-d H:i:s', time() + $invoice_duration);
         }
 
         $data = [
@@ -343,7 +346,7 @@ class Pesanan extends BaseController
             'invoice_url'      => $response_xendit['invoice_url'] ?? '',
             'invoice_id'       => $response_xendit['id'] ?? '',
             'invoice_status'   => $response_xendit['status'] ?? '',
-            'expired_at'       => $response_xendit['expiry_date'] ?? null,
+            'expired_at'       => $expired_at,
             'paid_at'          => $response_xendit['paid_at'] ?? null,
         ];
 

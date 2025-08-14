@@ -65,7 +65,7 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
         <div class="col-12 col-md-6 text-end">
             <h4><?= formatRupiah($data['total_tagihan']) ?></h4>
             <?php if ($data['status'] != 'Lunas') : ?>
-            <small class="text-danger fw-600">Jatuh Tempo pada <?= dateFormatter($data['expired_at'] ?? date('Y-m-d H:i', strtotime($data['created_at'] . ' +1 hour')), 'd MMMM yyyy HH:mm') ?> (GMT+07:00)</small>
+            <small class="text-danger fw-600">Jatuh Tempo pada <?= dateFormatter($data['expired_at'], 'd MMMM yyyy HH:mm') ?> (GMT+07:00)</small>
             <br>
             <?php endif; ?>
             <?php if ($data['status'] == 'Menunggu Pembayaran') : if ($data['tipe_pembayaran'] == 'VA') : ?>

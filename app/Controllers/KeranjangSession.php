@@ -6,7 +6,6 @@ class KeranjangSession extends BaseController
 {
     public function create()
     {
-
         $rules = [
             'varian_produk' => 'required',
             'qty' => 'required',

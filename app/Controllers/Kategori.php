@@ -152,6 +152,13 @@ class Kategori extends BaseController
 
     public function delete($id = null)
     {
+        if (in_array($id, [5, 6])) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'status'  => 'error',
+                'message' => 'Tidak dapat dihapus',
+            ]);
+        }
+
         model($this->model_name)->delete($id);
 
         return $this->response->setStatusCode(200)->setJSON([
