@@ -44,8 +44,11 @@ $potongan_ongkir = model('PotonganOngkir')->where([
 <div class="fixed-top navbar-shadow bg-light">
     <nav class="navbar navbar-expand-md flex-wrap" style="z-index: 100;">
         <div class="container">
+            <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <a class="navbar-brand" href="<?= base_url() ?>">
-                <img src="<?= $logo_web ?>" style="height: 35px; filter: brightness(0) saturate(100%) sepia(1) hue-rotate(170deg) saturate(600%) brightness(1.2);" alt="<?= $app_settings['nama_aplikasi'] ?>">
+                <img src="<?= $logo_web ?>" style="height: 30px; filter: brightness(0) saturate(100%) sepia(1) hue-rotate(170deg) saturate(600%) brightness(1.2);" alt="<?= $app_settings['nama_aplikasi'] ?>">
             </a>
             <div class="d-md-none">
                 <a href="#" class="fw-600 me-4" data-bs-toggle="modal" data-bs-target="#lacakPesanan" title="Lacak Pesanan">
@@ -62,9 +65,6 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                     </span>
                 </a>
             </div>
-            <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fa-solid fa-bars"></i>
-            </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav w-100 pt-3 pt-md-1">
                     <?php

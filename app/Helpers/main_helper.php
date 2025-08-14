@@ -194,6 +194,13 @@ function menuSidebar()
 			'role'	=> [1, 3],
 			'type'	=> 'heading',
 		],
+        [
+			'title'	=> 'App Settings',
+			'icon'	=> 'fa-solid fa-gear',
+			'url'	=> base_url(userSession('slug_role')) . '/app-settings',
+			'role'	=> [1],
+			'type'	=> 'no-collapse',
+		],
 		[
 			'title'	=> 'Profil',
 			'icon'	=> 'fa-solid fa-user',

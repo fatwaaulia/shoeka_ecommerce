@@ -47,7 +47,7 @@ if ($array_id_produk) {
             <small><?= $total_produk ?> produk</small>
         </div>
     </div>
-    <div class="row mt-0 gx-2 gx-md-4 gy-5">
+    <div class="row mt-0 gx-2 gx-md-4 gy-4">
         <?php
         if ($array_id_produk) :
             foreach ($produk as $v) :

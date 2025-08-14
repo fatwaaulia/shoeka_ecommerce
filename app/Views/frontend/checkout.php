@@ -1,3 +1,7 @@
+<?php
+$app_settings = model('AppSettings')->find(1);
+?>
+
 
 <link rel="stylesheet" href="<?= base_url() ?>assets/modules/dselect/dselect.min.css">
 <script src="<?= base_url() ?>assets/modules/dselect/dselect.min.js"></script>
@@ -182,11 +186,14 @@
                 <div class="text-end mt-5">
                     <input type="hidden" name="submit" id="submit">
                     <button type="submit" id="btn_chat_admin" onclick="dom('#submit').value='Admin'" class="btn btn-primary me-2">
-                        Chat Admin
+                        <i class="fa-brands fa-whatsapp"></i>
+                        Bayar via WhatsApp
                     </button>
+                    <?php if ($app_settings['open_va'] == 1) : ?>
                     <button type="submit" id="btn_va" onclick="dom('#submit').value='VA'" class="btn btn-primary">
                         Bayar Pakai VA
                     </button>
+                    <?php endif; ?>
                 </div>
             </form>
         </div>

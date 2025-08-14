@@ -74,6 +74,19 @@
                                         <div class="invalid-feedback" id="invalid_favicon"></div>
                                     </div>
                                 </div>
+                                 <div class="mb-3">
+                                    <label class="form-label">Open VA</label>
+                                    <?php
+                                    $open_va = ['Tutup', 'Buka'];
+                                    foreach ($open_va as $key => $v) :
+                                    ?>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="open_va_<?= $key ?>" name="open_va" value="<?= $key ?>" <?= $data['open_va'] == $key ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="open_va_<?= $key ?>"><?= $v ?></label>
+                                    </div>
+                                    <?php endforeach ?>
+                                    <div class="invalid-feedback" id="invalid_status"></div>
+                                </div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary mt-3 float-end">Simpan Perubahan</button>

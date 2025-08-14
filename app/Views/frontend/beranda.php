@@ -87,9 +87,9 @@ $no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
         <div class="col-12 col-md-6 offset-md-3 col-xl-4 offset-xl-4">
             <div class="card py-4 my-4" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 6px!important;">
                 <div class="card-body text-center">
-                    <h3 class="fw-600">Pembelian Jumlah Besar</h3>
+                    <h4 class="fw-600">Pembelian Jumlah Besar</h4>
                     <p>Tersedia layanan pembelian jumlah besar untuk berbagai keperluan!</p>
-                    <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="btn btn-light mt-3" style="border-radius: 6px!important;">PESAN SEKARANG</a>
+                    <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="btn btn-light mt-3" style="border-radius: 6px!important;">Pesan Sekarang</a>
                 </div>
             </div>
         </div>
