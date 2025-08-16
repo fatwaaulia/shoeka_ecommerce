@@ -101,28 +101,28 @@ $app_settings = model('AppSettings')->find(1);
                 </div>
                 <div class="mb-3">
                     <label for="provinsi" class="form-label">Provinsi</label>
-                    <div id="component_provinsi">
+                    <div id="component_provinsi" style="height: 40.1px;">
                         <a class="text-primary">Cari Provinsi</a>
                     </div>
                     <div class="invalid-feedback" id="invalid_provinsi"></div>
                 </div>
                 <div class="mb-3">
                     <label for="kabupaten" class="form-label">Kabupaten</label>
-                    <div id="component_kabupaten">
+                    <div id="component_kabupaten" style="height: 40.1px;">
                         <input type="text" class="form-control" disabled>
                     </div>
                     <div class="invalid-feedback" id="invalid_kabupaten"></div>
                 </div>
                 <div class="mb-3">
                     <label for="kecamatan" class="form-label">Kecamatan</label>
-                    <div id="component_kecamatan">
+                    <div id="component_kecamatan" style="height: 40.1px;">
                         <input type="text" class="form-control" disabled>
                     </div>
                     <div class="invalid-feedback" id="invalid_kecamatan"></div>
                 </div>
                 <div class="mb-3">
                     <label for="desa" class="form-label">Desa</label>
-                    <div id="component_desa">
+                    <div id="component_desa" style="height: 40.1px;">
                         <input type="text" class="form-control" disabled>
                     </div>
                     <div class="invalid-feedback" id="invalid_desa"></div>
