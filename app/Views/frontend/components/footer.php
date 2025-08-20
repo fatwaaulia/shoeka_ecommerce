@@ -1,6 +1,8 @@
 <?php
 $app_settings = model('AppSettings')->find(1);
 $logo_web = webFile('image', 'app_settings', $app_settings['logo'], $app_settings['updated_at']);
+
+$no_hp_admin = $app_settings['no_hp'];
 ?>
 
 <style>
@@ -33,10 +35,10 @@ footer a:hover { color: white; }
             <div class="col-12 col-md-6 col-xl-3">
                 <p class="mb-2 fw-600">INFORMASI KAMI</p>
                 <div class="mb-2">
-                    <a href="" class="text-dark">
+                    <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="text-dark">
                         Kontak
                     </a> <br>
-                    <a href="" class="text-dark">
+                    <a href="<?= base_url() ?>tentang" class="text-dark">
                         Tentang Shoeka
                     </a>
                 </div>
@@ -44,7 +46,7 @@ footer a:hover { color: white; }
             <div class="col-12 col-md-6 col-xl-3">
                 <p class="mb-2 fw-600">PUSAT BANTUAN</p>
                 <div class="mb-2">
-                    <a href="" class="text-dark">
+                    <a href="<?= base_url() ?>faq" class="text-dark">
                         FAQ
                     </a>
                 </div>

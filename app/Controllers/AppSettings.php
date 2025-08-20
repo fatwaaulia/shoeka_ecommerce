@@ -83,7 +83,8 @@ class AppSettings extends BaseController
             'logo'            => $logo_name,
             'favicon'         => $favicon_name,
             'alamat'          => $this->request->getVar('alamat'),
-            'open_va'         => $this->request->getVar('open_va'),
+            'tentang'         => $this->request->getVar('tentang'),
+            'faq'             => $this->request->getVar('faq'),
         ];
 
         model($this->model_name)->update($id, $data);

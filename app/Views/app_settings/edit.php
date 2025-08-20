@@ -1,3 +1,5 @@
+<link href="<?= base_url() ?>assets/modules/summernote/summernote-lite.min.css" rel="stylesheet">
+
 <section class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -43,6 +45,16 @@
                                     <label for="maps" class="form-label">Maps</label>
                                     <input type="text" class="form-control" id="maps" name="maps" value="<?= $data['maps'] ?>" placeholder="https://www.google.com/maps/embed..">
                                     <div class="invalid-feedback" id="invalid_maps"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tentang" class="form-label">Tentang</label>
+                                    <textarea type="text" class="form-control summernote" name="tentang" id="tentang"><?= $data['tentang'] ?></textarea>
+                                    <div class="invalid-feedback" id="invalid_tentang"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="faq" class="form-label">FAQ</label>
+                                    <textarea type="text" class="form-control summernote" name="faq" id="faq"><?= $data['faq'] ?></textarea>
+                                    <div class="invalid-feedback" id="invalid_faq"></div>
                                 </div>
                             </div>
                             <div class="col-xxl-6">
@@ -96,6 +108,24 @@
         </div>
     </div>
 </section>
+
+<script src="<?= base_url() ?>assets/js/jquery.min.js"></script>
+<script src="<?= base_url() ?>assets/modules/summernote/summernote-lite.min.js"></script>
+<script src="<?= base_url() ?>assets/modules/summernote/lang/summernote-id-ID.js"></script>
+<script>
+$(document).ready(function() {
+    $('.summernote').summernote({
+        placeholder: '',
+        lang: 'id-ID', // default: 'en-US'
+        tabsize: 2,
+        height: 200,
+        toolbar: [
+            ['font', ['bold', 'underline']],
+            ['para', ['ul', 'ol', 'paragraph']],
+        ]
+    });
+});
+</script>
 
 <script>
 dom('#form').addEventListener('submit', function(event) {

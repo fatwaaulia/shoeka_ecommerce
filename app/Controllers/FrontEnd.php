@@ -33,6 +33,26 @@ class FrontEnd extends BaseController
         return view('frontend/header', $view);
     }
 
+    public function tentang()
+    {
+        $data['title'] = 'Tentang Shoeka';
+
+        $view['navbar'] = view('frontend/components/navbar');
+        $view['content'] = view('frontend/tentang', $data);
+        $view['footer'] = view('frontend/components/footer');
+        return view('frontend/header', $view);
+    }
+
+    public function faq()
+    {
+        $data['title'] = 'FAQ';
+
+        $view['navbar'] = view('frontend/components/navbar');
+        $view['content'] = view('frontend/faq', $data);
+        $view['footer'] = view('frontend/components/footer');
+        return view('frontend/header', $view);
+    }
+
     public function koleksi()
     {
         $kategori = model('Kategori')->where('slug', $_GET['kategori'] ?? '')->first();

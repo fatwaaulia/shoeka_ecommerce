@@ -26,6 +26,8 @@ $routes->set404Override(
 --------------------------------------------------------------*/
 $routes->get('/', 'FrontEnd::beranda');
 $routes->get('koleksi', 'FrontEnd::koleksi');
+$routes->get('tentang', 'FrontEnd::tentang');
+$routes->get('faq', 'FrontEnd::faq');
 
 // Detail Produk
 $routes->get('detail-produk/(:segment)', 'FrontEnd::detailProduk/$1');

@@ -1,5 +1,6 @@
 <?php
-$no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
+$app_settings = model('AppSettings')->find(1);
+$no_hp_admin = $app_settings['no_hp'];
 ?>
 
 <section class="container">
