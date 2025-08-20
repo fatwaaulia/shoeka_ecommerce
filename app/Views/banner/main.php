@@ -25,7 +25,8 @@
                         <tr>
                             <th>No.</th>
                             <th>Urutan</th>
-                            <th>Gambar</th>
+                            <th>Gambar Desktop</th>
+                            <th>Gambar Ponsel</th>
                             <th>Judul</th>
                             <th>Created At</th>
                             <th>Opsi</th>
@@ -65,7 +66,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }, {
                 name: '',
                 data: null,
-                render: data => `<img data-src="${data.gambar}" class="wh-40 cover-center lazy-shimmer">`,
+                render: data => `<img data-src="${data.gambar_desktop}" class="cover-center lazy-shimmer" style="aspect-ratio: 16 / 9; height: 40px;">`,
+            }, {
+                name: '',
+                data: null,
+                render: data => `<img data-src="${data.gambar_ponsel}" class="wh-40 cover-center lazy-shimmer">`,
             }, {
                 name: 'judul',
                 data: 'judul',

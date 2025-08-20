@@ -90,7 +90,8 @@ class Banner extends BaseController
 
         foreach ($data as $key => $v) {
             $data[$key]['no_urut'] = $offset + $key + 1;
-            $data[$key]['gambar'] = webFile('image', $this->base_name, $v['gambar'], $v['updated_at']);
+            $data[$key]['gambar_desktop'] = webFile('image', $this->base_name, $v['gambar_desktop'], $v['updated_at']);
+            $data[$key]['gambar_ponsel'] = webFile('image', $this->base_name, $v['gambar_ponsel'], $v['updated_at']);
             $data[$key]['created_at'] = date('d-m-Y H:i:s', strtotime($v['created_at']));
         }
 
@@ -105,7 +106,8 @@ class Banner extends BaseController
     {
         $rules = [
             'judul'  => 'required',
-            'gambar' => 'uploaded[gambar]|max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'gambar_desktop' => 'uploaded[gambar_desktop]|max_size[gambar_desktop,2048]|ext_in[gambar_desktop,png,jpg,jpeg]|mime_in[gambar_desktop,image/png,image/jpeg]|is_image[gambar_desktop]',
+            'gambar_ponsel' => 'uploaded[gambar_ponsel]|max_size[gambar_ponsel,2048]|ext_in[gambar_ponsel,png,jpg,jpeg]|mime_in[gambar_ponsel,image/png,image/jpeg]|is_image[gambar_ponsel]',
             'tautan' => 'permit_empty|valid_url_strict',
             'urutan' => 'required',
         ];
@@ -120,19 +122,31 @@ class Banner extends BaseController
         }
 
         // Lolos Validasi
-        $gambar = $this->request->getFile('gambar');
-        if ($gambar->isValid()) {
-            $filename_gambar = $gambar->getRandomName();
-            if ($gambar->getExtension() != 'jpg') {
-                $filename_gambar = str_replace($gambar->getExtension(), 'jpg', $filename_gambar);
+        $gambar_desktop = $this->request->getFile('gambar_desktop');
+        if ($gambar_desktop->isValid()) {
+            $filename_gambar_desktop = $gambar_desktop->getRandomName();
+            if ($gambar_desktop->getExtension() != 'jpg') {
+                $filename_gambar_desktop = str_replace($gambar_desktop->getExtension(), 'jpg', $filename_gambar_desktop);
             }
-            compressConvertImage($gambar, $this->upload_path, $filename_gambar);
+            compressConvertImage($gambar_desktop, $this->upload_path, $filename_gambar_desktop);
         } else {
-            $filename_gambar = '';
+            $filename_gambar_desktop = '';
+        }
+
+        $gambar_ponsel = $this->request->getFile('gambar_ponsel');
+        if ($gambar_ponsel->isValid()) {
+            $filename_gambar_ponsel = $gambar_ponsel->getRandomName();
+            if ($gambar_ponsel->getExtension() != 'jpg') {
+                $filename_gambar_ponsel = str_replace($gambar_ponsel->getExtension(), 'jpg', $filename_gambar_ponsel);
+            }
+            compressConvertImage($gambar_ponsel, $this->upload_path, $filename_gambar_ponsel);
+        } else {
+            $filename_gambar_ponsel = '';
         }
 
         $data = [
-            'gambar'  => $filename_gambar,
+            'gambar_desktop'  => $filename_gambar_desktop,
+            'gambar_ponsel'  => $filename_gambar_ponsel,
             'judul'   => $this->request->getVar('judul'),
             'tautan'  => $this->request->getVar('tautan'),
             'urutan'  => $this->request->getVar('urutan'),
@@ -153,7 +167,8 @@ class Banner extends BaseController
 
         $rules = [
             'judul'  => 'required',
-            'gambar' => 'max_size[gambar,2048]|ext_in[gambar,png,jpg,jpeg]|mime_in[gambar,image/png,image/jpeg]|is_image[gambar]',
+            'gambar_desktop' => 'max_size[gambar_desktop,2048]|ext_in[gambar_desktop,png,jpg,jpeg]|mime_in[gambar_desktop,image/png,image/jpeg]|is_image[gambar_desktop]',
+            'gambar_ponsel' => 'max_size[gambar_ponsel,2048]|ext_in[gambar_ponsel,png,jpg,jpeg]|mime_in[gambar_ponsel,image/png,image/jpeg]|is_image[gambar_ponsel]',
             'tautan' => 'permit_empty|valid_url_strict',
             'urutan' => 'required',
         ];
@@ -168,19 +183,31 @@ class Banner extends BaseController
         }
 
         // Lolos Validasi
-        $gambar = $this->request->getFile('gambar');
-        if ($gambar->isValid()) {
-            $filename_gambar = $find_data['gambar'] ?: $gambar->getRandomName();
-            if ($gambar->getExtension() != 'jpg') {
-                $filename_gambar = str_replace($gambar->getExtension(), 'jpg', $filename_gambar);
+        $gambar_desktop = $this->request->getFile('gambar_desktop');
+        if ($gambar_desktop->isValid()) {
+            $filename_gambar_desktop = $find_data['gambar_desktop'] ?: $gambar_desktop->getRandomName();
+            if ($gambar_desktop->getExtension() != 'jpg') {
+                $filename_gambar_desktop = str_replace($gambar_desktop->getExtension(), 'jpg', $filename_gambar_desktop);
             }
-            compressConvertImage($gambar, $this->upload_path, $filename_gambar);
+            compressConvertImage($gambar_desktop, $this->upload_path, $filename_gambar_desktop);
         } else {
-            $filename_gambar = $find_data['gambar'];
+            $filename_gambar_desktop = $find_data['gambar_desktop'];
+        }
+
+        $gambar_ponsel = $this->request->getFile('gambar_ponsel');
+        if ($gambar_ponsel->isValid()) {
+            $filename_gambar_ponsel = $find_data['gambar_ponsel'] ?: $gambar_ponsel->getRandomName();
+            if ($gambar_ponsel->getExtension() != 'jpg') {
+                $filename_gambar_ponsel = str_replace($gambar_ponsel->getExtension(), 'jpg', $filename_gambar_ponsel);
+            }
+            compressConvertImage($gambar_ponsel, $this->upload_path, $filename_gambar_ponsel);
+        } else {
+            $filename_gambar_ponsel = $find_data['gambar_ponsel'];
         }
 
         $data = [
-            'gambar'  => $filename_gambar,
+            'gambar_desktop'  => $filename_gambar_desktop,
+            'gambar_ponsel'  => $filename_gambar_ponsel,
             'judul'   => $this->request->getVar('judul'),
             'tautan'  => $this->request->getVar('tautan'),
             'urutan'  => $this->request->getVar('urutan'),
@@ -199,8 +226,8 @@ class Banner extends BaseController
     {
         $find_data = model($this->model_name)->find($id);
 
-        $gambar = $this->upload_path . $find_data['gambar'];
-        if (is_file($gambar)) unlink($gambar);
+        $gambar_desktop = $this->upload_path . $find_data['gambar_desktop'];
+        if (is_file($gambar_desktop)) unlink($gambar_desktop);
 
         model($this->model_name)->delete($id);
 

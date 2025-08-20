@@ -2,11 +2,11 @@
 .banner { height: 40vh; }
 
 @media (min-width: 768px) {
-    .banner { height: 50vh; }
+    .banner { height: 100%; }
 }
 
 @media (min-width: 1200px) {
-    .banner { height: calc(100vh - 114.38px) }
+    .banner { height: calc(100vh - 107.75px) }
 }
 </style>
 
@@ -19,11 +19,14 @@
                     $banner = model('Banner')->orderBy('urutan ASC')->findAll();
                     foreach ($banner as $key => $v) :
                     ?>
-                    <div class="carousel-item <?= $key == 0 ? 'active' : '' ?>" data-bs-interval="5000">
-                        <a <?= $v['tautan'] ? 'href="' . $v['tautan'] . '" target="_blank"' : '' ?>>
-                            <img src="<?= webFile('image', 'banner', $v['gambar'], $v['updated_at']) ?>" class="d-block w-100 rounded-0 cover-center banner" alt="<?= $v['judul'] ?>">
-                        </a>
-                    </div>
+                        <div class="carousel-item <?= $key == 0 ? 'active' : '' ?>" data-bs-interval="5000">
+                            <a <?= $v['tautan'] ? 'href="' . $v['tautan'] . '" target="_blank"' : '' ?>>
+                                <picture>
+                                    <source media="(min-width: 768px)" srcset="<?= webFile('image', 'banner', $v['gambar_desktop'], $v['updated_at']) ?>">
+                                    <img src="<?= webFile('image', 'banner', $v['gambar_ponsel'], $v['updated_at']) ?>" class="d-block w-100 rounded-0 cover-center banner" alt="<?= $v['judul'] ?>">
+                                </picture>
+                            </a>
+                        </div>
                     <?php endforeach; ?>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
@@ -42,7 +45,7 @@
 <section class="container">
     <div class="row">
         <div class="col-12 mt-4 mb-3">
-            <h4>Kategori Populer</h4>
+            <h4 class="fw-600">Kategori Populer</h4>
         </div>
     </div>
     <div class="row gx-2 gx-md-4 gy-3">
@@ -62,7 +65,7 @@
 <section class="container">
     <div class="row">
         <div class="col-12 mt-4 mb-3">
-            <h4>Koleksi Spesial</h4>
+            <h4 class="fw-600">Koleksi Spesial</h4>
         </div>
     </div>
     <div class="row gx-2 gx-md-4 gy-3">

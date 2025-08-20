@@ -10,17 +10,30 @@
                 <div class="card-body">
                     <form id="form">
                         <div class="mb-3">
-                            <label for="gambar" class="form-label">Gambar</label>
+                            <label for="gambar_desktop" class="form-label">Gambar Desktop (16 : 9)</label>
                             <div class="col-12 col-md-6 col-lg-5 col-xl-4 position-relative">
-                                <img src="<?= webFile('image') ?>" class="w-100 cover-center" id="frame_gambar">
+                                <img src="<?= webFile('image') ?>" class="w-100 cover-center" style="aspect-ratio: 16 / 9;" id="frame_gambar_desktop">
                                 <div class="position-absolute" style="bottom: 0px; right: 0px;">
-                                    <label for="gambar" class="btn btn-secondary rounded-circle" style="padding: 8px;">
+                                    <label for="gambar_desktop" class="btn btn-secondary rounded-circle" style="padding: 8px;">
                                         <i class="fa-solid fa-camera fa-lg"></i>
                                     </label>
-                                    <input type="file" class="form-control d-none" id="gambar" name="gambar" accept=".png,.jpg,.jpeg" onchange="dom('#frame_gambar').src = window.URL.createObjectURL(this.files[0]);">
+                                    <input type="file" class="form-control d-none" id="gambar_desktop" name="gambar_desktop" accept=".png,.jpg,.jpeg" onchange="dom('#frame_gambar_desktop').src = window.URL.createObjectURL(this.files[0]);">
                                 </div>
                             </div>
-                            <div class="invalid-feedback" id="invalid_gambar"></div>
+                            <div class="invalid-feedback" id="invalid_gambar_desktop"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gambar_ponsel" class="form-label">Gambar Ponsel (1 : 1)</label>
+                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 position-relative">
+                                <img src="<?= webFile('image') ?>" class="w-100 cover-center" id="frame_gambar_ponsel">
+                                <div class="position-absolute" style="bottom: 0px; right: 0px;">
+                                    <label for="gambar_ponsel" class="btn btn-secondary rounded-circle" style="padding: 8px;">
+                                        <i class="fa-solid fa-camera fa-lg"></i>
+                                    </label>
+                                    <input type="file" class="form-control d-none" id="gambar_ponsel" name="gambar_ponsel" accept=".png,.jpg,.jpeg" onchange="dom('#frame_gambar_ponsel').src = window.URL.createObjectURL(this.files[0]);">
+                                </div>
+                            </div>
+                            <div class="invalid-feedback" id="invalid_gambar_ponsel"></div>
                         </div>
                         <div class="mb-3">
                             <label for="judul" class="form-label">Judul</label>
