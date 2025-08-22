@@ -504,7 +504,7 @@ class Pesanan extends BaseController
             $biaya_marketplace = 0;
             $total_penghasilan = $pesanan['total_tagihan'] - $biaya_marketplace;
 
-            $warehouse = model('KasirWarehouse')->find(2); // Outlet Online
+            $warehouse = model('KasirWarehouse')->find(1); // Outlet Offline
 
             $data_transaksi = [
                 'id_pesanan' => $pesanan['id'],

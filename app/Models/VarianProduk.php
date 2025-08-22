@@ -12,7 +12,7 @@ class VarianProduk extends Model
 
     public function baseQuery($get = false)
     {
-        $id_warehouse = 2; // Outlet Online
+        $id_warehouse = 1; // Outlet Offline
 
         $select = [
             'a.*',
