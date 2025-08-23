@@ -147,7 +147,7 @@ $app_settings = model('AppSettings')->find(1);
                 </div>
                 <div class="mb-3">
                     <label for="layanan_kurir" class="form-label">Layanan Kurir</label>
-                    <div id="component_layanan_kurir">
+                    <div id="component_layanan_kurir" style="height: 40.1px;">
                         <input type="text" class="form-control" disabled>
                     </div>
                     <div class="invalid-feedback" id="invalid_layanan_kurir"></div>
@@ -189,7 +189,7 @@ $app_settings = model('AppSettings')->find(1);
                         <i class="fa-brands fa-whatsapp"></i>
                         Bayar via WhatsApp
                     </button>
-                    <?php if ($app_settings['open_va'] == 1) : ?>
+                    <?php if ($app_settings['open_va'] == 'Buka') : ?>
                     <button type="submit" id="btn_va" onclick="dom('#submit').value='VA'" class="btn btn-primary">
                         Bayar Pakai VA
                     </button>

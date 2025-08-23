@@ -1,6 +1,8 @@
 <?php
 $app_settings = model('AppSettings')->find(1);
 $no_hp_admin = $app_settings['no_hp'];
+
+$href_admin = "https://wa.me/" . preg_replace('/^0/', '62', $no_hp_admin) . "?text=Halo%20Admin%20Shoeka,%20saya%20ingin%20konfirmasi%20pembayaran.%0AKode%20Pesanan:%20" . $data['kode'] . "%0A%0A" . base_url() . "detail-pesanan%3Fkode%3D" . $data['kode'];
 ?>
 
 <section class="container">
@@ -72,7 +74,7 @@ $no_hp_admin = $app_settings['no_hp'];
             <?php if ($data['status'] == 'Menunggu Pembayaran') : if ($data['tipe_pembayaran'] == 'VA') : ?>
             <a href="<?= $data['invoice_url'] ?>" target="_blank" class="btn btn-primary mt-3">Bayar Sekarang</a>
             <?php else : ?>
-            <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="btn btn-primary mt-3">Hubungi Admin</a>
+            <a href="<?= $href_admin ?>" target="_blank" class="btn btn-primary mt-3">Hubungi Admin</a>
             <?php endif; endif; ?>
         </div>
     </div>
@@ -347,7 +349,7 @@ $no_hp_admin = $app_settings['no_hp'];
                     <?php if ($data['status'] == 'Menunggu Pembayaran') : if ($data['tipe_pembayaran'] == 'VA') : ?>
                     <a href="<?= $data['invoice_url'] ?>" target="_blank" class="btn btn-primary mt-3">Bayar Sekarang</a>
                     <?php else : ?>
-                    <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="btn btn-primary mt-3">Hubungi Admin</a>
+                    <a href="<?= $href_admin ?>" target="_blank" class="btn btn-primary mt-3">Hubungi Admin</a>
                     <?php endif; endif; ?>
                 </div>
             </form>

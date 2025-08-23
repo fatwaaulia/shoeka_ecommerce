@@ -85,6 +85,7 @@ class AppSettings extends BaseController
             'alamat'          => $this->request->getVar('alamat'),
             'tentang'         => $this->request->getVar('tentang'),
             'faq'             => $this->request->getVar('faq'),
+            'open_va'         => $this->request->getVar('open_va'),
         ];
 
         model($this->model_name)->update($id, $data);

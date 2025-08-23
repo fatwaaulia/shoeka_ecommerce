@@ -93,7 +93,7 @@
                                     foreach ($open_va as $key => $v) :
                                     ?>
                                     <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="open_va_<?= $key ?>" name="open_va" value="<?= $key ?>" <?= $data['open_va'] == $key ? 'checked' : '' ?>>
+                                        <input type="radio" class="form-check-input" id="open_va_<?= $key ?>" name="open_va" value="<?= $v ?>" <?= $data['open_va'] == $v ? 'checked' : '' ?>>
                                         <label class="form-check-label" for="open_va_<?= $key ?>"><?= $v ?></label>
                                     </div>
                                     <?php endforeach ?>
