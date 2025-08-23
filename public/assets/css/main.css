@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
     --main-color: #019eaf;
@@ -38,7 +38,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 body, h1, h2, h3, h4, h5, h6, p, span, a, div, button, label {
-    font-family: 'Raleway', sans-serif!important;
+    font-family: 'Noto Sans', sans-serif!important;
 }
 
 input:not([type="radio"]):not([type="checkbox"]),

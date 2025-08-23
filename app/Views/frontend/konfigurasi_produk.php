@@ -54,7 +54,7 @@ div.dt-processing > div:last-child > div {
 </style>
 
 <section class="container">
-    <div class="row">
+    <div class="row py-3">
         <div class="col-12">
             <h5 class="text-center">
                 <?= $kategori['nama'] ?>

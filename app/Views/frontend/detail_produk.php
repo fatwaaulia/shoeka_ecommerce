@@ -62,7 +62,7 @@ sort($varian_produk);
             <img src="<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>" class="w-100 mb-3" id="sampul" alt="<?= $data['nama'] ?>">
         </div>
         <div class="col-12 col-md-5 col-lg-6 order-3">
-            <h4 class="mt-4 mt-md-0"><?= $data['nama'] ?></h4>
+            <h4 class="mt-4 mt-md-0 fw-600"><?= $data['nama'] ?></h4>
             <h5 id="harga_varian"><?= formatRupiah($varian_produk['0']['harga_ecommerce']) ?></h5>
 
             <hr style="border: 1px solid #ddd;">
