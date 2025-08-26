@@ -25,6 +25,7 @@ $routes->set404Override(
   # Front-End
 --------------------------------------------------------------*/
 $routes->get('/', 'FrontEnd::beranda');
+$routes->get('pencarian', 'FrontEnd::pencarian');
 $routes->get('koleksi', 'FrontEnd::koleksi');
 $routes->get('tentang', 'FrontEnd::tentang');
 $routes->get('faq', 'FrontEnd::faq');
@@ -52,7 +53,7 @@ $routes->get('api/ongkir/resi', 'Ongkir::lacakResi');
 
 // Pesanan
 $routes->get('detail-pesanan', 'FrontEnd::detailPesanan');
-$routes->post('webhook/xendit', 'Webhook::xendit');
+$routes->post('webhook/doku', 'Webhook::doku');
 $routes->get('api/pesanan/detail/(:segment)', 'Pesanan::detail/$1');
 
 /*--------------------------------------------------------------
@@ -121,6 +122,7 @@ if (userSession('id_role') == 1) {
 if (in_array($id_role, roleAccessByTitle('Pesanan'))) {
     $routes->group("$slug_role/pesanan", ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'Pesanan::main');
+        $routes->get('resi/(:segment)', 'Pesanan::resi/$1');
     });
     $routes->group('api/pesanan', ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'Pesanan::index');

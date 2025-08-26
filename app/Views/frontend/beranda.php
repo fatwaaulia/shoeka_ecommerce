@@ -83,7 +83,8 @@
 </section>
 
 <?php
-$no_hp_admin = model('Users')->select('no_hp')->find(1)['no_hp'];
+$app_settings = model('AppSettings')->find(1);
+$no_hp_admin = $app_settings['no_hp'];
 ?>
 <section class="container mt-5 cover-center" style="background-image: linear-gradient(rgba(0, 0, 0, .2), rgba(0, 0, 0, .2)), url('<?= base_url('assets/img/bg-login.jpg') ?>')">
     <div class="row">

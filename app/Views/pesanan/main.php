@@ -242,6 +242,12 @@ function renderNomorResi(data) {
                         <input type="text" class="form-control" id="nomor_resi" name="nomor_resi" value="${data.nomor_resi}" placeholder="Masukkan nomor resi">
                         <div class="invalid-feedback" id="invalid_nomor_resi"></div>
                     </div>
+                    <div>
+                        <a href="<?= base_url(userSession('slug_role')) ?>/pesanan/resi/${data.id}" target="_blank" class="btn btn-primary">
+                            <i class="fa-solid fa-print me-2"></i>
+                            Cetak Resi
+                        </a>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>

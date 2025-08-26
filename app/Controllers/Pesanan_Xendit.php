@@ -1,4 +1,7 @@
 <?php
+/*--------------------------------------------------------------
+# Backup
+--------------------------------------------------------------*/
 
 namespace App\Controllers;
 
@@ -29,19 +32,6 @@ class Pesanan extends BaseController
         $view['sidebar'] = view('dashboard/sidebar');
         $view['content'] = view($this->base_name . '/main', $data);
         return view('dashboard/header', $view);
-    }
-
-    public function resi($id)
-    {
-        $pesanan = model($this->model_name)->find($id);
-
-        $data = [
-            'base_route' => $this->base_route,
-            'title'      => ucwords(str_replace('_', ' ', $this->base_name)),
-            'pesanan'    => $pesanan,
-        ];
-
-        return view($this->base_name . '/resi', $data);
     }
 
     /*--------------------------------------------------------------
@@ -257,45 +247,31 @@ class Pesanan extends BaseController
 
         $invoice_duration = 3600;
         if ($submit == 'VA') {
-            // Doku Payment Gateway
+            // Payment Gateway
             $invoice_data = [
-                "order" => [
-                    "amount"         => (int)$total_tagihan,
-                    "invoice_number" => $kode,
-                    "currency"       => "IDR",
-                    "callback_url"   => $detail_pesanan,
-                ],
+                "external_id" => $kode,
+                "amount"      => (int)$total_tagihan,
+                "description" => "Invoice Demo #$kode",
+                // "invoice_duration" => 86400,
+                "invoice_duration" => $invoice_duration,
                 "customer" => [
-                    "name" => $nama_customer,
-                    "email" => $email_customer,
-                    "phone" => $no_hp_customer,
+                    "given_names"   => $nama_customer,
+                    "email"         => $email_customer,
+                    "mobile_number" => $no_hp_customer,
                 ],
-                "payment" => [
-                    "payment_due_date" => 60,
-                ],
+                "success_redirect_url" => $detail_pesanan,
+                "failure_redirect_url" => $detail_pesanan,
+                "currency" => "IDR"
             ];
             $invoice_sent = json_encode($invoice_data);
 
-            $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw';
-
-            $client_id   = 'BRN-0210-1756035403723';
-            $request_id  = uniqid();
-            $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
-            $target_path = '/checkout/v1/payment';
-
-            $digest = base64_encode(hash('sha256', $invoice_sent, true));
-            $signature_component =
-                "Client-Id:$client_id\n" .
-                "Request-Id:$request_id\n" .
-                "Request-Timestamp:$timestamp\n" .
-                "Request-Target:$target_path\n" .
-                "Digest:$digest";
-            $signature = base64_encode(hash_hmac('sha256', $signature_component, $api_key, true));
+            $api_key = 'xnd_development_Z745AIUbLnrvgz9JtyGSV8mF1UNarORVsj62mirDsKFHCDtsxrzgA9rcueAR9nd';
+            $api_key_base64 = base64_encode($api_key);
 
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://api-sandbox.doku.com/checkout/v1/payment',
+                CURLOPT_URL => 'https://api.xendit.co/v2/invoices',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -304,26 +280,23 @@ class Pesanan extends BaseController
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $invoice_sent,
-                CURLOPT_HTTPHEADER => [
-                    "Content-Type: application/json",
-                    "Client-Id: $client_id",
-                    "Request-Id: $request_id",
-                    "Request-Timestamp: $timestamp",
-                    "Signature: HMACSHA256=$signature",
-                ],
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json',
+                    'Authorization: Basic ' . $api_key_base64,
+                ),
             ));
 
-            $response_doku = curl_exec($curl);
+            $response_xendit = curl_exec($curl);
             curl_close($curl);
-            $response_doku = json_decode($response_doku, true)['response'];
-            // END | Doku Payment Gateway
+            $response_xendit = json_decode($response_xendit, true);
+            // END | Payment Gateway
 
             $tipe_pembayaran = 'VA';
-            $expired_at = date('Y-m-d H:i:s', strtotime($response_doku['payment']['expired_date']));
+            $expired_at = date('Y-m-d H:i:s', strtotime($response_xendit['expiry_date']));
         } else {
             $tipe_pembayaran = 'Admin';
             $invoice_sent = '';
-            $response_doku = '';
+            $response_xendit = '';
             $expired_at = date('Y-m-d H:i:s', time() + $invoice_duration);
         }
 
@@ -372,12 +345,12 @@ class Pesanan extends BaseController
             'tipe_pembayaran'  => $tipe_pembayaran,
             'status'           => 'Menunggu Pembayaran',
             'invoice_sent'     => $invoice_sent,
-            'invoice_received' => json_encode($response_doku),
-            'invoice_url'      => $response_doku['payment']['url'] ?? '',
-            'invoice_id'       => $response_doku['payment']['token_id'] ?? '',
-            'invoice_status'   => '',
+            'invoice_received' => json_encode($response_xendit),
+            'invoice_url'      => $response_xendit['invoice_url'] ?? '',
+            'invoice_id'       => $response_xendit['id'] ?? '',
+            'invoice_status'   => $response_xendit['status'] ?? '',
             'expired_at'       => $expired_at,
-            'paid_at'          => null,
+            'paid_at'          => $response_xendit['paid_at'] ?? null,
         ];
 
         model('Pesanan')->insert($data);
@@ -434,48 +407,25 @@ class Pesanan extends BaseController
     public function sinkronisasi($id = null)
     {
         $pesanan = model($this->model_name)->find($id);
-
-        $invoice_data = [
-            "order" => [
-                "invoice_number" => $pesanan['kode'],
-            ],
-        ];
-        $invoice_sent = json_encode($invoice_data);
-
-        $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw';
-
-        $client_id   = 'BRN-0210-1756035403723';
-        $request_id  = uniqid();
-        $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
-        $target_path = '/orders/v1/status/' . $pesanan['kode'];
-
-        $digest = base64_encode(hash('sha256', $invoice_sent, true));
-        $signature_component =
-            "Client-Id:$client_id\n" .
-            "Request-Id:$request_id\n" .
-            "Request-Timestamp:$timestamp\n" .
-            "Request-Target:$target_path\n" .
-            "Digest:$digest";
-        $signature = base64_encode(hash_hmac('sha256', $signature_component, $api_key, true));
-
+        $invoice_id = $pesanan['invoice_id'];
         $curl = curl_init();
+
         curl_setopt_array($curl, array(
-            CURLOPT_URL => base_url() . 'webhook/doku',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $invoice_sent,
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-                "Client-Id: $client_id",
-                "Request-Id: $request_id",
-                "Request-Timestamp: $timestamp",
-                "Signature: HMACSHA256=$signature",
-            ],
+        CURLOPT_URL => base_url().'webhook/xendit',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'{
+            "id": "'.$invoice_id.'"
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'Cookie: ci_session=0ae9f92b9845b2cd55211e49a9e40478'
+        ),
         ));
 
         $response = curl_exec($curl);
@@ -511,7 +461,7 @@ class Pesanan extends BaseController
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',
             'message' => 'Nomor resi berhasil disimpan',
-            'route'   => $this->base_route . 'resi/' . $id,
+            'route'   => $this->base_route,
         ]);
     }
 

@@ -1,42 +1,33 @@
 <?php
+/*--------------------------------------------------------------
+# Backup
+--------------------------------------------------------------*/
 
 namespace App\Controllers;
 
 class Webhook extends BaseController
 {
-    public function doku()
+    public function xendit()
     {
         $json     = file_get_contents('php://input');
         $response = json_decode($json, true);
-
         $data = [
             'input'      => json_encode($response, true),
-            'invoice_id' => $response['order']['invoice_number'] ?? '',
-            'kode'       => $response['order']['invoice_number'] ?? '',
+            'invoice_id' => $response['id'] ?? '',
+            'kode'       => $response['external_id'] ?? '',
         ];
         model('Webhook')->insert($data);
 
-        if (isset($response['order']['invoice_number'])) {
-            $pesanan = model('Pesanan')->where('kode', $response['order']['invoice_number'])->first();
+        if (isset($response['id'])) {
+            $pesanan = model('Pesanan')->where('invoice_id', $response['id'])->first();
 
             if ($pesanan) {
-                $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw';
-
-                $client_id   = 'BRN-0210-1756035403723';
-                $request_id  = uniqid();
-                $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
-                $target_path = '/orders/v1/status/' . $pesanan['kode'];
-
-                $signature_component =
-                    "Client-Id:$client_id\n" .
-                    "Request-Id:$request_id\n" .
-                    "Request-Timestamp:$timestamp\n" .
-                    "Request-Target:$target_path";
-                $signature = base64_encode(hash_hmac('sha256', $signature_component, $api_key, true));
+                $api_key = 'xnd_development_Z745AIUbLnrvgz9JtyGSV8mF1UNarORVsj62mirDsKFHCDtsxrzgA9rcueAR9nd';
+                $api_key_base64 = base64_encode($api_key);
 
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
-                    CURLOPT_URL => 'https://api-sandbox.doku.com/orders/v1/status/' . $response['order']['invoice_number'],
+                    CURLOPT_URL => 'https://api.xendit.co/v2/invoices/' . $response['id'],
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10,
@@ -44,13 +35,11 @@ class Webhook extends BaseController
                     CURLOPT_FOLLOWLOCATION => true,
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => 'GET',
-                    CURLOPT_HTTPHEADER => [
-                        "Content-Type: application/json",
-                        "Client-Id: $client_id",
-                        "Request-Id: $request_id",
-                        "Request-Timestamp: $timestamp",
-                        "Signature: HMACSHA256=$signature",
-                    ],
+                    CURLOPT_POSTFIELDS => '',
+                    CURLOPT_HTTPHEADER => array(
+                        'Content-Type: application/json',
+                        'Authorization: Basic ' . $api_key_base64,
+                    ),
                 ));
                 $response = curl_exec($curl);
                 curl_close($curl);
@@ -58,36 +47,32 @@ class Webhook extends BaseController
                 $response = json_decode($response, true);
 
                 $status = 'Menunggu Pembayaran';
-                if ($response['transaction']['status'] == 'PENDING') {
+                if ($response['status'] == 'PENDING') {
                     $status = 'Menunggu Pembayaran';
-                } elseif ($response['transaction']['status'] == 'SUCCESS') {
+                } elseif ($response['status'] == 'PAID') {
                     $status = 'Lunas';
-                } elseif ($response['transaction']['status'] == 'EXPIRED') {
+                } elseif ($response['status'] == 'SETTLED') {
+                    $status = 'Lunas';
+                } elseif ($response['status'] == 'EXPIRED') {
                     $status = 'Kedaluwarsa';
                 }
 
                 $data_pesanan = [
-                    'currency'        => '',
-                    'bank_code'       => $response['acquirer']['id'] ?? '',
-                    'payment_id'      => $response['acquirer']['id'] ?? '',
-                    'paid_amount'     => $response['order']['amount'] ?? '',
-                    'merchant_name'   => $response['acquirer']['name'] ?? '',
-                    'payment_method'  => $response['acquirer']['name'] ?? '',
-                    'payment_channel' => $response['channel']['id'] ?? '',
-                    'payment_destination' => $response['acquirer']['id'] ?? '',
+                    'currency'        => $response['currency'] ?? '',
+                    'bank_code'       => $response['bank_code'] ?? '',
+                    'payment_id'      => $response['payment_id'] ?? '',
+                    'paid_amount'     => $response['paid_amount'] ?? '',
+                    'merchant_name'   => $response['merchant_name'] ?? '',
+                    'payment_method'  => $response['payment_method'] ?? '',
+                    'payment_channel' => $response['payment_channel'] ?? '',
+                    'payment_destination' => $response['payment_destination'] ?? '',
 
                     'status'         => $status,
-                    'invoice_status' => $response['transaction']['status'],
-                    'paid_at'        => $response['transaction']['date'] ? date('Y-m-d H:i:s', strtotime($response['transaction']['date'])) : null,
+                    'invoice_status' => $response['status'],
+                    'paid_at'        => $response['paid_at'] ?? null,
                 ];
 
                 model('Pesanan')->update($pesanan['id'], $data_pesanan);
-
-                return $this->response->setStatusCode(200)->setJSON([
-                    'status'  => 'success',
-                    'message' => 'Webhook doku berhasil',
-                    'data'    => $response,
-                ]);
 
                 // Proses Transaksi Kasir
                 $transaksi = model('KasirTransaksi')->where('id_pesanan', $pesanan['id'])->first();
@@ -185,7 +170,7 @@ class Webhook extends BaseController
                             'id_customer'   => $id_customer,
                             'nama_customer' => $pesanan['nama_customer'],
                             'jenis_kelamin_customer' => '',
-                            'alamat_customer' => $pesanan['alamat_customer'] . ' - ' . ucwords(strtolower($pesanan['nama_kecamatan'])) . ', ' . ucwords(strtolower($pesanan['nama_kabupaten'])) . ', ' . ucwords(strtolower($pesanan['nama_provinsi'])),
+                            'alamat_customer' => $pesanan['alamat_customer'],
                             'no_hp_customer'  => $pesanan['no_hp_customer'],
                             'email_customer'  => $pesanan['email_customer'],
                         ];
@@ -238,7 +223,7 @@ class Webhook extends BaseController
 
                 return $this->response->setStatusCode(200)->setJSON([
                     'status'  => 'success',
-                    'message' => 'Webhook doku berhasil',
+                    'message' => 'Webhook xendit berhasil',
                     'data'    => $response,
                 ]);
             } else {
@@ -251,7 +236,7 @@ class Webhook extends BaseController
         } else {
             return $this->response->setStatusCode(200)->setJSON([
                 'status'  => 'error',
-                'message' => 'Webhook doku gagal',
+                'message' => 'Webhook xendit gagal',
                 'data'    => $response,
             ]);
         }

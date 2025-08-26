@@ -40,6 +40,17 @@ $potongan_ongkir = model('PotonganOngkir')->where([
     color:white!important;
     background-color:var(--main-color)!important;
 }
+
+@media (min-width: 768px) {
+    .overflow-md-auto {
+        overflow: auto!important;
+    }
+}
+
+.navbar-nav { width: calc(53vw); }
+@media (min-width: 992px) {
+    .navbar-nav { width: calc(65vw); }
+}
 </style>
 <div class="fixed-top navbar-shadow bg-light">
     <nav class="navbar navbar-expand-md flex-wrap" style="z-index: 100;">
@@ -51,7 +62,7 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                 <img src="<?= $logo_web ?>" style="height: 30px; filter: brightness(0) saturate(100%) sepia(1) hue-rotate(170deg) saturate(600%) brightness(1.2);" alt="<?= $app_settings['nama_aplikasi'] ?>">
             </a>
             <div class="d-md-none">
-                <a href="#" class="fw-600 me-4" data-bs-toggle="modal" data-bs-target="#lacakPesanan" title="Lacak Pesanan">
+                <a href="#" class="fw-600 me-4" data-bs-toggle="modal" data-bs-target="#cariProduk" title="Cari Produk">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                     </svg>
@@ -66,7 +77,7 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                 </a>
             </div>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav w-100 pt-3 pt-md-1">
+                <div class="navbar-nav pt-3 pt-md-1 overflow-none overflow-md-auto scrollbar-hidden">
                     <?php
                     $kategori = model('Kategori')->whereNotIn('nama', ['KATEGORI POPULER', 'KOLEKSI SPESIAL'])->findAll();
                     if (($_GET['config'] ?? '') == 'produk') {
@@ -78,14 +89,14 @@ $potongan_ongkir = model('PotonganOngkir')->where([
                             $active = 'nav-active';
                         }
                     ?>
-                    <a class="nav-link <?= $active ?> fw-500 d-flex align-items-center me-3" href="<?= base_url() ?>koleksi?kategori=<?= $v['slug'] ?><?= $get_config ?>">
+                    <a class="nav-link <?= $active ?> fw-500 d-flex align-items-center me-3 text-nowrap" href="<?= base_url() ?>koleksi?kategori=<?= $v['slug'] ?><?= $get_config ?>">
                         <h5 class="mb-0"><?= $v['nama'] ?></h5>
                     </a>
                     <?php endforeach; ?>
                 </div>
             </div>
             <div class="ms-lg-auto mt-3 mt-lg-0 d-none d-md-block">
-                <a href="#" class="fw-600 me-4" data-bs-toggle="modal" data-bs-target="#lacakPesanan" title="Lacak Pesanan">
+                <a href="#" class="fw-600 me-4" data-bs-toggle="modal" data-bs-target="#cariProduk" title="Cari Produk">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                     </svg>
@@ -186,26 +197,23 @@ $potongan_ongkir = model('PotonganOngkir')->where([
     <?php endif; ?>
 </div>
 
-<div class="modal fade" id="lacakPesanan" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+<div class="modal fade" id="cariProduk" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Lacak Pesanan</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Cari Produk</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="<?= base_url() ?>detail-pesanan" method="get">
+            <form action="<?= base_url() ?>pencarian" method="get">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="kode" class="form-label">Kode Pesanan</label>
-                        <input type="text" class="form-control" id="kode" name="kode" placeholder="Masukkan kode pesanan" required oninput="this.value = this.value.toUpperCase()">
-                    </div>
-                    <div class="mb-2">
-                        <small><i>* Kode pesanan bisa dicek di email atau whatsapp yang digunakan untuk melakukan transaksi.</i></small>
+                        <label for="nama_produk" class="form-label">Nama Produk</label>
+                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan nama produk" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Cari Sekarang</button>
+                    <button type="submit" class="btn btn-primary">Cari Produk</button>
                 </div>
             </form>
         </div>

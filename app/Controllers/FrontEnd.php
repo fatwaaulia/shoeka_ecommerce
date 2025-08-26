@@ -33,6 +33,42 @@ class FrontEnd extends BaseController
         return view('frontend/header', $view);
     }
 
+    public function pencarian()
+    {
+        $json_id_produk_sub_kategori = model('SubKategori')->findAll();
+        $json_id_produk_sub_sub_kategori = model('SubSubKategori')->findAll();
+
+        $array_id_produk = [];
+        foreach ($json_id_produk_sub_kategori as $v) {
+            $ids = json_decode($v['json_id_produk'], true);
+            if (is_array($ids)) {
+                $array_id_produk = array_merge($array_id_produk, $ids);
+            }
+        }
+
+        foreach ($json_id_produk_sub_sub_kategori as $v) {
+            $ids = json_decode($v['json_id_produk'], true);
+            if (is_array($ids)) {
+                $array_id_produk = array_merge($array_id_produk, $ids);
+            }
+        }
+
+        $array_id_produk = array_unique($array_id_produk);
+
+        $get_nama_produk = $this->request->getVar('nama_produk');
+        $array_id_produk = model('Produk')->whereIn('id', $array_id_produk)->like('nama', $get_nama_produk)->findColumn('id');
+
+        $data = [
+            'array_id_produk' => json_encode($array_id_produk),
+            'title' => 'Pencarian',
+        ];
+
+        $view['navbar'] = view('frontend/components/navbar');
+        $view['content'] = view('frontend/pencarian', $data);
+        $view['footer'] = view('frontend/components/footer');
+        return view('frontend/header', $view);
+    }
+
     public function tentang()
     {
         $data['title'] = 'Tentang Shoeka';

@@ -227,6 +227,7 @@ async function provinsi() {
             kabupaten(this.value);
             dom('#component_kecamatan').innerHTML = `<input type="text" class="form-control" disabled>`;
             dom('#component_desa').innerHTML = `<input type="text" class="form-control" disabled>`;
+            dom('#component_layanan_kurir').innerHTML = `<input type="text" class="form-control" disabled>`;
         });
     } catch (error) {
         console.error(error);
@@ -253,6 +254,7 @@ async function kabupaten(id_provinsi) {
             dom('#nama_kabupaten').value = dom('#kabupaten').options[dom('#kabupaten').selectedIndex].text;
             kecamatan(this.value);
             dom('#component_desa').innerHTML = `<input type="text" class="form-control" disabled>`;
+            dom('#component_layanan_kurir').innerHTML = `<input type="text" class="form-control" disabled>`;
         });
     } catch (error) {
         console.error(error);
@@ -278,6 +280,7 @@ async function kecamatan(id_kabupaten) {
         dom('#kecamatan').addEventListener('change', function () {
             dom('#nama_kecamatan').value = dom('#kecamatan').options[dom('#kecamatan').selectedIndex].text;
             desa(this.value);
+            dom('#component_layanan_kurir').innerHTML = `<input type="text" class="form-control" disabled>`;
         });
     } catch (error) {
         console.error(error);
@@ -303,6 +306,7 @@ async function desa(id_kecamatan) {
         dselect(dom('#desa'), { search: true });
         dom('#desa').addEventListener('change', function () {
             dom('#nama_desa').value = dom('#desa').options[dom('#desa').selectedIndex].text;
+            dom('#component_layanan_kurir').innerHTML = `<input type="text" class="form-control" disabled>`;
         });
     } catch (error) {
         console.error(error);

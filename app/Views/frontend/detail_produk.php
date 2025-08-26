@@ -10,6 +10,24 @@ $varian_produk = model('VarianProduk')
 sort($varian_produk);
 ?>
 
+<link rel="stylesheet" href="<?= base_url() ?>assets/modules/swiperjs/swiper.css">
+<style>
+.swiper-button-prev, .swiper-button-next {
+    background-color: rgba(0, 0, 0, 0.5)!important;
+    width: 50px!important;
+    height: 50px!important;
+    border-radius: 50%!important;
+    pointer-events: auto!important;
+}
+.swiper-button-prev::after, .swiper-button-next::after {
+    font-size: 20px!important;
+    color: white!important;
+}
+.swiper-pagination-bullet-active {
+    background: var(--main-color);
+}
+</style>
+
 <section class="container">
     <div class="row">
         <div class="col-12">
@@ -23,43 +41,53 @@ sort($varian_produk);
     <div class="row mt-4">
         <div class="col-12 col-md-1 col-lg-1 order-2 order-md-1">
             <style>
-            #sub_gambar { width: 100%; }
+            .swipper-thumbs { width: 100%; }
             @media (max-width: 768px) {
-                #sub_gambar {
+                .swipper-thumbs {
                     width: 50px;
                     height: 50px;
                 }
             }
             </style>
-            <div class="overflow-auto scrollbar-hidden d-flex flex-nowrap gap-2 d-md-block">
-                
-            <img src="<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>" class="mb-2" id="sub_gambar" style="cursor: pointer;" onclick="previewGambar('<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>')">
-            <?php
-            $json_gambar_ecommerce = json_decode($data['json_gambar_ecommerce'], true);
-            if ($json_gambar_ecommerce) :
-            foreach ($json_gambar_ecommerce as $v) :
-            ?>
-            <img src="<?= webFile('image', 'produk', $v, $data['updated_at']) ?>" class="mb-2" id="sub_gambar" style="cursor: pointer;" onclick="previewGambar('<?= webFile('image', 'produk', $v, $data['updated_at']) ?>')">
-            <?php endforeach; endif; ?>
+            <div class="overflow-auto scrollbar-hidden d-flex flex-nowrap gap-2 d-md-block" style="max-height: 75vh;">
+                <img src="<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>" class="mb-2 swipper-thumbs" style="cursor: pointer;">
+                <?php
+                $json_gambar_ecommerce = json_decode($data['json_gambar_ecommerce'], true);
+                if ($json_gambar_ecommerce) :
+                foreach ($json_gambar_ecommerce as $v) :
+                ?>
+                <img data-src="<?= webFile('image', 'produk', $v, $data['updated_at']) ?>" class="lazy-shimmer mb-2 swipper-thumbs" style="cursor: pointer;">
+                <?php endforeach; endif; ?>
+                <?php foreach ($varian_produk as $v) : ?>
+                <img data-src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="lazy-shimmer mb-2 swipper-thumbs" style="cursor: pointer;">
+                <?php endforeach; ?>
             </div>
-
-            <script>
-            function previewGambar(src) {
-                if (src == dom('#sampul').src) return;
-                const img = dom('#sampul');
-                img.style.transition = 'opacity 0.3s';
-                img.style.opacity = 0.5;
-                setTimeout(() => {
-                    dom('#sampul').src = src;
-                    dom('#sampul').onload = () => {
-                        dom('#sampul').style.opacity = 1;
-                    };
-                }, 200);
-            }
-            </script>
         </div>
         <div class="col-12 col-md-6 col-lg-5 order-1 order-md-2">
-            <img src="<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>" class="w-100 mb-3" id="sampul" alt="<?= $data['nama'] ?>">
+            <div class="swiper swiper-produk">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="<?= webFile('image', 'produk', $data['gambar'], $data['updated_at']) ?>" class="mb-2 w-100" id="sub_gambar" style="cursor: pointer;">
+                    </div>
+                    <?php
+                    $json_gambar_ecommerce = json_decode($data['json_gambar_ecommerce'], true);
+                    if ($json_gambar_ecommerce) :
+                    foreach ($json_gambar_ecommerce as $v) :
+                    ?>
+                    <div class="swiper-slide">
+                        <img src="<?= webFile('image', 'produk', $v, $data['updated_at']) ?>" class="mb-3 w-100" alt="<?= $data['nama'] ?>">
+                    </div>
+                    <?php endforeach; endif; ?>
+                    <?php foreach ($varian_produk as $v) : ?>
+                    <div class="swiper-slide">
+                        <img src="<?= webFile('image', 'varian_produk', $v['gambar'], $v['updated_at']) ?>" class="mb-3 w-100" alt="<?= $v['nama'] ?>">
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <!-- <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div> -->
+                <div class="swiper-pagination d-flex" style="left: 16px; bottom: 24px;"></div>
+            </div>
         </div>
         <div class="col-12 col-md-5 col-lg-6 order-3">
             <h4 class="mt-4 mt-md-0 fw-600"><?= $data['nama'] ?></h4>
@@ -72,9 +100,14 @@ sort($varian_produk);
                 <div class="mb-3">
                     <label class="mb-2">Varian</label> <br>
                     <div class="d-flex flex-wrap gap-2">
-                        <?php foreach ($varian_produk as $key => $v) : ?>
+                        <?php
+                        $json_gambar_ecommerce = json_decode($data['json_gambar_ecommerce'], true);
+                        $total_gambar_ecommerce = is_array($json_gambar_ecommerce) ? count($json_gambar_ecommerce) : 1;
+                        foreach ($varian_produk as $key => $v) :
+                            $index_thumbs = ($total_gambar_ecommerce) + ($key+1);
+                        ?>
                         <span>
-                            <input type="radio" class="btn-check" id="checked_<?= $key ?>" name="varian_produk" value="<?= encode($v['id']) ?>" onclick="pilihVarian(this)" autocomplete="off">
+                            <input type="radio" class="btn-check" id="checked_<?= $key ?>" name="varian_produk" value="<?= encode($v['id']) ?>" onclick="pilihVarian(this, <?= $index_thumbs ?>)" autocomplete="off">
                             <label class="btn btn-outline-secondary" for="checked_<?= $key ?>"><?= $v['nama'] ?></label>
                         </span>
                         <?php endforeach; ?>
@@ -116,7 +149,7 @@ sort($varian_produk);
         $sub_sub_json_id_produk = model('SubSubKategori')->where('json_id_produk !=', '')->findColumn('json_id_produk');
         $json_id_produk = array_merge($sub_json_id_produk, $sub_sub_json_id_produk);
 
-       $produk = [];
+        $produk = [];
         foreach ($json_id_produk as $v) {
             if (!empty($v)) {
                 $ids = json_decode($v, true);
@@ -133,7 +166,6 @@ sort($varian_produk);
         $rekomendasi_produk = model('Produk')->whereIn('id', $produk)->findAll();
         if ($rekomendasi_produk) :
             foreach ($rekomendasi_produk as $v) :
-                
                 $varian_produk = model('VarianProduk')
                 ->baseQuery()
                 ->where([
@@ -159,13 +191,41 @@ sort($varian_produk);
     </div>
 </section>
 
+<script src="<?= base_url() ?>assets/modules/swiperjs/swiper.js"></script>
 <script>
-async function pilihVarian(el) {
+const swiper_preview = new Swiper('.swiper-produk', {
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    spaceBetween: 24,
+    slidesPerView: 1,
+    loop: true,
+    breakpoints: {
+        576: { slidesPerView: 1 },
+        768: { slidesPerView: 1 },
+        992: { slidesPerView: 1 },
+    },
+});
+
+document.querySelectorAll(".swipper-thumbs").forEach((el, index) => {
+    el.addEventListener("click", () => {
+        swiper_preview.slideTo(index);
+    });
+});
+</script>
+
+<script>
+async function pilihVarian(el, index_thumbs) {
     const response = await fetch(`<?= base_url() ?>api/varian-produk/${el.value}`);
     const data = await response.json();
 
     dom('#harga_varian').innerText = formatRupiah(data.data.harga_ecommerce);
-    previewGambar(data.gambar)
+    swiper_preview.slideTo(index_thumbs);
 }
 
 dom('#kurang_qty').addEventListener('click', () => {
