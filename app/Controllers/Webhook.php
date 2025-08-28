@@ -20,9 +20,11 @@ class Webhook extends BaseController
             $pesanan = model('Pesanan')->where('invoice_id', $response['order']['invoice_number'])->first();
 
             if ($pesanan) {
-                $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw';
+                // $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw'; // Demo
+                $api_key = 'SK-aFuKG4c6vkBuO1KNudHZ'; // Production
 
-                $client_id   = 'BRN-0210-1756035403723';
+                // $client_id   = 'BRN-0210-1756035403723'; // Demo
+                $client_id   = 'BRN-0217-1755940419110'; // Production
                 $request_id  = uniqid();
                 $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
                 $target_path = '/orders/v1/status/' . $pesanan['invoice_id'];
@@ -36,7 +38,8 @@ class Webhook extends BaseController
 
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
-                    CURLOPT_URL => 'https://api-sandbox.doku.com/orders/v1/status/' . $response['order']['invoice_number'],
+                    // CURLOPT_URL => 'https://api-sandbox.doku.com' . $target_path, // Demo
+                    CURLOPT_URL => 'https://api.doku.com' . $target_path, // Production
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10,
@@ -58,12 +61,15 @@ class Webhook extends BaseController
                 $response = json_decode($response, true);
 
                 $status = 'Menunggu Pembayaran';
-                if ($response['transaction']['status'] == 'PENDING') {
+                if (($response['transaction']['status'] ?? '') == 'SUCCESS') {
+                $status = 'Lunas';
+                $invoice_status = 'SUCCESS';
+                } elseif (($response['order']['status'] ?? '') == 'ORDER_GENERATED') {
                     $status = 'Menunggu Pembayaran';
-                } elseif ($response['transaction']['status'] == 'SUCCESS') {
-                    $status = 'Lunas';
-                } elseif ($response['transaction']['status'] == 'EXPIRED') {
+                    $invoice_status = 'ORDER_GENERATED';
+                } elseif (($response['order']['status'] ?? '') == 'ORDER_EXPIRED') {
                     $status = 'Kedaluwarsa';
+                    $invoice_status = 'ORDER_EXPIRED';
                 }
 
                 $data_pesanan = [
@@ -77,7 +83,7 @@ class Webhook extends BaseController
                     'payment_destination' => '',
 
                     'status'         => $status,
-                    'invoice_status' => $response['transaction']['status'],
+                    'invoice_status' => $invoice_status,
                     'paid_at'        => ($response['transaction']['date'] ?? '') ? date('Y-m-d H:i:s', strtotime($response['transaction']['date'])) : null,
                 ];
 
@@ -87,11 +93,11 @@ class Webhook extends BaseController
 
                 model('Pesanan')->update($pesanan['id'], $data_pesanan);
 
-                return $this->response->setStatusCode(200)->setJSON([
-                    'status'  => 'success',
-                    'message' => 'Webhook doku berhasil',
-                ]);
-                die;
+                // return $this->response->setStatusCode(200)->setJSON([
+                //     'status'  => 'success',
+                //     'message' => 'Webhook doku berhasil',
+                // ]);
+                // die;
 
                 // Proses Transaksi Kasir
                 $transaksi = model('KasirTransaksi')->where('id_pesanan', $pesanan['id'])->first();

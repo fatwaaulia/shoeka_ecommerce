@@ -262,10 +262,12 @@ class Pesanan extends BaseController
         $invoice_duration = 3600;
         if ($submit == 'VA') {
             // Doku Payment Gateway
+            $request_id  = uniqid();
+
             $invoice_data = [
                 "order" => [
                     "amount"         => (int)$total_tagihan,
-                    "invoice_number" => $kode,
+                    "invoice_number" => $request_id,
                     "currency"       => "IDR",
                     "callback_url"   => $detail_pesanan,
                 ],
@@ -280,10 +282,11 @@ class Pesanan extends BaseController
             ];
             $invoice_sent = json_encode($invoice_data);
 
-            $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw';
+            // $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw'; // Demo
+            $api_key = 'SK-aFuKG4c6vkBuO1KNudHZ'; // Production
 
-            $client_id   = 'BRN-0210-1756035403723';
-            $request_id  = uniqid();
+            // $client_id   = 'BRN-0210-1756035403723'; // Demo
+            $client_id   = 'BRN-0217-1755940419110'; // Production
             $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
             $target_path = '/checkout/v1/payment';
 
@@ -299,7 +302,8 @@ class Pesanan extends BaseController
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://api-sandbox.doku.com/checkout/v1/payment',
+                // CURLOPT_URL => 'https://api-sandbox.doku.com' . $target_path, // Demo
+                CURLOPT_URL => 'https://api.doku.com' . $target_path, // Production
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -446,9 +450,11 @@ class Pesanan extends BaseController
         ];
         $invoice_sent = json_encode($invoice_data);
 
-        $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw';
+        // $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw'; // Demo
+        $api_key = 'SK-aFuKG4c6vkBuO1KNudHZ'; // Production
 
-        $client_id   = 'BRN-0210-1756035403723';
+        // $client_id   = 'BRN-0210-1756035403723'; // Demo
+        $client_id   = 'BRN-0217-1755940419110'; // Production
         $request_id  = uniqid();
         $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
         $target_path = '/orders/v1/status/' . $pesanan['invoice_id'];

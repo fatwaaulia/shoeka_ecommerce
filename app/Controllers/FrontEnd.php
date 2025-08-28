@@ -215,6 +215,10 @@ class FrontEnd extends BaseController
             </script>');
         }
 
+        if ($pesanan['status'] == 'Menunggu Pembayaran' && $pesanan['expired_at'] < date('Y-m-d H:i:s')) {
+            model('Pesanan')->update($pesanan['id'], ['status' => 'Kedaluwarsa']);
+        }
+
         $item_pesanan = model('ItemPesanan')->where('id_pesanan', $pesanan['id'])->findAll();
         $data = [
             'data'  => $pesanan,

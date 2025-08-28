@@ -207,7 +207,7 @@ $href_admin = "https://wa.me/" . preg_replace('/^0/', '62', $no_hp_admin) . "?te
                         <span>Status</span>
                         <span><?= $data['status'] ?></span>
                     </div>
-                    <?php if (userSession() && $data['tipe_pembayaran'] == 'VA' && userSession('id_role') == 1) : ?>
+                    <?php if (userSession() && $data['tipe_pembayaran'] == 'VA') : ?>
                     <div class="d-flex justify-content-end mb-2">
                         <a href="#" id="sinkronisasi_pembayaran">Sinkronisasi</a>
                     </div>
