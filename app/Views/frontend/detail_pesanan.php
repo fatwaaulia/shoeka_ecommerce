@@ -201,7 +201,7 @@ $href_admin = "https://wa.me/" . preg_replace('/^0/', '62', $no_hp_admin) . "?te
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Metode Pembayaran</span>
-                        <span><?= $data['payment_channel'] ?></span>
+                        <span><?= $data['payment_method'] ?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Status</span>

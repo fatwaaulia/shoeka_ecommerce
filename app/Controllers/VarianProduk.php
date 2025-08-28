@@ -69,6 +69,13 @@ class VarianProduk extends BaseController
         $id = decode($id_encode);
         $varian_produk = model('VarianProduk')->find($id);
 
+        if ($varian_produk['harga_ecommerce'] < $varian_produk['harga_ecommerce_coret']) {
+            $persentase = (($varian_produk['harga_ecommerce_coret'] - $varian_produk['harga_ecommerce']) / $varian_produk['harga_ecommerce_coret']) * 100;
+            $varian_produk['persentase'] = 0 - round($persentase, 2) . '%';
+        } else {
+            $varian_produk['persentase'] = 0;
+        }
+
         return $this->response->setStatusCode(200)->setJSON([
             'status' => 'success',
             'data'   => $varian_produk,

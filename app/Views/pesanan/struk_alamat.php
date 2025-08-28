@@ -8,7 +8,7 @@ $logo = webFile('image', 'app_settings', $app_settings['logo'], $app_settings['u
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resi - <?= $pesanan['kode'] ?></title>
+    <title>Struk Alamat - <?= $pesanan['kode'] ?></title>
 
     <link rel="stylesheet" href="<?= base_url() ?>assets/modules/bootstrap/css/bootstrap.min.css">
     <style>
@@ -17,9 +17,9 @@ $logo = webFile('image', 'app_settings', $app_settings['logo'], $app_settings['u
         font-family: 'Calibry', monospace!important;
     }
     #struk {
-        width: 80mm;
+        /* width: 80mm; */
         font-size: 12px;
-        padding: 6px;
+        padding: 24px;
         margin: 0;
     }
 
@@ -46,47 +46,43 @@ window.onload = function () {
 };
 </script>
 
-<body class="d-flex justify-content-center">
-    <div id="struk" class="my-3">
-        <div class="text-center">
-            <img src="<?= $logo ?>" class="w-25" alt="<?= $app_settings['nama_aplikasi'] ?>" title="<?= $app_settings['nama_aplikasi'] ?>" style="filter: brightness(0) saturate(100%) sepia(1) hue-rotate(170deg) saturate(600%) brightness(1.2);"> <br>
+<body>
+    <div id="struk">
+        <div class="row">
+            <div class="col-6">
+                <h6 style="font-weight: 600;">PENGIRIM</h6>
+                <p>
+                    Shoeka Shoes / 0813 9069 2727 <br>
+                    Jl. Danau Maninjau Barat B2 / A 41 Sawojajar - Malang
+                </p>
+                <table class="w-100 mt-3">
+                    <?php foreach ($item_pesanan as $key => $v) : ?>
+                    <tr>
+                        <td><?= $key+1 ?>.</td>
+                        <td><?= $v['nama_varian_produk'] ?></td>
+                        <td><?= $v['qty'] ?>x</td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+            <div class="col-6">
+                <h6 style="font-weight: 600;">PENERIMA</h6>
+                <table class="w-100">
+                    <tr>
+                        <td class="text-nowrap">Nama</td>
+                        <td>: <?= $pesanan['nama_customer'] ?></td>
+                    </tr>
+                    <tr>
+                        <td class="align-top">No. HP</td>
+                        <td>: <?= $pesanan['no_hp_customer'] ?></td>
+                    </tr>
+                    <tr>
+                        <td class="align-top">Alamat</td>
+                        <td class="offset-double-dots">: <?= $pesanan['alamat_customer'] ?></td>
+                    </tr>
+                </table>
+            </div>
         </div>
-
-        <p style="font-weight: 600;" class="mt-4">NO. RESI : <?= $pesanan['nomor_resi'] ?></p>
-
-        <h6 style="font-weight: 600;">PENERIMA</h6>
-
-        <p>
-            <span style="font-weight: 600;">
-            <?= $pesanan['nama_customer'] ?> (<?= $pesanan['no_hp_customer'] ?>)
-            </span> <br>
-            <?= $pesanan['alamat_customer'] ?> <br>
-            <?= ucwords(strtolower($pesanan['nama_kecamatan'])) ?>, <?= ucwords(strtolower($pesanan['nama_kabupaten'])) ?>, <?= ucwords(strtolower($pesanan['nama_provinsi'])) ?>
-        </p>
-
-        <h6 style="font-weight: 600;" class="mt-4">PENGIRIM</h6>
-
-        <p>
-            <span style="font-weight: 600;">
-            Shoeka Shoes (081390692727)
-            </span> <br>
-            Jl. Danau Maninjau Barat B2 / A 41 <br> Sawojajar - Malang
-        </p>
-
-        <table class="w-100">
-            <tr>
-                <td class="align-top">Berat</td>
-                <td class="offset-double-dots">: <?= $pesanan['total_berat'] ?> gr</td>
-            </tr>
-            <tr>
-                <td class="align-top">Layanan</td>
-                <td class="offset-double-dots">: <?= $pesanan['tarif_ongkir_service'] ?> - <?= $pesanan['tarif_ongkir_name'] ?></td>
-            </tr>
-            <tr>
-                <td class="align-top">Kode Pesanan</td>
-                <td class="offset-double-dots">: <?= $pesanan['kode'] ?></td>
-            </tr>
-        </table>
 
         <div class="outside-invoice">
             <hr>

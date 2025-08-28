@@ -17,7 +17,7 @@ class Webhook extends BaseController
         model('Webhook')->insert($data);
 
         if (isset($response['order']['invoice_number'])) {
-            $pesanan = model('Pesanan')->where('kode', $response['order']['invoice_number'])->first();
+            $pesanan = model('Pesanan')->where('invoice_id', $response['order']['invoice_number'])->first();
 
             if ($pesanan) {
                 $api_key = 'SK-8wQdzxaAmPzxAfAQ1Ihw';
@@ -25,7 +25,7 @@ class Webhook extends BaseController
                 $client_id   = 'BRN-0210-1756035403723';
                 $request_id  = uniqid();
                 $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
-                $target_path = '/orders/v1/status/' . $pesanan['kode'];
+                $target_path = '/orders/v1/status/' . $pesanan['invoice_id'];
 
                 $signature_component =
                     "Client-Id:$client_id\n" .
@@ -69,25 +69,29 @@ class Webhook extends BaseController
                 $data_pesanan = [
                     'currency'        => '',
                     'bank_code'       => $response['acquirer']['id'] ?? '',
-                    'payment_id'      => $response['acquirer']['id'] ?? '',
+                    'payment_id'      => '',
                     'paid_amount'     => $response['order']['amount'] ?? '',
-                    'merchant_name'   => $response['acquirer']['name'] ?? '',
+                    'merchant_name'   => '',
                     'payment_method'  => $response['acquirer']['name'] ?? '',
-                    'payment_channel' => $response['channel']['id'] ?? '',
-                    'payment_destination' => $response['acquirer']['id'] ?? '',
+                    'payment_channel' => '',
+                    'payment_destination' => '',
 
                     'status'         => $status,
                     'invoice_status' => $response['transaction']['status'],
-                    'paid_at'        => $response['transaction']['date'] ? date('Y-m-d H:i:s', strtotime($response['transaction']['date'])) : null,
+                    'paid_at'        => ($response['transaction']['date'] ?? '') ? date('Y-m-d H:i:s', strtotime($response['transaction']['date'])) : null,
                 ];
+
+                // return $this->response->setStatusCode(200)->setJSON([
+                //     'data' => $response,
+                // ]);
 
                 model('Pesanan')->update($pesanan['id'], $data_pesanan);
 
                 return $this->response->setStatusCode(200)->setJSON([
                     'status'  => 'success',
                     'message' => 'Webhook doku berhasil',
-                    'data'    => $response,
                 ]);
+                die;
 
                 // Proses Transaksi Kasir
                 $transaksi = model('KasirTransaksi')->where('id_pesanan', $pesanan['id'])->first();
@@ -141,7 +145,7 @@ class Webhook extends BaseController
                         'total_tagihan'   => $pesanan['total_tagihan'],
                         'jumlah_bayar'    => $pesanan['paid_amount'],
                         'kembalian'       => 0,
-                        'metode_pembayaran' => $response['payment_channel'],
+                        'metode_pembayaran' => $response['acquirer']['name'] ?? '',
                         'marketplace'       => 'WEB',
                         'total_penghasilan' => $total_penghasilan,
                     ];
@@ -162,7 +166,7 @@ class Webhook extends BaseController
                             'id_pesanan' => $pesanan['id'],
                             'id_transaksi'   => $id_transaksi_kasir,
                             'kode_transaksi' => $kode_transaksi,
-                            'metode_pembayaran' => $response['payment_channel'],
+                            'metode_pembayaran' => $response['acquirer']['name'] ?? '',
                             'marketplace'       => 'WEB',
                             'id_stok'        => $id_stok,
                             'id_warehouse'   => $warehouse['id'],

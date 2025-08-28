@@ -141,7 +141,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 function renderStatusPembayaran(data) {
     if (data.tipe_pembayaran == 'VA' || data.status == 'Lunas') {
-        return `${data.status}`;
+        let badge_color = 'bg-primary';
+        if (data.status == 'Lunas') {
+            badge_color = 'bg-success';
+        } else if (data.status == 'Kedaluwarsa') {
+            badge_color = 'bg-danger';
+        }
+        return `<div class="badge ${ badge_color }" style="border-radius: 6px!important;">${data.status}</div>`;
     } else {
         const status = ['Menunggu Pembayaran', 'Lunas'];
 
@@ -242,10 +248,9 @@ function renderNomorResi(data) {
                         <input type="text" class="form-control" id="nomor_resi" name="nomor_resi" value="${data.nomor_resi}" placeholder="Masukkan nomor resi">
                         <div class="invalid-feedback" id="invalid_nomor_resi"></div>
                     </div>
-                    <div>
-                        <a href="<?= base_url(userSession('slug_role')) ?>/pesanan/resi/${data.id}" target="_blank" class="btn btn-primary">
-                            <i class="fa-solid fa-print me-2"></i>
-                            Cetak Resi
+                    <div class="${data.status != 'Lunas' ? 'd-none' : ''}">
+                        <a href="<?= $base_route ?>struk-alamat?id_pesanan=${data.id}" target="_blank" class="btn btn-primary">
+                            Cetak Struk Alamat
                         </a>
                     </div>
                 </div>

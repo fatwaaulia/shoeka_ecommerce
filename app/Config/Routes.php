@@ -122,7 +122,7 @@ if (userSession('id_role') == 1) {
 if (in_array($id_role, roleAccessByTitle('Pesanan'))) {
     $routes->group("$slug_role/pesanan", ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'Pesanan::main');
-        $routes->get('resi/(:segment)', 'Pesanan::resi/$1');
+        $routes->get('struk-alamat', 'Pesanan::strukAlamat');
     });
     $routes->group('api/pesanan', ['filter' => 'EnsureLogin'], static function ($routes) {
         $routes->get('/', 'Pesanan::index');

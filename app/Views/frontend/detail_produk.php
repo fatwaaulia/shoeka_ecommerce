@@ -91,7 +91,26 @@ sort($varian_produk);
         </div>
         <div class="col-12 col-md-5 col-lg-6 order-3">
             <h4 class="mt-4 mt-md-0 fw-600"><?= $data['nama'] ?></h4>
-            <h5 id="harga_varian"><?= formatRupiah($varian_produk['0']['harga_ecommerce']) ?></h5>
+            <div class="d-md-flex align-items-center">
+                <h4 class="me-3 fw-600 mb-0 text-primary" id="harga_varian">
+                    <?= formatRupiah($varian_produk['0']['harga_ecommerce']) ?>
+                </h4>
+                <div id="harga_coret" class="mt-2 mt-md-0">
+                    <?php
+                    if ($varian_produk['0']['harga_ecommerce'] < $varian_produk['0']['harga_ecommerce_coret']) :
+                        $persentase = (($varian_produk['0']['harga_ecommerce_coret'] - $varian_produk['0']['harga_ecommerce']) / $varian_produk['0']['harga_ecommerce_coret']) * 100;
+                    ?>
+                    <small class="me-2">
+                        <s class="text-secondary">
+                            <?= formatRupiah($varian_produk['0']['harga_ecommerce_coret']) ?>
+                        </s>
+                    </small>
+                    <div class="badge text-success bg-success-subtle" style="border-radius: 6px!important;">
+                        <?= 0 - round($persentase, 2) ?>%
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <hr style="border: 1px solid #ddd;">
 
@@ -165,7 +184,7 @@ sort($varian_produk);
         $produk = array_slice($produk, 0, 8);
         $rekomendasi_produk = model('Produk')->whereIn('id', $produk)->findAll();
         if ($rekomendasi_produk) :
-            foreach ($rekomendasi_produk as $v) :
+            foreach ($rekomendasi_produk as $key => $v) :
                 $varian_produk = model('VarianProduk')
                 ->baseQuery()
                 ->where([
@@ -174,9 +193,20 @@ sort($varian_produk);
                     'stok !=' => 0,
                 ])
                 ->get()->getResultArray();
-                $harga_varian = array_column($varian_produk, 'harga_ecommerce');
-                sort($harga_varian);
-                $harga_varian_termurah = $harga_varian[0] ?? 0;
+
+                $id_varian = array_column($varian_produk, 'id');
+                if (!empty($id_varian)) {
+                    $varian_termurah = model('VarianProduk')
+                        ->whereIn('id', $id_varian)
+                        ->orderBy('harga_ecommerce', 'ASC')
+                        ->first();
+                } else {
+                    $varian_termurah = null;
+                }
+
+                $harga_varian_termurah = $varian_termurah['harga_ecommerce'] ?? 0;
+                $harga_coret_varian_termurah = $varian_termurah['harga_ecommerce_coret'] ?? 0;
+
                 if ($harga_varian_termurah == 0) continue;
 
         ?>
@@ -184,7 +214,26 @@ sort($varian_produk);
             <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>?kategori=<?= $_GET['kategori'] ?? '' ?>">
                 <img data-src="<?= webFile('image', 'produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
                 <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
-                <p class="mb-0 fw-500"><?= formatRupiah($harga_varian_termurah) ?></p>
+                  <div class="mb-0 fw-500 d-md-flex justify-content-between">
+                    <div>
+                        <?= formatRupiah($harga_varian_termurah) ?>
+                    </div>
+                    <?php
+                    if ($harga_varian_termurah < $harga_coret_varian_termurah) :
+                        $persentase = (($harga_coret_varian_termurah - $harga_varian_termurah) / $harga_coret_varian_termurah) * 100;
+                    ?>
+                    <div>
+                        <small class="me-2">
+                            <s class="text-secondary">
+                                <?= formatRupiah($harga_coret_varian_termurah) ?>
+                            </s>
+                        </small>
+                        <div class="badge text-success bg-success-subtle" style="border-radius: 6px!important;">
+                            <?= 0 - round($persentase, 2) ?>%
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
             </a>
         </div>
         <?php endforeach; endif; ?>
@@ -225,6 +274,15 @@ async function pilihVarian(el, index_thumbs) {
     const data = await response.json();
 
     dom('#harga_varian').innerText = formatRupiah(data.data.harga_ecommerce);
+    dom('#harga_coret').innerHTML = (data.data.persentase != 0) ? `
+    <small class="me-2">
+        <s class="text-secondary">
+            ${formatRupiah(data.data.harga_ecommerce_coret)}
+        </s>
+    </small>
+    <div class="badge text-success bg-success-subtle" style="border-radius: 6px!important;">
+        ${data.data.persentase}
+    </div>` : '';
     swiper_preview.slideTo(index_thumbs);
 }
 

@@ -31,17 +31,21 @@ class Pesanan extends BaseController
         return view('dashboard/header', $view);
     }
 
-    public function resi($id)
+    public function strukAlamat()
     {
-        $pesanan = model($this->model_name)->find($id);
+        $id_pesanan = ($this->request->getVar('id_pesanan'));
+
+        $pesanan = model('Pesanan')->find($id_pesanan);
+        $item_pesanan = model('ItemPesanan')->where('id_pesanan', $id_pesanan)->findAll();
 
         $data = [
             'base_route' => $this->base_route,
             'title'      => ucwords(str_replace('_', ' ', $this->base_name)),
-            'pesanan'    => $pesanan,
+            'pesanan'      => $pesanan,
+            'item_pesanan' => $item_pesanan,
         ];
 
-        return view($this->base_name . '/resi', $data);
+        return view($this->base_name . '/struk_alamat', $data);
     }
 
     /*--------------------------------------------------------------
@@ -374,7 +378,7 @@ class Pesanan extends BaseController
             'invoice_sent'     => $invoice_sent,
             'invoice_received' => json_encode($response_doku),
             'invoice_url'      => $response_doku['payment']['url'] ?? '',
-            'invoice_id'       => $response_doku['payment']['token_id'] ?? '',
+            'invoice_id'       => $request_id ?? '',
             'invoice_status'   => '',
             'expired_at'       => $expired_at,
             'paid_at'          => null,
@@ -437,7 +441,7 @@ class Pesanan extends BaseController
 
         $invoice_data = [
             "order" => [
-                "invoice_number" => $pesanan['kode'],
+                "invoice_number" => $pesanan['invoice_id'],
             ],
         ];
         $invoice_sent = json_encode($invoice_data);
@@ -447,7 +451,7 @@ class Pesanan extends BaseController
         $client_id   = 'BRN-0210-1756035403723';
         $request_id  = uniqid();
         $timestamp   = gmdate("Y-m-d\TH:i:s\Z");
-        $target_path = '/orders/v1/status/' . $pesanan['kode'];
+        $target_path = '/orders/v1/status/' . $pesanan['invoice_id'];
 
         $digest = base64_encode(hash('sha256', $invoice_sent, true));
         $signature_component =
@@ -511,7 +515,7 @@ class Pesanan extends BaseController
         return $this->response->setStatusCode(200)->setJSON([
             'status'  => 'success',
             'message' => 'Nomor resi berhasil disimpan',
-            'route'   => $this->base_route . 'resi/' . $id,
+            'route'   => $this->base_route . 'struk-alamat?id_pesanan=' . $id,
         ]);
     }
 
