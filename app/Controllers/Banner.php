@@ -125,10 +125,7 @@ class Banner extends BaseController
         $gambar_desktop = $this->request->getFile('gambar_desktop');
         if ($gambar_desktop->isValid()) {
             $filename_gambar_desktop = $gambar_desktop->getRandomName();
-            if ($gambar_desktop->getExtension() != 'jpg') {
-                $filename_gambar_desktop = str_replace($gambar_desktop->getExtension(), 'jpg', $filename_gambar_desktop);
-            }
-            compressConvertImage($gambar_desktop, $this->upload_path, $filename_gambar_desktop);
+            $gambar_desktop->move($this->upload_path, $filename_gambar_desktop);
         } else {
             $filename_gambar_desktop = '';
         }
@@ -136,10 +133,7 @@ class Banner extends BaseController
         $gambar_ponsel = $this->request->getFile('gambar_ponsel');
         if ($gambar_ponsel->isValid()) {
             $filename_gambar_ponsel = $gambar_ponsel->getRandomName();
-            if ($gambar_ponsel->getExtension() != 'jpg') {
-                $filename_gambar_ponsel = str_replace($gambar_ponsel->getExtension(), 'jpg', $filename_gambar_ponsel);
-            }
-            compressConvertImage($gambar_ponsel, $this->upload_path, $filename_gambar_ponsel);
+            $gambar_ponsel->move($this->upload_path, $filename_gambar_ponsel);
         } else {
             $filename_gambar_ponsel = '';
         }
@@ -185,22 +179,16 @@ class Banner extends BaseController
         // Lolos Validasi
         $gambar_desktop = $this->request->getFile('gambar_desktop');
         if ($gambar_desktop->isValid()) {
-            $filename_gambar_desktop = $find_data['gambar_desktop'] ?: $gambar_desktop->getRandomName();
-            if ($gambar_desktop->getExtension() != 'jpg') {
-                $filename_gambar_desktop = str_replace($gambar_desktop->getExtension(), 'jpg', $filename_gambar_desktop);
-            }
-            compressConvertImage($gambar_desktop, $this->upload_path, $filename_gambar_desktop);
+            $filename_gambar_desktop = $gambar_desktop->getRandomName();
+            $gambar_desktop->move($this->upload_path, $filename_gambar_desktop);
         } else {
             $filename_gambar_desktop = $find_data['gambar_desktop'];
         }
 
         $gambar_ponsel = $this->request->getFile('gambar_ponsel');
         if ($gambar_ponsel->isValid()) {
-            $filename_gambar_ponsel = $find_data['gambar_ponsel'] ?: $gambar_ponsel->getRandomName();
-            if ($gambar_ponsel->getExtension() != 'jpg') {
-                $filename_gambar_ponsel = str_replace($gambar_ponsel->getExtension(), 'jpg', $filename_gambar_ponsel);
-            }
-            compressConvertImage($gambar_ponsel, $this->upload_path, $filename_gambar_ponsel);
+            $filename_gambar_ponsel = $gambar_ponsel->getRandomName();
+            $gambar_ponsel->move($this->upload_path, $filename_gambar_ponsel);
         } else {
             $filename_gambar_ponsel = $find_data['gambar_ponsel'];
         }
