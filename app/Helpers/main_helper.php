@@ -103,7 +103,7 @@ function compressConvertImage($get_file, $upload_path, $filename)
     $image->withFile($get_file);
     $image->convert(IMAGETYPE_JPEG);
     $image->flatten(255, 255, 255);
-    $image->save($upload_path . $filename, 60);
+    $image->save($upload_path . $filename, 80);
 }
 
 /*--------------------------------------------------------------
