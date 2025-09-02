@@ -80,3 +80,24 @@ footer a:hover { color: white; }
         </div>
     </div>
 </footer>
+
+<style>
+.btn-konsultasi {
+    background-color:#30B945!important;
+    color:white!important;
+    position: fixed;
+    bottom: 2%;
+    right: 3%;
+    border: 2px solid white!important;
+    transition: .3s;
+    animation: bounce 1.5s infinite;
+}
+@keyframes bounce {
+    0%, 100% { bottom: 2%; }
+    50% { bottom: 3%; }
+}
+</style>
+<a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="btn rounded-5 btn-konsultasi d-flex align-items-center" style="z-index:999;" title="WhatsApp">
+    <i class="fa-brands fa-whatsapp fa-2x"></i>
+    <i class="fa-solid fa-circle position-absolute fa-sm" style="color:#74d07e; top:5px; right:0px;"></i>
+</a>
