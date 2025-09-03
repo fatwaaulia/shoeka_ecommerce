@@ -152,15 +152,52 @@ $app_settings = model('AppSettings')->find(1);
                     </div>
                     <div class="invalid-feedback" id="invalid_layanan_kurir"></div>
                 </div>
-
                 <div class="mt-4">
                     <h5 class="mb-3">Rincian Pembayaran</h5>
-                    <div class="d-flex justify-content-between mb-2">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="kode_voucher_belanja" name="kode_voucher_belanja" placeholder="Punya kode promo? Masukkan disini ✨" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" autocomplete="off">
-                            <button type="button" class="btn btn-outline-primary" id="submit_kode_voucher_belanja">Pakai</button>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="kode_voucher_belanja" name="kode_voucher_belanja" placeholder="Punya kode promo? Masukkan disini ✨" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" autocomplete="off">
+                                <button type="button" class="btn btn-outline-primary" onclick="submitKodeVoucherBelanja()">Pakai</button>
+                            </div>
+                        </div>
+                        <style>body { padding-right: 0!important; }</style>
+                        <a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom">Lihat Promo</a>
+                        <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" style="min-height: 85vh;">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasBottomLabel">Daftar Promo</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <div class="row gy-4">
+                                    <?php
+                                    $voucher = model('VoucherBelanja')
+                                    ->where([
+                                        'periode_awal <='  => date('Y-m-d'),
+                                        'periode_akhir >=' => date('Y-m-d'),
+                                    ])
+                                    ->findAll();
+                                    foreach ($voucher as $v) :
+                                    ?>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                                        <p class="fw-600"><?= $v['nama'] ?></p>
+                                        <div>Min. belanja <span class="fw-500"><?= formatRupiah($v['minimal_belanja']) ?></span></div>
+                                        <button type="button" class="btn btn-primary w-100 mt-3" onclick="gunakanVoucher('<?= $v['kode'] ?>')" data-bs-dismiss="offcanvas">
+                                            Gunakan Voucher
+                                        </button>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <script>
+                    function gunakanVoucher(kode) {
+                        dom('#kode_voucher_belanja').value = kode;
+
+                        submitKodeVoucherBelanja();
+                    }
+                    </script>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Total Belanja</span>
                         <span><?= formatRupiah($total_belanja) ?></span>
@@ -366,7 +403,7 @@ async function tarif(weight) {
     }
 }
 
-dom('#submit_kode_voucher_belanja').addEventListener('click', async() => {
+async function submitKodeVoucherBelanja() {
     const layanan_kurir = dom('#layanan_kurir').value;
     if (! layanan_kurir) {
         await Swal.fire({
@@ -419,7 +456,7 @@ dom('#submit_kode_voucher_belanja').addEventListener('click', async() => {
     } catch (error) {
         console.error(error);
     }
-});
+}
 
 async function updateRincianPembayaran(diskon_belanja = 0) {
     try {
