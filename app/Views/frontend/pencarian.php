@@ -158,7 +158,7 @@ if ($array_id_produk) {
         <div class="col-6 col-md-4 col-xl-3">
             <a href="<?= base_url() ?>detail-produk/<?= $v['slug'] ?>?kategori=<?= $_GET['kategori'] ?? '' ?>">
                 <img data-src="<?= webFile('image', 'produk', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
-                <p class="mt-3 mb-1 text-dark"><?= $v['nama'] ?></p>
+                <p class="mt-3 mb-1 text-dark fw-600"><?= $v['nama'] ?></p>
                 <div class="mb-0 fw-500 d-md-flex justify-content-between">
                     <div>
                         <?= formatRupiah($harga_varian_termurah) ?>
