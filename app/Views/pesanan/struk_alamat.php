@@ -78,7 +78,13 @@ window.onload = function () {
                     </tr>
                     <tr>
                         <td class="align-top">Alamat</td>
-                        <td class="offset-double-dots">: <?= $pesanan['alamat_customer'] ?></td>
+                        <td class="offset-double-dots">:
+                            <?= $pesanan['alamat_customer'] ?>,
+                            Desa <?= ucwords(strtolower($pesanan['nama_desa'])) ?>,
+                            Kec. <?= ucwords(strtolower($pesanan['nama_kecamatan'])) ?>,
+                            <?= ucwords(strtolower($pesanan['nama_kabupaten'])) ?>,
+                            <?= ucwords(strtolower($pesanan['nama_provinsi'])) ?>
+                        </td>
                     </tr>
                 </table>
             </div>
