@@ -220,14 +220,16 @@ class Webhook extends BaseController
                         ])->first();
                         $stok_in = $stok_konfig['stok_in'];
                         $stok_out = $stok_konfig['stok_out'];
-                        $stok_out_pos = $stok_konfig['stok_out_pos'] + -abs($v['qty']);
-                        $stok = $stok_in + $stok_out + $stok_out_pos;
+                        $stok_out_pos = $stok_konfig['stok_out_pos'];
+                        $stok_out_web = $stok_konfig['stok_out_web'] + -abs($v['qty']);
+                        $stok = $stok_in + $stok_out + $stok_out_pos + $stok_out_web;
                         $data_stok_konfig[] = [
-                            'id'       => $stok_konfig['id'],
-                            'stok_in'  => $stok_in,
-                            'stok_out' => $stok_out,
+                            'id'           => $stok_konfig['id'],
+                            'stok_in'      => $stok_in,
+                            'stok_out'     => $stok_out,
                             'stok_out_pos' => $stok_out_pos,
-                            'stok'     => $stok,
+                            'stok_out_web' => $stok_out_web,
+                            'stok'         => $stok,
                         ];
                     }
 
