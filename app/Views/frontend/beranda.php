@@ -55,7 +55,7 @@
         ?>
         <div class="col-6 col-md-4 col-xl-3">
             <a href="<?= base_url() ?>koleksi?kategori=<?= $v['slug_kategori'] ?>&sub=<?= $v['slug'] ?>">
-                <img src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" style="aspect-ratio: 1 / 1.2;" alt="<?= $v['nama'] ?>">
+                <img data-src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1.2;" alt="<?= $v['nama'] ?>">
             </a>
         </div>
         <?php endforeach; ?>
@@ -75,7 +75,7 @@
         ?>
         <div class="col-6 col-md-4 col-xl-4">
             <a href="<?= base_url() ?>koleksi?kategori=<?= $v['slug_kategori'] ?>&sub=<?= $v['slug'] ?>">
-                <img src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
+                <img data-src="<?= webFile('image', 'sub_kategori', $v['gambar'], $v['updated_at']) ?>" class="w-100 cover-center lazy-shimmer" style="aspect-ratio: 1 / 1;" alt="<?= $v['nama'] ?>">
             </a>
         </div>
         <?php endforeach; ?>
