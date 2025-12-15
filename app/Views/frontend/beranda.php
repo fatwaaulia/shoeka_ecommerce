@@ -23,7 +23,7 @@
                             <a <?= $v['tautan'] ? 'href="' . $v['tautan'] . '" target="_blank"' : '' ?>>
                                 <picture>
                                     <source media="(min-width: 768px)" srcset="<?= webFile('image', 'banner', $v['gambar_desktop'], $v['updated_at']) ?>">
-                                    <img src="<?= webFile('image', 'banner', $v['gambar_ponsel'], $v['updated_at']) ?>" class="d-block w-100 rounded-0 cover-center banner" alt="<?= $v['judul'] ?>">
+                                    <img data-src="<?= webFile('image', 'banner', $v['gambar_ponsel'], $v['updated_at']) ?>" class="d-block w-100 rounded-0 cover-center banner lazy-shimmer" alt="<?= $v['judul'] ?>">
                                 </picture>
                             </a>
                         </div>
