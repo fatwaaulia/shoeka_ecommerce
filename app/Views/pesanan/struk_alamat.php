@@ -51,11 +51,14 @@ window.onload = function () {
         <div class="row">
             <div class="col-6">
                 <h6 style="font-weight: 600;">PENGIRIM</h6>
-                <p>
+                <p class="mb-2">
                     Shoeka Shoes / 0813 9069 2727 <br>
                     Jl. Danau Maninjau Barat B2 / A 41 Sawojajar - Malang
                 </p>
-                <table class="w-100 mt-3">
+                <p class="mb-2">
+                    Kurir : <?= $pesanan['tarif_ongkir_name'] ?>
+                </p>
+                <table class="w-100">
                     <?php foreach ($item_pesanan as $key => $v) : ?>
                     <tr>
                         <td><?= $key+1 ?>.</td>
