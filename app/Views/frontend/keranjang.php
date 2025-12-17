@@ -143,9 +143,10 @@ async function updateItem(id, tipe, qty = null) {
         });
         const data = await response.json();
 
-        // console.log(data);
-        // return;
-        
+        if (data.is_stok_kurang) {
+            location.reload();
+        }
+
         dom('#total_belanja').innerHTML = formatRupiah(data.total_belanja);
         dom('#total_qty_keranjang').innerHTML = data.total_qty_keranjang;
     } catch (error) {

@@ -8,11 +8,9 @@ if ($array_id_produk) {
     foreach ($produk as $key => $v) {
         $varian_produk = model('VarianProduk')
         ->baseQuery()
-        ->where([
-            'id_produk' => $v['id'],
-            'berat !=' => 0,
-            'stok !=' => 0,
-        ])
+        ->where('id_produk', $v['id'])
+        ->where('berat >=', 1)
+        ->where('stok >=', 1)
         ->get()->getResultArray();
 
         if (empty($varian_produk)) {

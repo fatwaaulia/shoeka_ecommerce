@@ -25,6 +25,7 @@ class KeranjangSession extends BaseController
         $id_varian_produk = decode($this->request->getVar('varian_produk'));
         $route = $this->request->getVar('route');
         $qty = $this->request->getVar('qty');
+
         $found = false;
         foreach ($keranjang_session as &$v) {
             if ($v['id_varian_produk'] == $id_varian_produk) {
@@ -34,6 +35,31 @@ class KeranjangSession extends BaseController
             }
         }
         unset($v);
+
+        $stok_gudang = model('VarianProduk')->baseQuery()
+        ->where('a.id', $id_varian_produk)
+        ->get()->getRow()->stok;
+
+        $keranjang = json_decode(session('keranjang'), true) ?? [];
+        $qty_keranjang = array_column($keranjang, 'qty', 'id_varian_produk');
+        $qty_keranjang = $qty_keranjang[$id_varian_produk] ?? null;
+
+        if ($qty_keranjang) {
+            $total_qty_keranjang = $qty_keranjang + $qty;
+            if ($stok_gudang < $total_qty_keranjang) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Sisa stok ' . $stok_gudang,
+                ]);
+            }
+        } else {
+            if ($stok_gudang < $qty) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Sisa stok ' . $stok_gudang,
+                ]);
+            }
+        }
 
         if (! $found) {
             $keranjang_session[] = [
@@ -75,17 +101,35 @@ class KeranjangSession extends BaseController
 
         $total_qty_keranjang = 0;
         $total_belanja = 0;
-        foreach ($keranjang_session as $v) {
-            $varian_produk = model('VarianProduk')->select('harga_ecommerce')->find($v['id_varian_produk']);
-            $total_qty_keranjang += $v['qty'];
-            $total_belanja += $varian_produk['harga_ecommerce'] * $v['qty'];
+        $is_stok_kurang = false;
+        foreach ($keranjang_session as &$v) {
+            $varian_produk = model('VarianProduk')->baseQuery()
+                ->where('a.id', $v['id_varian_produk'])
+                ->get()->getRow();
+
+            $harga_ecommerce = $varian_produk->harga_ecommerce;
+            $stok_gudang = $varian_produk->stok;
+
+            if ($stok_gudang < $v['qty']) {
+                $is_stok_kurang = true;
+            }
+
+            $qty_keranjang = min($stok_gudang, $v['qty']);
+
+            $v['qty'] = $qty_keranjang;
+
+            $total_qty_keranjang += $qty_keranjang;
+            $total_belanja += $harga_ecommerce * $qty_keranjang;
         }
+        unset($v);
 
         session()->set('keranjang', json_encode($keranjang_session));
 
         return $this->response->setStatusCode(200)->setJSON([
             'status'        => 'success',
             // 'data'          => $keranjang_session,
+            'is_stok_kurang'   => $is_stok_kurang,
+            'qty_keranjang'       => $qty_keranjang,
             'total_belanja'       => $total_belanja,
             'total_qty_keranjang' => $total_qty_keranjang,
         ]);

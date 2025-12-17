@@ -1,11 +1,9 @@
 <?php
 $varian_produk = model('VarianProduk')
 ->baseQuery()
-->where([
-    'id_produk' => $data['id'],
-    'berat !=' => 0,
-    'stok !=' => 0,
-])
+->where('id_produk', $data['id'])
+->where('berat >=', 1)
+->where('stok >=', 1)
 ->get()->getResultArray();
 sort($varian_produk);
 ?>
