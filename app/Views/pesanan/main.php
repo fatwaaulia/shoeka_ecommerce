@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 data: null,
                 render: data => `<a href="<?= base_url() ?>detail-pesanan?kode=${data.kode}" target="_blank">${data.kode}</a>`,
             }, {
-                name: '',
+                name: 'nama_customer',
                 data: 'nama_customer',
             }, {
                 name: '',
@@ -230,6 +230,7 @@ function renderNomorResi(data) {
 
     let html = `
     <a href="#" data-bs-toggle="modal" data-bs-target="#modal_nomor_resi_${data.id}">${klik_resi}</a>
+    ${(data.is_cetak_struk_alamat == 'ENABLE') ? '<br><i>struk alamat tercetak</i>' : ''}
     <div class="modal fade" id="modal_nomor_resi_${data.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">

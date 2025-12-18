@@ -38,6 +38,8 @@ class Pesanan extends BaseController
         $pesanan = model('Pesanan')->find($id_pesanan);
         $item_pesanan = model('ItemPesanan')->where('id_pesanan', $id_pesanan)->findAll();
 
+        model('Pesanan')->update($id_pesanan, ['is_cetak_struk_alamat' => 'ENABLE']);
+
         $data = [
             'base_route' => $this->base_route,
             'title'      => ucwords(str_replace('_', ' ', $this->base_name)),
