@@ -318,17 +318,18 @@ $href_admin = "https://wa.me/" . preg_replace('/^0/', '62', $no_hp_admin) . "?te
                             dom('#status_pengiriman').innerText = data.delivery_status.status;
 
                             dom('#manifest_resi').innerHTML = 
-                            data.manifest.map(manifest => {
+                            data.manifest.slice().reverse().map(manifest => {
                                 let date = new Date(manifest.manifest_date);
                                 let formatted = new Intl.DateTimeFormat('id-ID', { 
                                     weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' 
                                 }).format(date);
+                                let manifest_time = `${manifest.manifest_time.slice(0, 5)} WIB`;
 
                                 return `
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between mb-2">
                                         <span class="fw-500">${formatted}</span>
-                                        <span>${manifest.manifest_time}</span>
+                                        <span>${manifest_time}</span>
                                     </div>
                                     <div class="d-flex justify-content-between mb-2">
                                         <small>${manifest.manifest_description}</small>
