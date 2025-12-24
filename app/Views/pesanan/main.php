@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 name: 'nama_customer',
                 data: 'nama_customer',
             }, {
-                name: '',
+                name: 'tipe_pembayaran',
                 data: 'tipe_pembayaran',
             }, {
                 name: '',
@@ -225,7 +225,7 @@ function actionStatus(id) {
 function renderNomorResi(data) {
     let klik_resi = 'Input Nomor Resi';
     if (data.nomor_resi) {
-        klik_resi = data.nomor_resi;
+        klik_resi = `${data.nomor_resi}`;
     }
 
     let html = `
@@ -283,7 +283,7 @@ function actionNomorResi(id) {
 }
 
 function renderOpsi(data) {
-    if (data.status != 'Lunas' || <?= userSession('id_role') ?> == 1) {
+    if (data.status != 'Lunas') {
         let endpoint_hapus_data = `<?= $base_api ?>delete/${data.id}`;
         return `
         <a onclick="deleteData('${endpoint_hapus_data}')" title="Delete">
