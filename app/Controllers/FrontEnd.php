@@ -14,18 +14,12 @@ class FrontEnd extends BaseController
             exit();
         }
 
-        // if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
-        //     $url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        //     header('Location: ' . $url);
-        //     exit();
-        // }
-
         $this->app_settings = model('AppSettings')->find(1);
     }
 
     public function beranda()
     {
-        $data['title'] = $this->app_settings['nama_aplikasi'];
+        $data['title'] = $this->app_settings['nama_aplikasi'] . ' | Produk Kulit Asli Buatan Lokal';
 
         $view['navbar'] = view('frontend/components/navbar');
         $view['content'] = view('frontend/beranda', $data);

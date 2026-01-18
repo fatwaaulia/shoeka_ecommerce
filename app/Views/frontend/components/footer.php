@@ -37,7 +37,9 @@ footer a:hover { color: white; }
                 <div class="mb-2">
                     <a href="https://wa.me/<?= preg_replace('/^0/', '62', $no_hp_admin) ?>" target="_blank" class="text-dark">
                         Kontak
-                    </a> <br>
+                    </a>
+                </div>
+                <div class="mb-2">
                     <a href="<?= base_url() ?>tentang" class="text-dark">
                         Tentang Shoeka
                     </a>

@@ -217,26 +217,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script src="<?= base_url() ?>assets/modules/datatables/js/dataTables.min.js"></script>
-
-<style>
-.btn-scroll,
-.btn-scroll:focus {
-    position: fixed;
-    bottom: 2%;
-    right: 2%;
-    transition: .3s;
-}
-.btn-scroll-to-bottom:hover,
-.btn-scroll-to-top:hover {
-    bottom: 3%;
-}
-</style>
-
-<div class="btn-scroll">
-    <button class="btn btn-primary btn-scroll-to-top me-1" style="z-index:999;" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        <i class="fa-solid fa-arrow-up"></i>
-    </button>
-    <button class="btn btn-primary btn-scroll-to-bottom" style="z-index:999;" onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})">
-        <i class="fa-solid fa-arrow-down"></i>
-    </button>
-</div>
