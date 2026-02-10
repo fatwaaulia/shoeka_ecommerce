@@ -23,20 +23,20 @@ function dateFormatter($tanggal, $format)
 
 function userSession($field = null)
 {
+    static $user = null;
+
     if (! session()->isLogin) return '';
 
-    $id_user = session()->get('id_user');
-    $user = model('Users')->find($id_user);
-    
-    if (! $user) return 'Pengguna tidak ditemukan!';
+    if ($user === null) {
+        $id_user = session('id_user');
+        $user = model('Users')->find($id_user);
 
-    if ($field) {
-        $user_session = $user[$field];
-    } else {
-        $user_session = $user;
+        if (! $user) {
+            return 'Pengguna tidak ditemukan!';
+        }
     }
 
-    return $user_session;
+    return $field ? ($user[$field] ?? null) : $user;
 }
 
 function dataTablesSearch($columns, $search, $select, $base_query) {
@@ -220,8 +220,9 @@ function menuSidebar()
     return $menu_sidebar;
 }
 
-function roleAccessByTitle($title) {
-    $sidebar = menuSidebar();
+function roleAccessByTitle($title)
+{
+    $sidebar = session('menu_sidebar') ?? [];
     foreach ($sidebar as $item) {
 		if (in_array(($item['type'] ?? ''), ['no-collapse', 'collapse'])) {
 			if (($item['title'] ?? '') == $title) {

@@ -77,8 +77,9 @@ class Auth extends BaseController
             model('LogLogin')->insert($log);
 
             $session = [
-                'isLogin'   => true,
-                'id_user'   => $user['id'],
+                'isLogin'      => true,
+                'id_user'      => $user['id'],
+                'menu_sidebar' => menuSidebar(),
             ];
             session()->set($session);
             $role = model('Role')->where('id', $user['id_role'])->first();
